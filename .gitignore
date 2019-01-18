@@ -1,0 +1,7 @@
+# .gitignore for TackEngineLib
+
+[Bb]in/Debug/*
+[Bb]in/Release/*
+[Oo]bj/Debug/*
+[Oo]bj/Release/*
+
