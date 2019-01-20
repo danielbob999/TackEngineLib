@@ -81,6 +81,16 @@ namespace TackEngineLib.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap DefaultSprite {
+            get {
+                object obj = ResourceManager.GetObject("DefaultSprite", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #version 330 core
         ///layout (location = 0) in vec3 aPos;
         ///layout (location = 1) in vec3 aColor;

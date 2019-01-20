@@ -62,6 +62,9 @@ namespace TackEngineLib.Objects.Components
         {
             rectange = _rect;
             m_Colour = _colour;
+
+            Sprite = Main.Sprite.LoadFromBitmap(Properties.Resources.DefaultSprite);
+            Sprite.Create(false);
         }
 
         public override void OnStart()
