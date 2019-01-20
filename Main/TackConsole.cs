@@ -122,6 +122,14 @@ namespace TackEngineLib.Main
                 DateTime.Now.Millisecond,
                 _type.ToString(),
                 _msg));
+
+            Console.WriteLine(string.Format("{0}:{1:00}:{2:00}:{3:000} [{4}] {5}",
+                DateTime.Now.Hour,
+                DateTime.Now.Minute,
+                DateTime.Now.Second,
+                DateTime.Now.Millisecond,
+                _type.ToString(),
+                _msg));
         }
     }
 }
