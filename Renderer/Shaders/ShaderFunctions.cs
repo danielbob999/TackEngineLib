@@ -11,63 +11,17 @@ namespace TackEngineLib.Renderer.Shaders
 {
     public static class ShaderFunctions
     {
-        public static string m_ColourVertexShader = @"#version 150 core
-            in vec2 position;
-            in vec3 color;
-            out vec3 Color;
-            void main()
-            {
-                Color = color;
-                gl_Position = vec4(position, 0.0, 1.0);
-            }
-        ";
-
-        public static string m_ColourFragmentShader = @"#version 150 core
-            in vec3 Color;
-            out vec4 outColor;
-            void main()
-            {
-                outColor = vec4(Color, 1.0);
-            }
-        ";
-
-        public static string m_ImageVertexShader = @"#version 150 core
-            in vec2 position;
-            in vec3 color;
-            in vec2 texcoord;
-            out vec3 Color;
-            out vec2 Texcoord;
-            void main()
-            {
-                Color = color;
-                Texcoord = texcoord;
-                gl_Position = vec4(position, 0.0, 1.0);
-            }
-        ";
-
-        public static string m_ImageFragmentShader = @"#version 150 core
-            in vec3 Color;
-            in vec2 Texcoord;
-
-            out vec4 outColor;
-
-            uniform sampler2D tex;
-
-            void main()
-            {
-                outColor = texture(tex, Texcoord) * vec4(Color, 1.0);
-            }
-        ";
-
-        public static int CompileAndLinkShaders()
+        public static int CompileAndLinkShaders(string _vertSource, string _fragSource)
         {
             try
             {
                 // Compile vertex shader
                 int vertShader = GL.CreateShader(ShaderType.VertexShader);
 
-                // GET SOURCE FROM VERTSHADER FILE
+                // Set the shader source
+                GL.ShaderSource(vertShader, _vertSource);
 
+                // Compile shader
                 GL.CompileShader(vertShader);
 
                 GL.GetShaderInfoLog(vertShader, out string vertLogStr);
@@ -76,12 +30,16 @@ namespace TackEngineLib.Renderer.Shaders
                     TackConsole.EngineLog(EngineLogType.Error, vertLogStr);
                 else
                     TackConsole.EngineLog(EngineLogType.Message, "Successfully complied vertex shader");
+                
 
-                // Compile fragment shader
+
+                // Create fragment shader
                 int fragShader = GL.CreateShader(ShaderType.FragmentShader);
 
-                // GET SOURCE FROM FRAGSHADER FILE
+                // Set the shader source
+                GL.ShaderSource(fragShader, _fragSource);
 
+                // Compile the shader
                 GL.CompileShader(fragShader);
 
                 GL.GetShaderInfoLog(fragShader, out string fragLogStr);
@@ -91,8 +49,12 @@ namespace TackEngineLib.Renderer.Shaders
                 else
                     TackConsole.EngineLog(EngineLogType.Message, "Successfully compiled fragment shader");
 
-                // Link vertex and fragment shaders
+
+
+                // Create shader program
                 int shaderProgram = GL.CreateProgram();
+
+                // Link shaders to the shader program
                 GL.AttachShader(shaderProgram, vertShader);
                 GL.AttachShader(shaderProgram, fragShader);
                 GL.LinkProgram(shaderProgram);
