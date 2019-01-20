@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 using OpenTK.Graphics.OpenGL;
 
@@ -10,11 +11,14 @@ using TackEngineLib.Main;
 using TackEngineLib.Engine;
 using TackEngineLib.Objects;
 using TackEngineLib.Objects.Components;
+using TackEngineLib.Renderer.Shaders;
 
 namespace TackEngineLib.Renderer
 {
     internal class TackRenderer
     {
+        private int m_ShaderProgramId;
+
         internal TackRenderer()
         {
 
@@ -22,14 +26,20 @@ namespace TackEngineLib.Renderer
 
         public void OnStart()
         {
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
 
+            m_ShaderProgramId = ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.DefaultFragmentShader);
+
+            timer.Stop();
+            TackConsole.EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
         }
 
         public void OnRender()
         {
             try
             {
-
+                TackObjectSpriteRendering();
             }
             catch (Exception e)
             {
@@ -43,109 +53,6 @@ namespace TackEngineLib.Renderer
 
         }
 
-        public static void RenderCycle()
-        {
-            int num = 0;
-
-            // Vertex Positions
-            // 
-            // V1 ------ V2
-            // |         |
-            // |         |
-            // V4 ------ v3
-
-            foreach (RenderObject rendObj in renderQueue)
-            {
-                num++;
-
-                if (!rendObj.renderSprite)
-                {
-                    GL.Enable(EnableCap.Blend);
-                    GL.Disable(EnableCap.Texture2D);
-
-                    GL.Begin(PrimitiveType.Quads);
-                    
-                    // Set the colour
-                    GL.Color4((byte)rendObj.colour.R, (byte)rendObj.colour.G, (byte)rendObj.colour.B, (byte)rendObj.colour.A);
-
-                    // V1
-                    GL.Vertex2(rendObj.rectangle.X, rendObj.rectangle.Y);
-
-                    // V2
-                    GL.Vertex2(rendObj.rectangle.X + rendObj.rectangle.Width, rendObj.rectangle.Y);
-
-                    // V3
-                    GL.Vertex2(rendObj.rectangle.X + rendObj.rectangle.Width, rendObj.rectangle.Y + -rendObj.rectangle.Height);
-
-                    // V4
-                    GL.Vertex2(rendObj.rectangle.X, rendObj.rectangle.Y + -rendObj.rectangle.Height);
-
-                    GL.End();
-                }
-                else
-                {
-                    GL.Enable(EnableCap.Texture2D);
-                    GL.Enable(EnableCap.Blend);
-                    GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
-                    GL.BindTexture(TextureTarget.Texture2D, rendObj.sprite.TextureId);
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, rendObj.sprite.Width, rendObj.sprite.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, rendObj.sprite.SpriteData.Scan0);
-
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
-                    GL.BindTexture(TextureTarget.Texture2D, rendObj.sprite.TextureId);
-
-                    GL.Begin(PrimitiveType.Quads);
-
-                    // Set the colour
-                    GL.Color4((byte)rendObj.colour.R, (byte)rendObj.colour.G, (byte)rendObj.colour.B, (byte)rendObj.colour.A);
-
-                    // V1
-                    GL.TexCoord2(0, 0);
-                    GL.Vertex2(rendObj.rectangle.X, rendObj.rectangle.Y);
-
-                    // V2
-                    GL.TexCoord2(1, 0);
-                    GL.Vertex2(rendObj.rectangle.X + rendObj.rectangle.Width, rendObj.rectangle.Y);
-
-                    // V3
-                    GL.TexCoord2(1, 1);
-                    GL.Vertex2(rendObj.rectangle.X + rendObj.rectangle.Width, rendObj.rectangle.Y + -rendObj.rectangle.Height);
-
-                    // V4
-                    GL.TexCoord2(0, 1);
-                    GL.Vertex2(rendObj.rectangle.X, rendObj.rectangle.Y + -rendObj.rectangle.Height);
-
-                    GL.End();
-                    //GL.Disable(EnableCap.Blend);
-                }
-            }
-
-            //GL.End();
-            //EngineLog.WriteMessage("Rendered {0} items this cycle", num);
-            renderQueue.Clear();
-        }
-
-        /// <summary>
-        /// Render a quad
-        /// </summary>
-        /// <param name="rendObj.rectangle">The dimensions and position of the quad</param>
-        /// <param name="_col">The colour of the rendered quad</param>
-        public static void RenderQuad(RectangleShape _rect, Colour4b _col)
-        {
-            renderQueue.Add(new RenderObject(_rect, _col, null, false));
-        }
-
-        
-        public static void RenderQuad(RectangleShape _rect, Colour4b _col, Sprite _tex)
-        {
-            renderQueue.Add(new RenderObject(_rect, _col, _tex, true));
-        }
-        
-
          /// <summary>
          /// Converts screen coords e.g(0 - 600) to different coords (-1 - 1)
          /// </summary>
@@ -158,8 +65,14 @@ namespace TackEngineLib.Renderer
             return (((_val - 0) * newRange) / oldRange) + (-1);
         }
 
+        /// <summary>
+        /// Loops through all active TackObjects and renders all QuadRenderer components
+        /// </summary>
         private void TackObjectSpriteRendering()
         {
+            // Tell OpenGL to use the compiled and linker shader program at m_ShaderProgramId
+            GL.UseProgram(m_ShaderProgramId);
+
             TackObject[] allObjects = TackObject.Get();
 
             foreach (TackObject currentTackObject in allObjects)
@@ -168,7 +81,91 @@ namespace TackEngineLib.Renderer
                 if (currentTackObject.GetComponent<QuadRenderer>().IsNullComponent())
                     continue;
 
+                /*
+                // Continue if TackObject is currently inactive
+                if (currentTackObject.)
+                */
 
+                QuadRenderer quadRenderer = currentTackObject.GetComponent<QuadRenderer>();
+
+                RectangleShape tackObjectBounds = new RectangleShape()
+                {
+                    X = ((currentTackObject.Position.X - MainScreenWindow.CameraObject.Position.X) - (currentTackObject.Scale.X / 2)) / (MainScreenWindow.Width / 2),
+                    Y = ((currentTackObject.Position.Y - MainScreenWindow.CameraObject.Position.Y) + (currentTackObject.Scale.Y / 2)) / (MainScreenWindow.Height / 2),
+                    Width = (currentTackObject.Scale.X) / (MainScreenWindow.Width / 2),
+                    Height = (currentTackObject.Scale.X) / (MainScreenWindow.Width / 2)
+                };
+
+                /*
+                 *    v4 ------ v1
+                 *    |         |
+                 *    |         |
+                 *    |         |
+                 *    v3 ------ v2
+                 * 
+                 */
+
+                float[] vertexData = new float[]
+                {
+                    //       Position (XYZ)                                                                                                      Colours (RGB)                                                                                  TexCoords (XY)
+                    /* v1 */ (tackObjectBounds.X + tackObjectBounds.Width), (tackObjectBounds.Y), 0.0f,                                          (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   1.0f, 1.0f,
+                    /* v2 */ (tackObjectBounds.X + tackObjectBounds.Width), (tackObjectBounds.Y - tackObjectBounds.Height), 0.0f,                (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   1.0f, 0.0f,
+                    /* v3 */ (tackObjectBounds.X), (tackObjectBounds.Y - tackObjectBounds.Height), 0.0f,                                         (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   0.0f, 0.0f,
+                    /* v4 */ (tackObjectBounds.X), (tackObjectBounds.Y), 0.0f,                                                                   (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   0.0f, 1.0f
+                };
+
+                int[] indices = new int[]
+                {
+                    0, 1, 3, // first triangle
+                    1, 2, 3  // second triangle
+                };
+
+                int VAO = GL.GenVertexArray();
+                int VBO = GL.GenBuffer();
+                int EBO = GL.GenBuffer();
+
+                GL.BindVertexArray(VAO);
+
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+                GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * 28, vertexData, BufferUsageHint.StaticDraw);
+
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(int) * 6, indices, BufferUsageHint.StaticDraw);
+
+                // position attribute
+                GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
+                GL.EnableVertexAttribArray(0);
+
+                // color attribute
+                GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
+                GL.EnableVertexAttribArray(1);
+
+                // texture coord attribute
+                GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
+                GL.EnableVertexAttribArray(2);
+
+                // Set texture attributes
+                GL.BindTexture(TextureTarget.Texture2D, quadRenderer.Sprite.TextureId);
+
+                // set the texture wrapping parameters
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+                // set texture filtering parameters
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+                // Set the shader uniform value
+                GL.Uniform1(GL.GetUniformLocation(m_ShaderProgramId, "ourTexture"), 0);
+
+                GL.ActiveTexture(TextureUnit.Texture0);
+                GL.BindTexture(TextureTarget.Texture2D, quadRenderer.Sprite.TextureId);
+
+                GL.BindVertexArray(VAO);
+
+                GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, 0);
             }
         }
 

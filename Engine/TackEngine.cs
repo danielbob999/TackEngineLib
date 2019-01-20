@@ -12,7 +12,7 @@ namespace TackEngineLib.Engine
     public class TackEngine
     {
         private const int VERSION_MAJOR = 0;
-        private const int VERSION_MINOR = 7;
+        private const int VERSION_MINOR = 8;
         private const int VERSION_PATCH = 0;
         private const string VERSION_DESC = "AlphaBuild";
 

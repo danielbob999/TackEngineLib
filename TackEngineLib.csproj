@@ -80,6 +80,11 @@
     <Compile Include="Physics\PhysicsStatus.cs" />
     <Compile Include="Physics\TackPhysics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Renderer\RenderObject.cs" />
     <Compile Include="Renderer\Shaders\ShaderFunctions.cs" />
     <Compile Include="Renderer\Shaders\TackShaderType.cs" />
@@ -91,6 +96,18 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Engine\WorkerThreads\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DefaultVertexShader.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DefaultFragmentShader.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

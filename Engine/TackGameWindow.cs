@@ -35,6 +35,7 @@ namespace TackEngineLib.Engine
         private TackConsole m_TackConsole;
         //private TackPhysics m_TackPhysics;
         private TackObjectManager m_TackObjectManager;
+        private TackRenderer m_TackRender;
 
         private Stopwatch updateTimer;
         private Stopwatch frameTimer;
@@ -75,6 +76,9 @@ namespace TackEngineLib.Engine
 
             m_TackObjectManager = new TackObjectManager();
             m_TackObjectManager.OnStart();
+
+            m_TackRender = new TackRenderer();
+            m_TackRender.OnStart();
 
             // OpenGL stuffs
             //GL.Viewport(0, 0, Width, Height);
@@ -129,7 +133,7 @@ namespace TackEngineLib.Engine
             GL.ClearColor(new OpenTK.Graphics.Color4(255, 0, 0, 255));
 
             // All OnRender here
-            TackRenderer.RenderCycle();
+            m_TackRender.OnRender();
 
             onGUIRenderFunction(); // This function should be called after all rendering. This means text will render above other objects
             m_TackConsole.OnGUIRender(); // TackConsole should be rendered above everything else, including the onGUIRenderFunction
