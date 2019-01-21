@@ -71,12 +71,21 @@ namespace TackEngineLib.Properties {
         ///
         ///void main()
         ///{
-        ///    FragColor = texture(ourTexture, TexCoord);
+        ///    FragColor = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0);
         ///}.
         /// </summary>
         internal static string DefaultFragmentShader {
             get {
                 return ResourceManager.GetString("DefaultFragmentShader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string DefaultFragmentShader_GUI {
+            get {
+                return ResourceManager.GetString("DefaultFragmentShader_GUI", resourceCulture);
             }
         }
         

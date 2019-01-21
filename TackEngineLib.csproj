@@ -112,5 +112,8 @@
   <ItemGroup>
     <None Include="Resources\DefaultSprite.bmp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DefaultFragmentShader_GUI.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
