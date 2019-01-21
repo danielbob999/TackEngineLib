@@ -13,6 +13,7 @@ using OpenTK.Graphics.OpenGL;
 
 using TackEngineLib.Main;
 using TackEngineLib.Engine;
+using TackEngineLib.Renderer;
 
 namespace TackEngineLib.GUI
 {
@@ -87,6 +88,9 @@ namespace TackEngineLib.GUI
 
         public static void Box(RectangleShape _rect, Colour4b _colour)
         {
+            Sprite defaultSprite = Sprite.LoadFromBitmap(Properties.Resources.DefaultSprite);
+            defaultSprite.Create(false);
+
             RectangleShape calculatedRect = new RectangleShape()
             {
                 X = (_rect.X - (MainScreenWindow.Width / 2)) / (MainScreenWindow.Width / 2),
@@ -95,49 +99,96 @@ namespace TackEngineLib.GUI
                 Height = (_rect.Height / (MainScreenWindow.Height / 2))
             };
 
-            //Console.WriteLine(calculatedRect.ToString());
-
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            GL.Begin(PrimitiveType.Quads);
+            // Tell OpenGL to use the compiled and linker shader program at m_ShaderProgramId
+            GL.UseProgram(TackRenderer.ShaderProgramId);
 
-            // Vertex Positions
-            // 
-            // V1 ------ V2
-            // |         |
-            // |         |
-            // V4 ------ v3
+            float[] vertexData = new float[32]
+                {
+                    //       Position (XYZ)                                                                                                      Colours (RGB)                                                                                  TexCoords (XY)
+                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        (_colour.R / 255), (_colour.G / 255), (_colour.B / 255),   1.0f, 0.0f,
+                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                (_colour.R / 255), (_colour.G / 255), (_colour.B / 255),   1.0f, 1.0f,
+                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       (_colour.R / 255), (_colour.G / 255), (_colour.B / 255),   0.0f, 1.0f,
+                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               (_colour.R / 255), (_colour.G / 255), (_colour.B / 255),   0.0f, 0.0f
+                };
 
-            // V1
-            //GL.TexCoord2(0, 0);
-            GL.Vertex2(calculatedRect.X, calculatedRect.Y);
+            int[] indices = new int[]
+            {
+                    0, 1, 3, // first triangle
+                    1, 2, 3  // second triangle
+            };
 
-            // V2
-            //GL.TexCoord2(1, 0);
-            GL.Vertex2(calculatedRect.X + calculatedRect.Width, calculatedRect.Y);
+            int VAO = GL.GenVertexArray();
+            int VBO = GL.GenBuffer();
+            int EBO = GL.GenBuffer();
 
-            // V3
-            //GL.TexCoord2(1, 1);
-            GL.Vertex2(calculatedRect.X + calculatedRect.Width, calculatedRect.Y + -calculatedRect.Height);
+            GL.BindVertexArray(VAO);
 
-            // V4
-            //GL.TexCoord2(0, 1);
-            GL.Vertex2(calculatedRect.X, calculatedRect.Y + -calculatedRect.Height);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+            GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * 32, vertexData, BufferUsageHint.StaticDraw);
 
-            GL.End();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(int) * 6, indices, BufferUsageHint.StaticDraw);
+
+            // position attribute
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
+            GL.EnableVertexAttribArray(0);
+
+            // color attribute
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
+            GL.EnableVertexAttribArray(1);
+
+            // texture coord attribute
+            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
+            GL.EnableVertexAttribArray(2);
+
+            // Set texture attributes
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, defaultSprite.TextureId);
+
+
+            //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quadRenderer.Sprite.Width, quadRenderer.Sprite.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, quadRenderer.Sprite.SpriteData.Scan0);
+
+
+            // set texture filtering parameters
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            // set the texture wrapping parameters
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, defaultSprite.Width, defaultSprite.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, defaultSprite.SpriteData.Scan0);
+            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            // Set the shader uniform value
+            GL.Uniform1(GL.GetUniformLocation(TackRenderer.ShaderProgramId, "ourTexture"), 0);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, defaultSprite.TextureId);
+
+            GL.BindVertexArray(VAO);
+
+            GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero);
+
+            defaultSprite.Destory(false);
         }
 
         public static void TextArea(RectangleShape _rect, string _text)
         {
-            TextArea(_rect, new Colour4b(0, 0, 0, 255), _text);
+            TextArea(_rect, new Colour4b(255, 255, 255, 255), _text, new Colour4b(0, 0, 0, 255));
         }
 
-        public static void TextArea(RectangleShape _rect, Colour4b _textCol, string _text)
+        public static void TextArea(RectangleShape _rect, Colour4b _backgroundColour, string _text, Colour4b _textColour)
         {
             // Render a box at the back of the TextArea
-            Box(_rect);
+            Box(_rect, _backgroundColour);
 
             // Generate Bitmap
             Vector2i size = new Vector2i((int)(_rect.Width), (int)(_rect.Height));
@@ -157,12 +208,104 @@ namespace TackEngineLib.GUI
             graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
             //Here we draw the string on the Bitmap
-            Color customColor = Color.FromArgb(_textCol.A, _textCol.R, _textCol.G, _textCol.B);
+            Color customColor = Color.FromArgb(_textColour.A, _textColour.R, _textColour.G, _textColour.B);
             graphics.DrawString(_text, myFont, new SolidBrush(customColor), rect);
 
             Sprite textTexture = Sprite.LoadFromBitmap(cBmp);
             textTexture.Create(false);
 
+            RectangleShape calculatedRect = new RectangleShape()
+            {
+                X = (_rect.X - (MainScreenWindow.Width / 2)) / (MainScreenWindow.Width / 2),
+                Y = ((MainScreenWindow.Height / 2) - _rect.Y) / (MainScreenWindow.Height / 2),
+                Width = (_rect.Width / (MainScreenWindow.Width / 2)),
+                Height = (_rect.Height / (MainScreenWindow.Height / 2))
+            };
+
+            GL.Enable(EnableCap.Texture2D);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            // Tell OpenGL to use the compiled and linker shader program at m_ShaderProgramId
+            GL.UseProgram(TackRenderer.ShaderProgramId);
+
+            float[] vertexData = new float[32]
+                {
+                    //       Position (XYZ)                                                                                              Colours (RGB)         TexCoords (XY)
+                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        1f, 1f, 1f,            1.0f, 0.0f,
+                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                1f, 1f, 1f,            1.0f, 1.0f,
+                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       1f, 1f, 1f,            0.0f, 1.0f,
+                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               1f, 1f, 1f,            0.0f, 0.0f
+                };
+
+            int[] indices = new int[]
+            {
+                    0, 1, 3, // first triangle
+                    1, 2, 3  // second triangle
+            };
+
+            int VAO = GL.GenVertexArray();
+            int VBO = GL.GenBuffer();
+            int EBO = GL.GenBuffer();
+
+            GL.BindVertexArray(VAO);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+            GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * 32, vertexData, BufferUsageHint.StaticDraw);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(int) * 6, indices, BufferUsageHint.StaticDraw);
+
+            // position attribute
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
+            GL.EnableVertexAttribArray(0);
+
+            // color attribute
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
+            GL.EnableVertexAttribArray(1);
+
+            // texture coord attribute
+            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
+            GL.EnableVertexAttribArray(2);
+
+            // Set texture attributes
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, textTexture.TextureId);
+
+
+            //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quadRenderer.Sprite.Width, quadRenderer.Sprite.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, quadRenderer.Sprite.SpriteData.Scan0);
+
+
+            // set texture filtering parameters
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            // set the texture wrapping parameters
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, textTexture.Width, textTexture.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, textTexture.SpriteData.Scan0);
+            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            // Set the shader uniform value
+            GL.Uniform1(GL.GetUniformLocation(TackRenderer.ShaderProgramId, "ourTexture"), 0);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, textTexture.TextureId);
+
+            GL.BindVertexArray(VAO);
+
+            GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero);
+
+            textTexture.Destory(false);
+
+
+
+
+            /*
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -214,7 +357,7 @@ namespace TackEngineLib.GUI
 
             textTexture.Destory(false);
 
-            //Console.WriteLine("Rendered 1 string '{0}'", _text);
+            //Console.WriteLine("Rendered 1 string '{0}'", _text);*/
         }
 
         public static void InputField(RectangleShape _rect, string _value, out string _returnString)

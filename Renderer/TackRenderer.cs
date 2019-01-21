@@ -17,6 +17,8 @@ namespace TackEngineLib.Renderer
 {
     internal class TackRenderer
     {
+        public static int ShaderProgramId;
+
         private int m_ShaderProgramId;
 
         internal TackRenderer()
@@ -30,6 +32,7 @@ namespace TackEngineLib.Renderer
             timer.Start();
 
             m_ShaderProgramId = ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.DefaultFragmentShader);
+            ShaderProgramId = m_ShaderProgramId;
 
             timer.Stop();
             TackConsole.EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
