@@ -31,9 +31,6 @@ namespace TackEngineLib.Renderer
 
             m_ShaderProgramId = ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.DefaultFragmentShader);
 
-            TackConsole.EngineLog(EngineLogType.Message, string.Format("Vertex Source: {0}", Properties.Resources.DefaultVertexShader));
-            TackConsole.EngineLog(EngineLogType.Message, string.Format("Fragment Source: {0}", Properties.Resources.DefaultFragmentShader));
-
             timer.Stop();
             TackConsole.EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
         }
