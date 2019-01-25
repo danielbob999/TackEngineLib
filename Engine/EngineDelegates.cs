@@ -11,5 +11,6 @@ namespace TackEngineLib.Engine
         public delegate void OnStart();
         public delegate void OnUpdate();
         public delegate void OnGUIRender();
+        public delegate void OnClose();
     }
 }

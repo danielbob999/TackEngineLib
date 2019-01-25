@@ -22,10 +22,10 @@ namespace TackEngineLib.Engine
         public static int ScreenWidth { get { return currentWindow.Width; } }
         public static int ScreenHeight { get { return currentWindow.Height; } }
 
-        public static void Init(int _windowWidth, int _windowHeight, int _updatesPerSec, int _framesPerSec, bool _vsync, string _windowName, EngineDelegates.OnStart _st, EngineDelegates.OnUpdate _up, EngineDelegates.OnGUIRender _guirend)
+        public static void Init(int _windowWidth, int _windowHeight, int _updatesPerSec, int _framesPerSec, bool _vsync, string _windowName, EngineDelegates.OnStart _st, EngineDelegates.OnUpdate _up, EngineDelegates.OnGUIRender _guirend, EngineDelegates.OnClose _clos)
         {
             // Create new window
-            NewGameWindow(_windowWidth, _windowHeight, _updatesPerSec, _framesPerSec, _windowName, _st, _up, _guirend);
+            NewGameWindow(_windowWidth, _windowHeight, _updatesPerSec, _framesPerSec, _windowName, _st, _up, _guirend, _clos);
 
             if (_vsync)
                 currentWindow.VSync = OpenTK.VSyncMode.On;
@@ -35,11 +35,11 @@ namespace TackEngineLib.Engine
             currentWindow.Run(_updatesPerSec, _framesPerSec);
         }
 
-        private static void NewGameWindow(int _w, int _h, int _u_s, int _f_s, string _n, EngineDelegates.OnStart _s, EngineDelegates.OnUpdate _u,EngineDelegates.OnGUIRender _r)
+        private static void NewGameWindow(int _w, int _h, int _u_s, int _f_s, string _n, EngineDelegates.OnStart _s, EngineDelegates.OnUpdate _u, EngineDelegates.OnGUIRender _r, EngineDelegates.OnClose _c)
         {
             if (currentWindow == null)
             {
-                currentWindow = new TackGameWindow(_w, _h, _n, _s, _u, _r);
+                currentWindow = new TackGameWindow(_w, _h, _n, _s, _u, _r, _c);
                 
                 TackConsole.EngineLog(EngineLogType.Message, "Successfully created new CustomGameWindow instance");
                 return;

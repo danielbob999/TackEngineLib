@@ -29,6 +29,7 @@ namespace TackEngineLib.Engine
         private EngineDelegates.OnStart onStartFunction;
         private EngineDelegates.OnUpdate onUpdateFunction;
         private EngineDelegates.OnGUIRender onGUIRenderFunction;
+        private EngineDelegates.OnClose onCloseFunction;
 
         // Modules
         private AudioManager m_AudioManager;
@@ -51,11 +52,12 @@ namespace TackEngineLib.Engine
         public static int ColourShaderProgramInt { get { return colourShaderProgramId; } }
         public static int ImageShaderProgramInt { get { return imageShaderProgramId; } }
 
-        public TackGameWindow(int _width, int _height, string _n, EngineDelegates.OnStart _strtFunc, EngineDelegates.OnUpdate _updtFunc, EngineDelegates.OnGUIRender _guiRendFunc) : base(_width, _height, GraphicsMode.Default, _n)
+        public TackGameWindow(int _width, int _height, string _n, EngineDelegates.OnStart _strtFunc, EngineDelegates.OnUpdate _updtFunc, EngineDelegates.OnGUIRender _guiRendFunc, EngineDelegates.OnClose _onCloseFunc) : base(_width, _height, GraphicsMode.Default, _n)
         {
             onStartFunction = _strtFunc;
             onUpdateFunction = _updtFunc;
             onGUIRenderFunction = _guiRendFunc;
+            onCloseFunction = _onCloseFunc;
 
             MainScreenWindow.Width = _width;
             MainScreenWindow.Height = _height;
@@ -146,6 +148,8 @@ namespace TackEngineLib.Engine
         protected override void OnUnload(EventArgs e)
         {
             base.OnUnload(e);
+
+            onCloseFunction();
 
             TackPhysics.Stop();
 
