@@ -45,8 +45,8 @@ namespace TackEngineLib.Physics
 
             shouldLoop = true;
             int targetUR = (int)((double)_targetUpdateRatePerSec);
-            targetUpdateRate = targetUR;
-            StartPhysicsLoop(targetUR);
+            targetUpdateRate = targetUR <= 0 ? 60 : targetUR;
+            StartPhysicsLoop(targetUR <= 0 ? 60 : targetUR);
         }
 
         private static void StartPhysicsLoop(int _ur)
