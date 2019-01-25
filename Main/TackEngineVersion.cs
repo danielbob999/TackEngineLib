@@ -12,6 +12,7 @@ namespace TackEngineLib.Main
         private int m_Minor;
         private int m_Patch;
         private string m_Desc;
+        private int m_BuildNumber;
 
         // Properties
 
@@ -47,17 +48,24 @@ namespace TackEngineLib.Main
             get { return m_Desc; }
         }
 
-        internal TackEngineVersion(int _major, int _minor, int _patch, string _desc)
+        public int BuildNumber
+        {
+            get { return m_BuildNumber; }
+        }
+
+        internal TackEngineVersion(int _major, int _minor, int _patch, string _desc, int _buildn)
         {
             m_Major = _major;
             m_Minor = _minor;
             m_Patch = _patch;
             m_Desc = _desc;
+            m_BuildNumber = _buildn;
         }
 
         public override string ToString()
         {
-            return string.Format("{0}.{1}.{2}", m_Major, m_Minor, m_Patch);
+            return string.Format("{0}.{1}.{2} (#{3})", m_Major, m_Minor, m_Patch, m_BuildNumber);
         }
+
     }
 }
