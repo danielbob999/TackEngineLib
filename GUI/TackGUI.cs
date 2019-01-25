@@ -184,6 +184,10 @@ namespace TackEngineLib.GUI
             GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero);
 
             defaultSprite.Destory(false);
+
+            GL.DeleteBuffer(EBO);
+            GL.DeleteBuffer(VBO);
+            GL.DeleteVertexArray(VAO);
         }
 
         public static void TextArea(RectangleShape _rect, string _text)
@@ -309,7 +313,9 @@ namespace TackEngineLib.GUI
 
             textTexture.Destory(false);
 
-
+            GL.DeleteBuffer(EBO);
+            GL.DeleteBuffer(VBO);
+            GL.DeleteVertexArray(VAO);
 
 
             /*

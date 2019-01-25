@@ -21,6 +21,8 @@ namespace TackEngineLib.Renderer
 
         private int m_ShaderProgramId;
 
+        private float[] m_VertexData; 
+
         internal TackRenderer()
         {
 
@@ -33,6 +35,8 @@ namespace TackEngineLib.Renderer
 
             m_ShaderProgramId = ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.DefaultFragmentShader);
             ShaderProgramId = m_ShaderProgramId;
+
+            m_VertexData = new float[4];
 
             timer.Stop();
             TackConsole.EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
@@ -119,7 +123,7 @@ namespace TackEngineLib.Renderer
                  */
                 
                 
-                float[] vertexData = new float[32]
+                m_VertexData = new float[32]
                 {
                     //       Position (XYZ)                                                                                                      Colours (RGB)                                                                                  TexCoords (XY)
                     /* v1 */ (tackObjectBounds.X + tackObjectBounds.Width), (tackObjectBounds.Y), 1.0f,                                          (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   1.0f, 0.0f,
@@ -153,7 +157,7 @@ namespace TackEngineLib.Renderer
                 GL.BindVertexArray(VAO);
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-                GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * 32, vertexData, BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * 32, m_VertexData, BufferUsageHint.StaticDraw);
 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
                 GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(int) * 6, indices, BufferUsageHint.StaticDraw);
@@ -203,6 +207,10 @@ namespace TackEngineLib.Renderer
                 GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero);
 
                 //sp.Destory(false);
+
+                GL.DeleteBuffer(EBO);
+                GL.DeleteBuffer(VBO);
+                GL.DeleteVertexArray(VAO);
             }
         }
 
