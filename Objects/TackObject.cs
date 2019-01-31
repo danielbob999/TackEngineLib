@@ -96,9 +96,9 @@ namespace TackEngineLib.Objects
 
                 TackConsole.EngineLog(EngineLogType.Message, string.Format("Added a '{0}' component to TackObject with name '{1}'", _component.GetType(), m_Name));
                 
-                if (_component.GetType() == typeof(Camera))
+                if (_component.GetType() == typeof(Camera) && TackEngine.m_MainCameraTackObject == null)
                 {
-                    MainScreenWindow.CameraObject = this;
+                    TackEngine.m_MainCameraTackObject = this;
                 }
             }
         }

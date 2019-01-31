@@ -98,10 +98,10 @@ namespace TackEngineLib.GUI
 
             RectangleShape calculatedRect = new RectangleShape()
             {
-                X = (_rect.X - (MainScreenWindow.Width / 2)) / (MainScreenWindow.Width / 2),
-                Y = ((MainScreenWindow.Height / 2) - _rect.Y) / (MainScreenWindow.Height / 2),
-                Width = (_rect.Width / (MainScreenWindow.Width / 2)),
-                Height = (_rect.Height / (MainScreenWindow.Height / 2))
+                X = (_rect.X - (TackEngine.ScreenWidth / 2)) / (TackEngine.ScreenWidth / 2),
+                Y = ((TackEngine.ScreenHeight / 2) - _rect.Y) / (TackEngine.ScreenHeight / 2),
+                Width = (_rect.Width / (TackEngine.ScreenWidth / 2)),
+                Height = (_rect.Height / (TackEngine.ScreenHeight / 2))
             };
 
             GL.Enable(EnableCap.Texture2D);
@@ -226,10 +226,10 @@ namespace TackEngineLib.GUI
 
             RectangleShape calculatedRect = new RectangleShape()
             {
-                X = (_rect.X - (MainScreenWindow.Width / 2)) / (MainScreenWindow.Width / 2),
-                Y = ((MainScreenWindow.Height / 2) - _rect.Y) / (MainScreenWindow.Height / 2),
-                Width = (_rect.Width / (MainScreenWindow.Width / 2)),
-                Height = (_rect.Height / (MainScreenWindow.Height / 2))
+                X = (_rect.X - (TackEngine.ScreenWidth / 2)) / (TackEngine.ScreenWidth / 2),
+                Y = ((TackEngine.ScreenHeight / 2) - _rect.Y) / (TackEngine.ScreenHeight / 2),
+                Width = (_rect.Width / (TackEngine.ScreenWidth / 2)),
+                Height = (_rect.Height / (TackEngine.ScreenHeight / 2))
             };
 
             GL.Enable(EnableCap.Texture2D);
@@ -335,10 +335,10 @@ namespace TackEngineLib.GUI
 
             RectangleShape calculatedRect = new RectangleShape()
             {
-                X = (_rect.X - (MainScreenWindow.Width / 2)) / (MainScreenWindow.Width / 2),
-                Y = ((MainScreenWindow.Height / 2) - _rect.Y) / (MainScreenWindow.Height / 2),
-                Width = (_rect.Width / (MainScreenWindow.Width / 2)),
-                Height = (_rect.Height / (MainScreenWindow.Height / 2))
+                X = (_rect.X - (TackEngine.ScreenWidth / 2)) / (TackEngine.ScreenWidth / 2),
+                Y = ((TackEngine.ScreenHeight / 2) - _rect.Y) / (TackEngine.ScreenHeight / 2),
+                Width = (_rect.Width / (TackEngine.ScreenWidth / 2)),
+                Height = (_rect.Height / (TackEngine.ScreenHeight / 2))
             };
 
             GL.Begin(PrimitiveType.Quads);

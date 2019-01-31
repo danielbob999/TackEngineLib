@@ -65,7 +65,7 @@ namespace TackEngineLib.Main
                     consString += str + "\n";
                 }
 
-                TackGUI.TextArea(new Main.RectangleShape(0, 0, MainScreenWindow.Width, MainScreenWindow.Height - 30), new Colour4b(255, 255, 255, 255), consString, new Colour4b(0, 0, 0, 255));
+                TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, TackEngine.ScreenHeight - 30), new Colour4b(255, 255, 255, 255), consString, new Colour4b(0, 0, 0, 255));
             }
         }
 

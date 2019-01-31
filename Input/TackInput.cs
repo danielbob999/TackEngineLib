@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using TackEngineLib.Main;
+using TackEngineLib.Engine;
 
 using OpenTK.Input;
 
@@ -178,14 +180,14 @@ namespace TackEngineLib.Input
 
         public static Vector2f MousePosition()
         {
-            int _oldMaxSizeX = MainScreenWindow.Width;
+            int _oldMaxSizeX = TackEngine.ScreenWidth;
 
             float oldRangeX = _oldMaxSizeX - 0;
             float newRangeX = 1 - (-1);
 
             float finalX = (((m_MousePositionX - 0) * newRangeX) / oldRangeX) + (-1);
 
-            int _oldMaxSizeY = MainScreenWindow.Height;
+            int _oldMaxSizeY = TackEngine.ScreenHeight;
 
             float oldRangeY = _oldMaxSizeY - 0;
             float newRangeY = 1 - (-1);
@@ -198,8 +200,8 @@ namespace TackEngineLib.Input
         public static Vector2f MouseCoordsScreenToWorld()
         {
             Vector2f mousePos = MousePosition();
-            float xPos = (mousePos.X * (MainScreenWindow.Width / 2)) + MainScreenWindow.CameraObject.Position.X;
-            float yPos = (mousePos.Y * (MainScreenWindow.Height / 2)) + MainScreenWindow.CameraObject.Position.Y;
+            float xPos = (mousePos.X * (TackEngine.ScreenWidth / 2)) + TackEngine.MainCamera.parentObject.Position.X;
+            float yPos = (mousePos.Y * (TackEngine.ScreenHeight / 2)) + TackEngine.MainCamera.parentObject.Position.Y;
 
             return new Vector2f(xPos, yPos);
         }

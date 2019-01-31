@@ -58,9 +58,6 @@ namespace TackEngineLib.Engine
             onUpdateFunction = _updtFunc;
             onGUIRenderFunction = _guiRendFunc;
             onCloseFunction = _onCloseFunc;
-
-            MainScreenWindow.Width = _width;
-            MainScreenWindow.Height = _height;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -125,6 +122,8 @@ namespace TackEngineLib.Engine
 
             m_TackConsole.OnUpdate();
             TackInput.OnUpdate();
+
+            TackEngine.m_UpdateCyclesPerSecond = (int)UpdateFrequency;
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -140,7 +139,7 @@ namespace TackEngineLib.Engine
             onGUIRenderFunction(); // This function should be called after all rendering. This means text will render above other objects
             m_TackConsole.OnGUIRender(); // TackConsole should be rendered above everything else, including the onGUIRenderFunction
 
-            MainScreenWindow.FramesPerSecond = (int)RenderFrequency;
+           TackEngine.m_FramesPerSecond = (int)RenderFrequency;
 
             this.SwapBuffers();
         }

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Threading;
 
 using TackEngineLib.Main;
+using TackEngineLib.Objects;
+using TackEngineLib.Objects.Components;
 
 namespace TackEngineLib.Engine
 {
@@ -15,13 +17,37 @@ namespace TackEngineLib.Engine
         private const int VERSION_MINOR = 8;
         private const int VERSION_PATCH = 0;
         private const string VERSION_DESC = "AlphaBuild";
-        private const int BUILD_NUMBER = 1;
+        private const int BUILD_NUMBER = 2;
 
         internal static TackGameWindow currentWindow;
-        
+
+        internal static int m_FramesPerSecond;
+        internal static int m_UpdateCyclesPerSecond;
+        internal static TackObject m_MainCameraTackObject;
+
         // Properties
-        public static int ScreenWidth { get { return currentWindow.Width; } }
-        public static int ScreenHeight { get { return currentWindow.Height; } }
+        public static int RenderCyclesPerSecond
+        {
+            get { return m_FramesPerSecond; }
+        }
+
+        public static int UpdateCyclesPerSecond
+        {
+            get { return m_UpdateCyclesPerSecond;  }
+        }
+        
+        public static int ScreenWidth {
+            get { return currentWindow.Width; }
+        }
+
+        public static int ScreenHeight {
+            get { return currentWindow.Height; }
+        }
+
+        public static Camera MainCamera
+        {
+            get { return m_MainCameraTackObject.GetComponent<Camera>(); }
+        }
 
         public static void Init(int _windowWidth, int _windowHeight, int _updatesPerSec, int _framesPerSec, bool _vsync, string _windowName, EngineDelegates.OnStart _st, EngineDelegates.OnUpdate _up, EngineDelegates.OnGUIRender _guirend, EngineDelegates.OnClose _clos)
         {

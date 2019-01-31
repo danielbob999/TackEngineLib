@@ -69,7 +69,6 @@
     <Compile Include="Input\MouseDownEvent.cs" />
     <Compile Include="Input\TackInput.cs" />
     <Compile Include="Main\Colour4b.cs" />
-    <Compile Include="Main\MainScreenWindow.cs" />
     <Compile Include="Main\RectangleShape.cs" />
     <Compile Include="Main\RunnableScript.cs" />
     <Compile Include="Main\Sprite.cs" />

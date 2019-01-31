@@ -107,10 +107,10 @@ namespace TackEngineLib.Renderer
 
                 RectangleShape tackObjectBounds = new RectangleShape()
                 {
-                    X = ((currentTackObject.Position.X - MainScreenWindow.CameraObject.Position.X) - (currentTackObject.Scale.X / 2)) / (MainScreenWindow.Width / 2),
-                    Y = ((currentTackObject.Position.Y - MainScreenWindow.CameraObject.Position.Y) + (currentTackObject.Scale.Y / 2)) / (MainScreenWindow.Height / 2),
-                    Width = (currentTackObject.Scale.X) / (MainScreenWindow.Width / 2),
-                    Height = (currentTackObject.Scale.Y) / (MainScreenWindow.Height / 2)
+                    X = ((currentTackObject.Position.X - TackEngine.MainCamera.parentObject.Position.X) - (currentTackObject.Scale.X / 2)) / (TackEngine.ScreenWidth / 2),
+                    Y = ((currentTackObject.Position.Y - TackEngine.MainCamera.parentObject.Position.Y) + (currentTackObject.Scale.Y / 2)) / (TackEngine.ScreenHeight / 2),
+                    Width = (currentTackObject.Scale.X) / (TackEngine.ScreenWidth / 2),
+                    Height = (currentTackObject.Scale.Y) / (TackEngine.ScreenHeight / 2)
                 };
 
                 /*
@@ -221,11 +221,11 @@ namespace TackEngineLib.Renderer
 
                 if (!qr.IsNullComponent() && qr.Active)
                 {
-                    float rectX = ((tackObject.Position.X - MainScreenWindow.CameraObject.Position.X) - (tackObject.Scale.X / 2)) / (MainScreenWindow.Width / 2);
-                    float rectY = ((tackObject.Position.Y - MainScreenWindow.CameraObject.Position.Y) + (tackObject.Scale.Y / 2)) / (MainScreenWindow.Height / 2);
+                    float rectX = ((tackObject.Position.X - MainScreenWindow.CameraObject.Position.X) - (tackObject.Scale.X / 2)) / (TackEngine.ScreenWidth / 2);
+                    float rectY = ((tackObject.Position.Y - MainScreenWindow.CameraObject.Position.Y) + (tackObject.Scale.Y / 2)) / (TackEngine.ScreenHeight / 2);
 
-                    float scaleX = (tackObject.Scale.X) / (MainScreenWindow.Width / 2);
-                    float scaleY = (tackObject.Scale.Y) / (MainScreenWindow.Height / 2);
+                    float scaleX = (tackObject.Scale.X) / (TackEngine.ScreenWidth / 2);
+                    float scaleY = (tackObject.Scale.Y) / (TackEngine.ScreenHeight / 2);
 
                     // inner comment start
                     if (qr.RenderMode != RendererMode.Colour)

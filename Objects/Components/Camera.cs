@@ -56,8 +56,8 @@ namespace TackEngineLib.Objects.Components
 
         public Camera()
         {
-            CameraScreenWidth = MainScreenWindow.Width;
-            CameraScreenHeight = MainScreenWindow.Height;
+            CameraScreenWidth = TackEngine.ScreenWidth;
+            CameraScreenHeight = TackEngine.ScreenHeight;
         }
     }
 }
