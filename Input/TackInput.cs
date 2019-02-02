@@ -48,7 +48,11 @@ namespace TackEngineLib.Input
         internal static bool GUIInputRequired
         {
             get { return m_GUIInputRequired; }
-            set { m_GUIInputRequired = value; }
+            set
+            {
+                m_GUIInputRequired = value;
+                TackConsole.EngineLog(EngineLogType.Message, string.Format("{0} GUI input", m_GUIInputRequired ? "Enabled" : "Disabled"));
+            }
         }
 
         internal static void OnStart()
@@ -187,6 +191,7 @@ namespace TackEngineLib.Input
 
         public static Vector2f MousePosition()
         {
+            /*
             int _oldMaxSizeX = TackEngine.ScreenWidth;
 
             float oldRangeX = _oldMaxSizeX - 0;
@@ -201,7 +206,9 @@ namespace TackEngineLib.Input
 
             float finalY = (((m_MousePositionY - 0) * newRangeY) / oldRangeY) + (-1);
 
-            return new Vector2f(finalX, -finalY);
+            return new Vector2f(finalX, -finalY);*/
+
+            return new Vector2f(m_MousePositionX, m_MousePositionY);
         }
 
         public static Vector2f MouseCoordsScreenToWorld()

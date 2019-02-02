@@ -49,6 +49,7 @@
     <Compile Include="Engine\EngineLogType.cs" />
     <Compile Include="GUI\BoxStyle.cs" />
     <Compile Include="GUI\GUIBorder.cs" />
+    <Compile Include="GUI\InputField.cs" />
     <Compile Include="Objects\Components\AudioComponent.cs" />
     <Compile Include="Physics\MovementDirection.cs" />
     <Compile Include="Main\TackConsole.cs" />

@@ -15,6 +15,7 @@ using TackEngineLib.Main;
 using TackEngineLib.Engine;
 using TackEngineLib.Renderer;
 using TackEngineLib.Renderer.Shaders;
+using TackEngineLib.Input;
 
 namespace TackEngineLib.GUI
 {
@@ -23,6 +24,8 @@ namespace TackEngineLib.GUI
         private static PrivateFontCollection fontCollection;
         private static FontFamily activeFontFamily;
         private static int uiShaderProgram;
+
+        internal static List<InputField> inputFields = new List<InputField>();
 
         public static void OnStart()
         {
