@@ -88,13 +88,16 @@ namespace TackEngineLib.GUI
 
         public static void Box(RectangleShape _rect)
         {
-            Box(_rect, new Colour4b(255, 255, 255, 255));
+            Box(_rect);
         }
 
-        public static void Box(RectangleShape _rect, Colour4b _colour)
+        public static void Box(RectangleShape _rect, BoxStyle _style = default(BoxStyle))
         {
-            Sprite defaultSprite = Sprite.LoadFromBitmap(Properties.Resources.DefaultSprite);
-            defaultSprite.Create(false);
+            if (_style == null)
+                _style = new BoxStyle();
+
+            //Sprite defaultSprite = Sprite.LoadFromBitmap(Properties.Resources.DefaultSprite);
+            //defaultSprite.Create(false);
 
             RectangleShape calculatedRect = new RectangleShape()
             {
@@ -114,10 +117,10 @@ namespace TackEngineLib.GUI
             float[] vertexData = new float[32]
                 {
                     //       Position (XYZ)                                                                                                      Colours (RGB)                                                                                  TexCoords (XY)
-                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        (_colour.R / 255), (_colour.G / 255), (_colour.B / 255),   1.0f, 0.0f,
-                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                (_colour.R / 255), (_colour.G / 255), (_colour.B / 255),   1.0f, 1.0f,
-                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       (_colour.R / 255), (_colour.G / 255), (_colour.B / 255),   0.0f, 1.0f,
-                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               (_colour.R / 255), (_colour.G / 255), (_colour.B / 255),   0.0f, 0.0f
+                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        (_style.Colour.R / 255.0f), (_style.Colour.G / 255.0f), (_style.Colour.B / 255.0f),   1.0f, 0.0f,
+                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                (_style.Colour.R / 255.0f), (_style.Colour.G / 255.0f), (_style.Colour.B / 255.0f),   1.0f, 1.0f,
+                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       (_style.Colour.R / 255.0f), (_style.Colour.G / 255.0f), (_style.Colour.B / 255.0f),   0.0f, 1.0f,
+                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               (_style.Colour.R / 255.0f), (_style.Colour.G / 255.0f), (_style.Colour.B / 255.0f),   0.0f, 0.0f
                 };
 
             int[] indices = new int[]
@@ -152,7 +155,7 @@ namespace TackEngineLib.GUI
 
             // Set texture attributes
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, defaultSprite.TextureId);
+            GL.BindTexture(TextureTarget.Texture2D, _style.SpriteTexture.TextureId);
 
 
             //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quadRenderer.Sprite.Width, quadRenderer.Sprite.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, quadRenderer.Sprite.SpriteData.Scan0);
@@ -169,21 +172,21 @@ namespace TackEngineLib.GUI
 
 
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, defaultSprite.Width, defaultSprite.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, defaultSprite.SpriteData.Scan0);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, _style.SpriteTexture.Width, _style.SpriteTexture.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, _style.SpriteTexture.SpriteData.Scan0);
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             // Set the shader uniform value
             GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourTexture"), 0);
-            GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourOpacity"), (float)(_colour.A / 255));
+            GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourOpacity"), (float)(_style.Colour.A / 255.0f));
 
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, defaultSprite.TextureId);
+            GL.BindTexture(TextureTarget.Texture2D, _style.SpriteTexture.TextureId);
 
             GL.BindVertexArray(VAO);
 
             GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero);
 
-            defaultSprite.Destory(false);
+            //defaultSprite.Destory(false);
 
             GL.DeleteBuffer(EBO);
             GL.DeleteBuffer(VBO);
@@ -198,7 +201,7 @@ namespace TackEngineLib.GUI
         public static void TextArea(RectangleShape _rect, Colour4b _backgroundColour, string _text, Colour4b _textColour)
         {
             // Render a box at the back of the TextArea
-            Box(_rect, _backgroundColour);
+            Box(_rect);
 
             // Generate Bitmap
             Vector2i size = new Vector2i((int)(_rect.Width), (int)(_rect.Height));
