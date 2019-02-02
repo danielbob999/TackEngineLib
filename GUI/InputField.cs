@@ -11,6 +11,7 @@ namespace TackEngineLib.GUI
     {
         private bool m_ReceivingInput;
         private RectangleShape m_Shape;
+        private InputFieldStyle m_Style;
 
         /// <summary>
         /// Is this InputField receiving input?
@@ -40,6 +41,7 @@ namespace TackEngineLib.GUI
         {
             m_ReceivingInput = false;
             m_Shape = new RectangleShape(10, 10, 160, 35);
+            m_Style = new InputFieldStyle();
 
             TackGUI.inputFields.Add(this);
         }
@@ -50,7 +52,7 @@ namespace TackEngineLib.GUI
         /// <param name="_value">The string to be rendered in this InputField</param>
         public void Render(string _value)
         {
-            TackGUI.Box(m_Shape);
+            TackGUI.Box(m_Shape, m_Style.GetBoxStyle());
             TackGUI.TextArea(m_Shape, _value);
         }
 
