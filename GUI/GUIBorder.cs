@@ -15,6 +15,8 @@ namespace TackEngineLib.GUI
         private int m_Up;
         private int m_Bottom;
 
+        private Colour4b m_Colour;
+
         public int Left
         {
             get { return m_Left; }
@@ -39,12 +41,19 @@ namespace TackEngineLib.GUI
             set { m_Bottom = value; }
         }
 
-        public GUIBorder(int _left, int _right, int _up, int _bottom)
+        public Colour4b Colour
+        {
+            get { return m_Colour; }
+            set { m_Colour = value; }
+        }
+
+        public GUIBorder(int _left, int _right, int _up, int _bottom, Colour4b _colour)
         {
             m_Left = _left;
             m_Right = _right;
             m_Up = _up;
             m_Bottom = _bottom;
+            m_Colour = _colour;
         }
     }
 }

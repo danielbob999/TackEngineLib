@@ -103,7 +103,7 @@ namespace TackEngineLib.GUI
 
                 BoxStyle boxStyle = new BoxStyle()
                 {
-                    Colour = new Colour4b(0, 0, 0, 255)
+                    Colour = _style.Border.Colour
                 };
 
                 Box(borderShape, boxStyle);
