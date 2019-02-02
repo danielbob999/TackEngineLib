@@ -86,15 +86,32 @@ namespace TackEngineLib.GUI
             TackConsole.EngineLog(EngineLogType.Error, "The specfied family index is outside the bounds of the font collection Families array");
         }
 
-        public static void Box(RectangleShape _rect)
-        {
-            Box(_rect);
-        }
-
         public static void Box(RectangleShape _rect, BoxStyle _style = default(BoxStyle))
         {
             if (_style == null)
                 _style = new BoxStyle();
+
+            if (_style.Border != null)
+            {
+                RectangleShape borderShape = new RectangleShape()
+                {
+                    X = _rect.X - _style.Border.Left,
+                    Y = _rect.Y - _style.Border.Up,
+                    Width = _rect.Width + _style.Border.Right + _style.Border.Left,
+                    Height = _rect.Height + _style.Border.Bottom + _style.Border.Up
+                };
+
+                BoxStyle boxStyle = new BoxStyle()
+                {
+                    Colour = new Colour4b(0, 0, 0, 255)
+                };
+
+                Box(borderShape, boxStyle);
+
+                boxStyle.Destory();
+            }
+
+            
 
             //Sprite defaultSprite = Sprite.LoadFromBitmap(Properties.Resources.DefaultSprite);
             //defaultSprite.Create(false);
