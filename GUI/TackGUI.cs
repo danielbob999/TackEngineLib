@@ -31,6 +31,8 @@ namespace TackEngineLib.GUI
         {
             fontCollection = new PrivateFontCollection();
             activeFontFamily = new FontFamily("Arial");
+            fontCollection.AddFontFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\Arial.ttf");
+            TackConsole.EngineLog(EngineLogType.Message, string.Format("Added default font file from: {0}\\Arial.ttf", Environment.GetFolderPath(Environment.SpecialFolder.Fonts)));
 
             TackConsole.EngineLog(EngineLogType.Message, "Starting GUI shader compilation and linking");
             uiShaderProgram = ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.DefaultFragmentShader_GUI);
@@ -213,15 +215,20 @@ namespace TackEngineLib.GUI
             GL.DeleteVertexArray(VAO);
         }
 
-        public static void TextArea(RectangleShape _rect, string _text)
+        public static void TextArea(RectangleShape _rect, string _text, TextAreaStyle _style = default(TextAreaStyle))
         {
-            TextArea(_rect, new Colour4b(255, 255, 255, 255), _text, new Colour4b(0, 0, 0, 255));
-        }
+            if (_style == null)
+                _style = new TextAreaStyle();
 
-        public static void TextArea(RectangleShape _rect, Colour4b _backgroundColour, string _text, Colour4b _textColour)
-        {
+            BoxStyle boxStyle = new BoxStyle()
+            {
+                Colour = _style.BackgroundColour,
+                Border = new GUIBorder(0, 0, 0, 0, new Colour4b(0, 0, 0, 255)),
+                SpriteTexture = _style.SpriteTexture
+            };
+
             // Render a box at the back of the TextArea
-            Box(_rect);
+            Box(_rect, boxStyle);
 
             // Generate Bitmap
             Vector2i size = new Vector2i((int)(_rect.Width), (int)(_rect.Height));
@@ -230,7 +237,7 @@ namespace TackEngineLib.GUI
             // Generate Graphics Object
             Graphics graphics = Graphics.FromImage(cBmp);
 
-            Font myFont = new Font(activeFontFamily, 8f, FontStyle.Regular);
+            Font myFont = new Font(fontCollection.Families[_style.FontFamilyId], _style.FontSize, FontStyle.Regular);
 
             //Get the perfect Image-Size so that Image-Size = String-Size
             RectangleF rect = new RectangleF(0, 0, cBmp.Width, cBmp.Height);
@@ -241,7 +248,7 @@ namespace TackEngineLib.GUI
             graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
             //Here we draw the string on the Bitmap
-            Color customColor = Color.FromArgb(_textColour.A, _textColour.R, _textColour.G, _textColour.B);
+            Color customColor = Color.FromArgb(_style.FontColour.A, _style.FontColour.R, _style.FontColour.G, _style.FontColour.B);
             graphics.DrawString(_text, myFont, new SolidBrush(customColor), rect);
 
             Sprite textTexture = Sprite.LoadFromBitmap(cBmp);
@@ -325,7 +332,7 @@ namespace TackEngineLib.GUI
 
             // Set the shader uniform value
             GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourTexture"), 0);
-            GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourOpacity"), (float)(_textColour.A / 255));
+            GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourOpacity"), (float)(_style.FontColour.A / 255.0f));
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, textTexture.TextureId);
@@ -396,17 +403,18 @@ namespace TackEngineLib.GUI
             //Console.WriteLine("Rendered 1 string '{0}'", _text);*/
         }
 
-        public static void InputField(RectangleShape _rect, string _value, out string _returnString)
+        public static int GetFontFamilyId(string _familyName)
         {
-            Input.TackInput.GUIInputRequired = true;
+            for (int i = 0; i < fontCollection.Families.Length; i++)
+            {
+                if (fontCollection.Families[i].Name == _familyName)
+                {
+                    return i;
+                }
+            }
 
-            Box(_rect);
-
-            string text = string.Format("{0}{1}", _value, Input.TackInput.GetInputBuffer());
-
-            TextArea(_rect, text);
-
-            _returnString = text;
+            TackConsole.EngineLog(EngineLogType.Error, string.Format("No FontFamily with name: {0} was found in the font collection", _familyName));
+            return -1;
         }
     }
 }

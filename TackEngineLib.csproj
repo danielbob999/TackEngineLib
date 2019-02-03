@@ -51,6 +51,7 @@
     <Compile Include="GUI\GUIBorder.cs" />
     <Compile Include="GUI\InputField.cs" />
     <Compile Include="GUI\InputFieldStyle.cs" />
+    <Compile Include="GUI\TextAreaStyle.cs" />
     <Compile Include="Objects\Components\AudioComponent.cs" />
     <Compile Include="Physics\MovementDirection.cs" />
     <Compile Include="Main\TackConsole.cs" />

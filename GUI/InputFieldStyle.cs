@@ -16,10 +16,44 @@ namespace TackEngineLib.GUI
         private GUIBorder m_Border;
         private Sprite m_SpriteTexture;
 
+        public float FontSize
+        {
+            get { return m_FontSize; }
+            set { m_FontSize = value; }
+        }
+
+        public Colour4b FontColour
+        {
+            get { return m_FontColour; }
+            set { m_FontColour = value; }
+        }
+
+        public Colour4b BackgroundColour
+        {
+            get { return m_Colour; }
+            set { m_Colour = value; }
+        }
+
+        public GUIBorder Border
+        {
+            get { return m_Border; }
+            set { m_Border = value; }
+        }
+
+        public Sprite SpriteTexture
+        {
+            get { return m_SpriteTexture; }
+            set
+            {
+                m_SpriteTexture.Destory(false);
+                m_SpriteTexture = value;
+            }
+        }
+
         public InputFieldStyle()
         {
             m_SpriteTexture = Sprite.LoadFromBitmap(TackEngineLib.Properties.Resources.DefaultSprite);
-            m_SpriteTexture.Create();
+            m_SpriteTexture.Create(false);
 
             m_FontSize = 6f;
             m_FontColour = new Colour4b(0, 0, 0, 255);
@@ -39,7 +73,23 @@ namespace TackEngineLib.GUI
             return style;
         }
 
+        public TextAreaStyle GetTextStyle()
+        {
+            TextAreaStyle style = new TextAreaStyle()
+            {
+                BackgroundColour = m_Colour,
+                FontColour = m_FontColour,
+                FontFamilyId = 0,
+                FontSize = m_FontSize,
+                SpriteTexture = m_SpriteTexture
+            };
 
+            return style;
+        }
 
+        public void Destory()
+        {
+            m_SpriteTexture.Destory(false);
+        }
     }
 }
