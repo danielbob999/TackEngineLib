@@ -223,7 +223,6 @@ namespace TackEngineLib.GUI
             BoxStyle boxStyle = new BoxStyle()
             {
                 Colour = _style.BackgroundColour,
-                Border = new GUIBorder(0, 0, 0, 0, new Colour4b(0, 0, 0, 255)),
                 SpriteTexture = _style.SpriteTexture
             };
 
