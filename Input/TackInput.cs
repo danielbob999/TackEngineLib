@@ -48,7 +48,11 @@ namespace TackEngineLib.Input
         internal static bool GUIInputRequired
         {
             get { return m_GUIInputRequired; }
-            set { m_GUIInputRequired = value; }
+            set
+            {
+                m_GUIInputRequired = value;
+                TackConsole.EngineLog(EngineLogType.Message, string.Format("{0} GUI input", m_GUIInputRequired ? "Enabled" : "Disabled"));
+            }
         }
 
         internal static void OnStart()
@@ -88,8 +92,15 @@ namespace TackEngineLib.Input
             // NOTE: Don't register the key as being pressed
             if (m_GUIInputRequired)
             {
-                if (FindCharacterFromKeyCode(_key) != '\0')
-                    m_InputBuffer.Add(FindCharacterFromKeyCode(_key));
+                if (FindCharacterFromKeyCode(_key) == 8)
+                {
+                    if (m_InputBuffer.Count > 0)
+                        m_InputBuffer.RemoveAt(m_InputBuffer.Count - 1);
+                    return;
+                }
+
+                if (FindCharacterFromKeyCode(_key) != 0)
+                    m_InputBuffer.Add((char)FindCharacterFromKeyCode(_key));
 
                 return;
             }
@@ -180,6 +191,7 @@ namespace TackEngineLib.Input
 
         public static Vector2f MousePosition()
         {
+            /*
             int _oldMaxSizeX = TackEngine.ScreenWidth;
 
             float oldRangeX = _oldMaxSizeX - 0;
@@ -194,7 +206,9 @@ namespace TackEngineLib.Input
 
             float finalY = (((m_MousePositionY - 0) * newRangeY) / oldRangeY) + (-1);
 
-            return new Vector2f(finalX, -finalY);
+            return new Vector2f(finalX, -finalY);*/
+
+            return new Vector2f(m_MousePositionX, m_MousePositionY);
         }
 
         public static Vector2f MouseCoordsScreenToWorld()
@@ -215,7 +229,6 @@ namespace TackEngineLib.Input
                 returnStr += c;
             }
 
-            m_InputBuffer.Clear();
             return returnStr;
         }
 
@@ -223,33 +236,41 @@ namespace TackEngineLib.Input
         /// Gets a character based on a KeyboardKey code.
         /// </summary>
         /// <param name="_key"></param>
-        /// <returns>A char that has been converted from a KeyboardKey code. If '\0' is return, a special key (CapsLock, Enter, BackSpace) has been pressed.</returns>
-        internal static char FindCharacterFromKeyCode(KeyboardKey _key)
+        /// <returns>Returns and ASCII keycode that represents the letter than has been pressed.
+        /// - Returns -1 if backspace has been pressed
+        /// - Returns 0 if useless button was pressed (Caps lock, shift, ect)
+        /// </returns>
+        internal static int FindCharacterFromKeyCode(KeyboardKey _key)
         {
             if (_key == KeyboardKey.CapsLock)
             {
-                m_InputBufferCapsLock =  !m_InputBufferCapsLock;
-                return '\0'; 
+                m_InputBufferCapsLock = !m_InputBufferCapsLock;
+                return 0; 
             }
 
             if (_key == KeyboardKey.BackSpace)
-            {
-               // m_InputBuffer.RemoveAt(m_InputBuffer.Count - 1);
-                return '\0';
-            }
+                return 8;
+
+            if (_key == KeyboardKey.Space)
+                return 32;
 
             if (_key >= KeyboardKey.Number0 && _key <= KeyboardKey.Number9)
-                return (char)((int)_key - 61);
+                return ((int)_key - 61);
 
             if (_key >= KeyboardKey.A && _key <= KeyboardKey.Z)
             {
                 if (m_InputBufferCapsLock)
-                    return (char)((int)_key - 18);
+                    return ((int)_key - 18);
                 else
-                    return (char)((int)_key + 14);
+                    return ((int)_key + 14);
             }
 
-            return '\0';
+            return 0;
+        }
+
+        public static void ClearGUIInputBuffer()
+        {
+            m_InputBuffer.Clear();
         }
     }
 }

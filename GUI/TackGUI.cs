@@ -15,6 +15,7 @@ using TackEngineLib.Main;
 using TackEngineLib.Engine;
 using TackEngineLib.Renderer;
 using TackEngineLib.Renderer.Shaders;
+using TackEngineLib.Input;
 
 namespace TackEngineLib.GUI
 {
@@ -24,10 +25,14 @@ namespace TackEngineLib.GUI
         private static FontFamily activeFontFamily;
         private static int uiShaderProgram;
 
+        internal static List<InputField> inputFields = new List<InputField>();
+
         public static void OnStart()
         {
             fontCollection = new PrivateFontCollection();
             activeFontFamily = new FontFamily("Arial");
+            fontCollection.AddFontFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\Arial.ttf");
+            TackConsole.EngineLog(EngineLogType.Message, string.Format("Added default font file from: {0}\\Arial.ttf", Environment.GetFolderPath(Environment.SpecialFolder.Fonts)));
 
             TackConsole.EngineLog(EngineLogType.Message, "Starting GUI shader compilation and linking");
             uiShaderProgram = ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.DefaultFragmentShader_GUI);
@@ -86,15 +91,35 @@ namespace TackEngineLib.GUI
             TackConsole.EngineLog(EngineLogType.Error, "The specfied family index is outside the bounds of the font collection Families array");
         }
 
-        public static void Box(RectangleShape _rect)
+        public static void Box(RectangleShape _rect, BoxStyle _style = default(BoxStyle))
         {
-            Box(_rect, new Colour4b(255, 255, 255, 255));
-        }
+            if (_style == null)
+                _style = new BoxStyle();
 
-        public static void Box(RectangleShape _rect, Colour4b _colour)
-        {
-            Sprite defaultSprite = Sprite.LoadFromBitmap(Properties.Resources.DefaultSprite);
-            defaultSprite.Create(false);
+            if (_style.Border != null)
+            {
+                RectangleShape borderShape = new RectangleShape()
+                {
+                    X = _rect.X - _style.Border.Left,
+                    Y = _rect.Y - _style.Border.Up,
+                    Width = _rect.Width + _style.Border.Right + _style.Border.Left,
+                    Height = _rect.Height + _style.Border.Bottom + _style.Border.Up
+                };
+
+                BoxStyle boxStyle = new BoxStyle()
+                {
+                    Colour = _style.Border.Colour
+                };
+
+                Box(borderShape, boxStyle);
+
+                boxStyle.Destory();
+            }
+
+            
+
+            //Sprite defaultSprite = Sprite.LoadFromBitmap(Properties.Resources.DefaultSprite);
+            //defaultSprite.Create(false);
 
             RectangleShape calculatedRect = new RectangleShape()
             {
@@ -114,10 +139,10 @@ namespace TackEngineLib.GUI
             float[] vertexData = new float[32]
                 {
                     //       Position (XYZ)                                                                                                      Colours (RGB)                                                                                  TexCoords (XY)
-                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        (_colour.R / 255), (_colour.G / 255), (_colour.B / 255),   1.0f, 0.0f,
-                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                (_colour.R / 255), (_colour.G / 255), (_colour.B / 255),   1.0f, 1.0f,
-                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       (_colour.R / 255), (_colour.G / 255), (_colour.B / 255),   0.0f, 1.0f,
-                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               (_colour.R / 255), (_colour.G / 255), (_colour.B / 255),   0.0f, 0.0f
+                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        (_style.Colour.R / 255.0f), (_style.Colour.G / 255.0f), (_style.Colour.B / 255.0f),   1.0f, 0.0f,
+                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                (_style.Colour.R / 255.0f), (_style.Colour.G / 255.0f), (_style.Colour.B / 255.0f),   1.0f, 1.0f,
+                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       (_style.Colour.R / 255.0f), (_style.Colour.G / 255.0f), (_style.Colour.B / 255.0f),   0.0f, 1.0f,
+                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               (_style.Colour.R / 255.0f), (_style.Colour.G / 255.0f), (_style.Colour.B / 255.0f),   0.0f, 0.0f
                 };
 
             int[] indices = new int[]
@@ -152,7 +177,7 @@ namespace TackEngineLib.GUI
 
             // Set texture attributes
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, defaultSprite.TextureId);
+            GL.BindTexture(TextureTarget.Texture2D, _style.SpriteTexture.TextureId);
 
 
             //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quadRenderer.Sprite.Width, quadRenderer.Sprite.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, quadRenderer.Sprite.SpriteData.Scan0);
@@ -169,36 +194,40 @@ namespace TackEngineLib.GUI
 
 
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, defaultSprite.Width, defaultSprite.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, defaultSprite.SpriteData.Scan0);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, _style.SpriteTexture.Width, _style.SpriteTexture.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, _style.SpriteTexture.SpriteData.Scan0);
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             // Set the shader uniform value
             GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourTexture"), 0);
-            GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourOpacity"), (float)(_colour.A / 255));
+            GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourOpacity"), (float)(_style.Colour.A / 255.0f));
 
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, defaultSprite.TextureId);
+            GL.BindTexture(TextureTarget.Texture2D, _style.SpriteTexture.TextureId);
 
             GL.BindVertexArray(VAO);
 
             GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero);
 
-            defaultSprite.Destory(false);
+            //defaultSprite.Destory(false);
 
             GL.DeleteBuffer(EBO);
             GL.DeleteBuffer(VBO);
             GL.DeleteVertexArray(VAO);
         }
 
-        public static void TextArea(RectangleShape _rect, string _text)
+        public static void TextArea(RectangleShape _rect, string _text, TextAreaStyle _style = default(TextAreaStyle))
         {
-            TextArea(_rect, new Colour4b(255, 255, 255, 255), _text, new Colour4b(0, 0, 0, 255));
-        }
+            if (_style == null)
+                _style = new TextAreaStyle();
 
-        public static void TextArea(RectangleShape _rect, Colour4b _backgroundColour, string _text, Colour4b _textColour)
-        {
+            BoxStyle boxStyle = new BoxStyle()
+            {
+                Colour = _style.BackgroundColour,
+                SpriteTexture = _style.SpriteTexture
+            };
+
             // Render a box at the back of the TextArea
-            Box(_rect, _backgroundColour);
+            Box(_rect, boxStyle);
 
             // Generate Bitmap
             Vector2i size = new Vector2i((int)(_rect.Width), (int)(_rect.Height));
@@ -207,7 +236,7 @@ namespace TackEngineLib.GUI
             // Generate Graphics Object
             Graphics graphics = Graphics.FromImage(cBmp);
 
-            Font myFont = new Font(activeFontFamily, 8f, FontStyle.Regular);
+            Font myFont = new Font(fontCollection.Families[_style.FontFamilyId], _style.FontSize, FontStyle.Regular);
 
             //Get the perfect Image-Size so that Image-Size = String-Size
             RectangleF rect = new RectangleF(0, 0, cBmp.Width, cBmp.Height);
@@ -218,7 +247,7 @@ namespace TackEngineLib.GUI
             graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
             //Here we draw the string on the Bitmap
-            Color customColor = Color.FromArgb(_textColour.A, _textColour.R, _textColour.G, _textColour.B);
+            Color customColor = Color.FromArgb(_style.FontColour.A, _style.FontColour.R, _style.FontColour.G, _style.FontColour.B);
             graphics.DrawString(_text, myFont, new SolidBrush(customColor), rect);
 
             Sprite textTexture = Sprite.LoadFromBitmap(cBmp);
@@ -302,7 +331,7 @@ namespace TackEngineLib.GUI
 
             // Set the shader uniform value
             GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourTexture"), 0);
-            GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourOpacity"), (float)(_textColour.A / 255));
+            GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourOpacity"), (float)(_style.FontColour.A / 255.0f));
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, textTexture.TextureId);
@@ -373,17 +402,18 @@ namespace TackEngineLib.GUI
             //Console.WriteLine("Rendered 1 string '{0}'", _text);*/
         }
 
-        public static void InputField(RectangleShape _rect, string _value, out string _returnString)
+        public static int GetFontFamilyId(string _familyName)
         {
-            Input.TackInput.GUIInputRequired = true;
+            for (int i = 0; i < fontCollection.Families.Length; i++)
+            {
+                if (fontCollection.Families[i].Name == _familyName)
+                {
+                    return i;
+                }
+            }
 
-            Box(_rect);
-
-            string text = string.Format("{0}{1}", _value, Input.TackInput.GetInputBuffer());
-
-            TextArea(_rect, text);
-
-            _returnString = text;
+            TackConsole.EngineLog(EngineLogType.Error, string.Format("No FontFamily with name: {0} was found in the font collection", _familyName));
+            return -1;
         }
     }
 }

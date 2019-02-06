@@ -22,6 +22,8 @@ namespace TackEngineLib.Main
 
         private List<string> m_Messages = new List<string>();
 
+        private TextAreaStyle m_ConsoleUIStyle;
+
         internal TackConsole()
         {
             // Set the static instance
@@ -34,6 +36,14 @@ namespace TackEngineLib.Main
             timer.Start();
 
             m_ActivationKey = KeyboardKey.Tilde;
+
+            m_ConsoleUIStyle = new TextAreaStyle()
+            {
+                BackgroundColour = new Colour4b(255, 255, 255, 255),
+                FontColour = new Colour4b(0, 0, 0, 255),
+                FontFamilyId = 0,
+                FontSize = 16f,
+            };
 
             EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
             timer.Stop();
@@ -65,7 +75,7 @@ namespace TackEngineLib.Main
                     consString += str + "\n";
                 }
 
-                TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, TackEngine.ScreenHeight - 30), new Colour4b(255, 255, 255, 255), consString, new Colour4b(0, 0, 0, 255));
+                TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, TackEngine.ScreenHeight - 30), consString, m_ConsoleUIStyle);
             }
         }
 
