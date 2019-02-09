@@ -219,7 +219,15 @@ namespace TackEngineLib.Physics
 
                             if (shape.X < (objShape.X + objShape.Width) && (shape.X + shape.Width) > objShape.X)
                             {
-                                finalMovementAmount.Y = _movementAmount.Y - (newBottomPos - objShape.Y);
+                                if (obj.GetComponent<PhysicsComponent>().AllowedToMove)
+                                {
+                                    finalMovementAmount = _movementAmount;
+                                    obj.GetComponent<PhysicsComponent>().Move(new Vector2f(0, (newBottomPos - objShape.Y)));
+                                }
+                                else
+                                {
+                                    finalMovementAmount.Y = _movementAmount.Y - (newBottomPos - objShape.Y);
+                                }
 
                                 break;
                             }
@@ -269,7 +277,16 @@ namespace TackEngineLib.Physics
                         {
                             if (shape.X < (stationaryObjectShape.X + stationaryObjectShape.Width) && (shape.X + shape.Width) > stationaryObjectShape.X)
                             {
-                                finalMovementAmount.Y = _movementAmount.Y - (newTopPos - (stationaryObjectShape.Y - stationaryObjectShape.Height));
+                                if (obj.GetComponent<PhysicsComponent>().AllowedToMove)
+                                {
+                                    finalMovementAmount = _movementAmount;
+                                    obj.GetComponent<PhysicsComponent>().Move(new Vector2f(0, (newTopPos - (stationaryObjectShape.Y - stationaryObjectShape.Height))));
+                                }
+                                else
+                                {
+                                    finalMovementAmount.Y = _movementAmount.Y - (newTopPos - (stationaryObjectShape.Y - stationaryObjectShape.Height));
+                                }
+
                                 break;
                             }
                         }
@@ -328,7 +345,17 @@ namespace TackEngineLib.Physics
                         {
                             if (newLeftPosition < (stationaryObjectShape.X + stationaryObjectShape.Width))
                             {
-                                finalMovementAmount.X = _movementAmount.X - (newLeftPosition - (stationaryObjectShape.X + stationaryObjectShape.Width));
+                                if (stationaryObject.GetComponent<PhysicsComponent>().AllowedToMove)
+                                {
+                                    finalMovementAmount = _movementAmount;
+                                    stationaryObject.GetComponent<PhysicsComponent>().Move(new Vector2f((newLeftPosition - (stationaryObjectShape.X + stationaryObjectShape.Width)), 0));
+                                }
+                                else
+                                {
+                                    finalMovementAmount.X = _movementAmount.X - (newLeftPosition - (stationaryObjectShape.X + stationaryObjectShape.Width));
+                                }
+
+                                break;
                             }
                         }
 
@@ -385,7 +412,17 @@ namespace TackEngineLib.Physics
                         {
                             if (newRightPosition > (stationaryObjectShape.X))
                             {
-                                finalMovementAmount.X = _movementAmount.X - (newRightPosition - (stationaryObjectShape.X));
+                                if (stationaryObject.GetComponent<PhysicsComponent>().AllowedToMove)
+                                {
+                                    finalMovementAmount = _movementAmount;
+                                    stationaryObject.GetComponent<PhysicsComponent>().Move(new Vector2f((newRightPosition - (stationaryObjectShape.X)), 0));
+                                }
+                                else
+                                {
+                                    finalMovementAmount.X = _movementAmount.X - (newRightPosition - (stationaryObjectShape.X));
+                                }
+
+                                break;
                             }
                         }
 
