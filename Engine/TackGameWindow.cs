@@ -157,6 +157,14 @@ namespace TackEngineLib.Engine
             m_TackConsole.OnClose();
         }
 
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            TackEngine.MainCamera.UpdateCameraDimensions(Width, Height);
+            GL.Viewport(0, 0, Width, Height);
+        }
+
         protected override void OnKeyDown(KeyboardKeyEventArgs e)
         {
             base.OnKeyDown(e);

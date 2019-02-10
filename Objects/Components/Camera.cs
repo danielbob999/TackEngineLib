@@ -17,13 +17,15 @@ namespace TackEngineLib.Objects.Components
 
 
         // Properties
-        public int CameraScreenWidth {
+        public int CameraScreenWidth
+        {
             get
             {
                 return m_CameraScreenWidth;
             }
             set
             {
+                Console.WriteLine(string.Format("Updating CameraScreenWidth. Old ({0}) -> New ({1})", m_CameraScreenWidth, value));
                 if (value > 0)
                     m_CameraScreenWidth = value;
                 else
@@ -39,6 +41,7 @@ namespace TackEngineLib.Objects.Components
             }
             set
             {
+                Console.WriteLine(string.Format("Updating CameraScreenHeight. Old ({0}) -> New ({1})", m_CameraScreenHeight, value));
                 if (value > 0)
                     m_CameraScreenHeight = value;
                 else
@@ -58,6 +61,12 @@ namespace TackEngineLib.Objects.Components
         {
             CameraScreenWidth = TackEngine.ScreenWidth;
             CameraScreenHeight = TackEngine.ScreenHeight;
+        }
+
+        public void UpdateCameraDimensions(int _w, int _h)
+        {
+            CameraScreenWidth = _w;
+            CameraScreenHeight = _h;
         }
     }
 }

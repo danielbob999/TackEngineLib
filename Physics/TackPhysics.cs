@@ -180,7 +180,7 @@ namespace TackEngineLib.Physics
 
             if (dirY != MovementDirection.NULL)
             {
-                #region Downwards Movement
+                #region DownwardsMovement
                 // If Object needs to move down
                 if (dirY == MovementDirection.Down)
                 {
@@ -235,7 +235,6 @@ namespace TackEngineLib.Physics
                     }
                 }
                 #endregion
-
 
                 #region UpwardsMovement
 
