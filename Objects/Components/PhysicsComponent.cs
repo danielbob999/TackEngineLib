@@ -16,6 +16,7 @@ namespace TackEngineLib.Objects.Components
         private Vector2f m_ColliderSizeMultiplier; // Size multiplier of the collider compared to the object's scale. 1.0f = collider size is the same as parentObject.Scale
         private Vector2f m_ColliderOffset;
         private bool m_SimulateGravity;
+        private float m_Weight;
 
         // Properties
         public bool CollisionsEnabled
@@ -48,6 +49,18 @@ namespace TackEngineLib.Objects.Components
             set { m_SimulateGravity = value; }
         }
 
+        public float Weight
+        {
+            get { return m_Weight; }
+            set
+            {
+                if (value > 0)
+                    m_Weight = value;
+                else
+                    TackConsole.EngineLog(Engine.EngineLogType.Error, string.Format("Cannot set PhysicsComponent.Weight to a value less than 0. Default weight (1) has been set."));
+            }
+        }
+
         public PhysicsComponent()
         {
             m_SimulateGravity = true;
@@ -55,6 +68,7 @@ namespace TackEngineLib.Objects.Components
             m_ColliderSizeMultiplier = new Vector2f(1, 1);
             m_ColliderOffset = new Vector2f(0, 0);
             m_AllowedToMove = true;
+            m_Weight = 1;
         }
 
         public void Move(float _x, float _y)
