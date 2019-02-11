@@ -214,7 +214,7 @@ namespace TackEngineLib.GUI
             GL.DeleteBuffer(VBO);
             GL.DeleteVertexArray(VAO);
 
-            _style.Destory();
+            //_style.Destory();
         }
 
         public static void TextArea(RectangleShape _rect, string _text, TextAreaStyle _style = default(TextAreaStyle))

@@ -42,7 +42,7 @@ namespace TackEngineLib.Main
                 BackgroundColour = new Colour4b(255, 255, 255, 255),
                 FontColour = new Colour4b(0, 0, 0, 255),
                 FontFamilyId = 0,
-                FontSize = 16f,
+                FontSize = 8f,
             };
 
             EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
