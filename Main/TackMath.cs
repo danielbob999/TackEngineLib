@@ -23,5 +23,15 @@ namespace TackEngineLib.Main
             else
                 return _val * -1.0f;
         }
+
+        /// <summary>
+        /// Converts an angle in degrees to and angle in radians
+        /// </summary>
+        /// <param name="_angle">An angle in degrees</param>
+        /// <returns>The converted angle in radians</returns>
+        public static double DegToRad(float _angle)
+        {
+            return _angle * (Math.PI / 180);
+        }
     }
 }
