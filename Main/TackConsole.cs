@@ -12,6 +12,9 @@ using TackEngineLib.Main;
 
 namespace TackEngineLib.Main
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class TackConsole
     {
         internal static TackConsole ActiveInstance; // The handle to this instance of TackConsole

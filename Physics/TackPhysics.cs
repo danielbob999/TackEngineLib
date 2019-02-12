@@ -456,7 +456,8 @@ namespace TackEngineLib.Physics
         /// <summary>
         /// Returns the actual update rate of the physics thread
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The current update rate of the Physics thread</returns>
+        /// <returntype>int</returntype>
         public static int GetUpdateRate()
         {
             return updateRate;
