@@ -76,6 +76,11 @@ namespace TackEngineLib.Main
             return true;
         }
 
+        public static Vector2f operator- (Vector2f _a)
+        {
+            return new Vector2f(_a.X * -1.0f, _a.Y * -1.0f);
+        }
+
         public override bool Equals(object obj)
         {
             return base.Equals(obj);
