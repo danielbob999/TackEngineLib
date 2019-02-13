@@ -23,6 +23,8 @@ namespace TackEngineLib.Objects
         private Vector2f m_Position;
         private Vector2f m_Scale;
         private float m_Rotation;
+        private Vector2f m_Up;
+        private Vector2f m_Right;
 
         internal List<object> objectComponents = new List<object>();
         internal List<string> usedHashCodes = new List<string>();
@@ -65,6 +67,28 @@ namespace TackEngineLib.Objects
         {
             get { return m_Rotation; }
             set { m_Rotation = value; }
+        }
+
+        /// <summary>
+        /// The vector of moving the TackObject directly forward based on rotation
+        /// </summary>
+        public Vector2f Up
+        {
+            get
+            {
+                return new Vector2f(1.0f * (float)Math.Sin(TackMath.DegToRad(m_Rotation)), 1.0f * (float)Math.Cos(TackMath.DegToRad(m_Rotation)));
+            }
+        }
+
+        /// <summary>
+        /// The vector of moving the TackObject directly right based on rotation
+        /// </summary>
+        public Vector2f Right
+        {
+            get
+            {
+                return new Vector2f(1.0f * (float)Math.Sin(TackMath.DegToRad(m_Rotation + 90)), 1.0f * (float)Math.Cos(TackMath.DegToRad(m_Rotation + 90)));
+            }
         }
 
         // CONSTRUCTORS

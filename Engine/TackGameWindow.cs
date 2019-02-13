@@ -52,7 +52,8 @@ namespace TackEngineLib.Engine
         public static int ColourShaderProgramInt { get { return colourShaderProgramId; } }
         public static int ImageShaderProgramInt { get { return imageShaderProgramId; } }
 
-        public TackGameWindow(int _width, int _height, string _n, EngineDelegates.OnStart _strtFunc, EngineDelegates.OnUpdate _updtFunc, EngineDelegates.OnGUIRender _guiRendFunc, EngineDelegates.OnClose _onCloseFunc) : base(_width, _height, GraphicsMode.Default, _n)
+        public TackGameWindow(int _width, int _height, string _n, EngineDelegates.OnStart _strtFunc, EngineDelegates.OnUpdate _updtFunc, EngineDelegates.OnGUIRender _guiRendFunc, EngineDelegates.OnClose _onCloseFunc) 
+            : base(_width, _height, GraphicsMode.Default, _n)
         {
             onStartFunction = _strtFunc;
             onUpdateFunction = _updtFunc;
