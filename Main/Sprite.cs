@@ -11,10 +11,26 @@ using OpenTK.Graphics.OpenGL;
 
 namespace TackEngineLib.Main
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class Sprite
     {
-        private int m_TextureId;
+        private static Sprite m_DefaultSprite;
+        private static bool m_LogMessageOverride = true;
 
+        public static bool LogMessageOverride
+        {
+            get { return m_LogMessageOverride; }
+            set { m_LogMessageOverride = value; }
+        }
+
+        public static Sprite DefaultSprite
+        {
+            get { return m_DefaultSprite; }
+        }
+
+        private int m_TextureId;
         private Bitmap m_SpriteBmp;
         private BitmapData m_SpriteData;
         private int m_Width = 0, m_Height = 0;
@@ -66,7 +82,7 @@ namespace TackEngineLib.Main
             GL.GenTextures(1, out m_TextureId);
 
             if (m_TextureId <= 0) {
-                if (_logMsgs)
+                if (_logMsgs || (m_LogMessageOverride))
                     TackConsole.EngineLog(EngineLogType.Error, string.Format("Error with generating sprite texture. Sprite. TextureId cannot be set to 0 or below. (Current Id = {0})", m_TextureId));
                 return;
             }
@@ -78,7 +94,7 @@ namespace TackEngineLib.Main
                 ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
             SpriteManager.AddSprite(this, _logMsgs);
-            if (_logMsgs)
+            if (_logMsgs || (m_LogMessageOverride))
                 TackConsole.EngineLog(EngineLogType.Message, string.Format("Generated Sprite texture with TextureId '{0}'", m_TextureId));
         }
 
@@ -128,6 +144,14 @@ namespace TackEngineLib.Main
             newSprite.Height = _bitmap.Height;
 
             return newSprite;
+        }
+
+        internal static void LoadDefaultSprite()
+        {
+            m_DefaultSprite = Sprite.LoadFromBitmap(TackEngineLib.Properties.Resources.DefaultSprite);
+            m_DefaultSprite.Create();
+
+            TackConsole.EngineLog(EngineLogType.Message, "Loaded the default sprite into Sprite.DefaultSprite");
         }
     }
 }

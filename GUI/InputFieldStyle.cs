@@ -45,15 +45,13 @@ namespace TackEngineLib.GUI
             get { return m_SpriteTexture; }
             set
             {
-                m_SpriteTexture.Destory(false);
                 m_SpriteTexture = value;
             }
         }
 
         public InputFieldStyle()
         {
-            m_SpriteTexture = Sprite.LoadFromBitmap(TackEngineLib.Properties.Resources.DefaultSprite);
-            m_SpriteTexture.Create(false);
+            m_SpriteTexture = Sprite.DefaultSprite;
 
             m_FontSize = 6f;
             m_FontColour = new Colour4b(0, 0, 0, 255);
@@ -89,7 +87,6 @@ namespace TackEngineLib.GUI
 
         public void Destory()
         {
-            m_SpriteTexture.Destory(false);
         }
     }
 }
