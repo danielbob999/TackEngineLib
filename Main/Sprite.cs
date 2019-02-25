@@ -17,14 +17,17 @@ namespace TackEngineLib.Main
     public class Sprite
     {
         private static Sprite m_DefaultSprite;
-        private static bool m_LogMessageOverride = true;
+        internal static bool m_LogMessageOverride = false;
 
-        public static bool LogMessageOverride
+        internal static bool LogMessageOverride
         {
             get { return m_LogMessageOverride; }
             set { m_LogMessageOverride = value; }
         }
 
+        /// <summary>
+        /// The default sprite.
+        /// </summary>
         public static Sprite DefaultSprite
         {
             get { return m_DefaultSprite; }
@@ -77,6 +80,10 @@ namespace TackEngineLib.Main
             Height = _h;
         }
 
+        /// <summary>
+        /// Loads the sprite into memory.
+        /// </summary>
+        /// <param name="_logMsgs">True if messages should be logged to console, false otherwise</param>
         public void Create(bool _logMsgs = true)
         {
             GL.GenTextures(1, out m_TextureId);
