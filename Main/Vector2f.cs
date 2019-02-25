@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace TackEngineLib.Main
 {
-    public class Vector2f
+    /// <summary>
+    /// 
+    /// </summary>
+    public struct Vector2f
     {
         private float m_X;
         private float m_Y;
@@ -21,12 +24,6 @@ namespace TackEngineLib.Main
         {
             get { return m_Y; }
             set { m_Y = value; }
-        }
-
-        public Vector2f()
-        {
-            m_X = 0;
-            m_Y = 0;
         }
 
         public Vector2f(float _x, float _y)
