@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using TackEngineLib.Main;
 using TackEngineLib.Engine;
 using TackEngineLib.Renderer;
+using TackEngineLib.Math;
 
 namespace TackEngineLib.Objects.Components
 {
@@ -155,12 +157,12 @@ namespace TackEngineLib.Objects.Components
                 Vector2f vertPos = new Vector2f(objectShape.X + objectShape.Width, objectShape.Y);
 
                 float x = parentObject.Position.X + (vertPos.X - parentObject.Position.X)
-                    * (float)Math.Cos(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
-                    * (float)Math.Sin(TackMath.DegToRad(parentObject.Rotation));
+                    * (float)System.Math.Cos(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
+                    * (float)System.Math.Sin(TackMath.DegToRad(parentObject.Rotation));
 
                 float y = parentObject.Position.Y - (vertPos.X - parentObject.Position.X)
-                    * (float)Math.Sin(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
-                    * (float)Math.Cos(TackMath.DegToRad(parentObject.Rotation));
+                    * (float)System.Math.Sin(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
+                    * (float)System.Math.Cos(TackMath.DegToRad(parentObject.Rotation));
 
                 return new Vector2f(x, y);
             }
@@ -170,12 +172,12 @@ namespace TackEngineLib.Objects.Components
                 Vector2f vertPos = new Vector2f(objectShape.X + objectShape.Width, objectShape.Y - objectShape.Height);
 
                 float x = parentObject.Position.X + (vertPos.X - parentObject.Position.X)
-                    * (float)Math.Cos(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
-                    * (float)Math.Sin(TackMath.DegToRad(parentObject.Rotation));
+                    * (float)System.Math.Cos(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
+                    * (float)System.Math.Sin(TackMath.DegToRad(parentObject.Rotation));
 
                 float y = parentObject.Position.Y - (vertPos.X - parentObject.Position.X)
-                    * (float)Math.Sin(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
-                    * (float)Math.Cos(TackMath.DegToRad(parentObject.Rotation));
+                    * (float)System.Math.Sin(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
+                    * (float)System.Math.Cos(TackMath.DegToRad(parentObject.Rotation));
 
                 return new Vector2f(x, y);
             }
@@ -185,12 +187,12 @@ namespace TackEngineLib.Objects.Components
                 Vector2f vertPos = new Vector2f(objectShape.X, objectShape.Y - objectShape.Height);
 
                 float x = parentObject.Position.X + (vertPos.X - parentObject.Position.X)
-                    * (float)Math.Cos(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
-                    * (float)Math.Sin(TackMath.DegToRad(parentObject.Rotation));
+                    * (float)System.Math.Cos(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
+                    * (float)System.Math.Sin(TackMath.DegToRad(parentObject.Rotation));
 
                 float y = parentObject.Position.Y - (vertPos.X - parentObject.Position.X)
-                    * (float)Math.Sin(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
-                    * (float)Math.Cos(TackMath.DegToRad(parentObject.Rotation));
+                    * (float)System.Math.Sin(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
+                    * (float)System.Math.Cos(TackMath.DegToRad(parentObject.Rotation));
 
                 return new Vector2f(x, y);
             }
@@ -200,12 +202,12 @@ namespace TackEngineLib.Objects.Components
                 Vector2f vertPos = new Vector2f(objectShape.X, objectShape.Y);
 
                 float x = parentObject.Position.X + (vertPos.X - parentObject.Position.X)
-                    * (float)Math.Cos(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
-                    * (float)Math.Sin(TackMath.DegToRad(parentObject.Rotation));
+                    * (float)System.Math.Cos(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
+                    * (float)System.Math.Sin(TackMath.DegToRad(parentObject.Rotation));
 
                 float y = parentObject.Position.Y - (vertPos.X - parentObject.Position.X)
-                    * (float)Math.Sin(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
-                    * (float)Math.Cos(TackMath.DegToRad(parentObject.Rotation));
+                    * (float)System.Math.Sin(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
+                    * (float)System.Math.Cos(TackMath.DegToRad(parentObject.Rotation));
 
                 return new Vector2f(x, y);
             }

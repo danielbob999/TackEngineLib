@@ -51,9 +51,12 @@
     <Compile Include="Engine\EngineLogType.cs" />
     <Compile Include="GUI\BoxStyle.cs" />
     <Compile Include="GUI\GUIBorder.cs" />
+    <Compile Include="GUI\HorizontalAlignment.cs" />
     <Compile Include="GUI\InputField.cs" />
     <Compile Include="GUI\InputFieldStyle.cs" />
     <Compile Include="GUI\TextAreaStyle.cs" />
+    <Compile Include="GUI\VerticalAlignment.cs" />
+    <Compile Include="Math\LinearEquation.cs" />
     <Compile Include="Objects\Components\AudioComponent.cs" />
     <Compile Include="Physics\MovementDirection.cs" />
     <Compile Include="Main\TackConsole.cs" />
@@ -81,8 +84,9 @@
     <Compile Include="Main\Sprite.cs" />
     <Compile Include="Main\SpriteSheet.cs" />
     <Compile Include="Main\TackEngineVersion.cs" />
-    <Compile Include="Main\TackMath.cs" />
+    <Compile Include="Math\TackMath.cs" />
     <Compile Include="Main\Vector2f.cs" />
+    <Compile Include="Physics\PhysicsMovement.cs" />
     <Compile Include="Physics\PhysicsStatus.cs" />
     <Compile Include="Physics\TackPhysics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -105,7 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>

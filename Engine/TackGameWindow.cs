@@ -65,6 +65,8 @@ namespace TackEngineLib.Engine
         {
             base.OnLoad(e);
 
+            Sprite.LoadDefaultSprite();
+
             m_TackConsole = new TackConsole();
             m_TackConsole.OnStart();
 
@@ -132,7 +134,7 @@ namespace TackEngineLib.Engine
             base.OnRenderFrame(e);
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.ClearColor(new OpenTK.Graphics.Color4(255, 0, 0, 255));
+            GL.ClearColor(new OpenTK.Graphics.Color4(127, 146, 150, 255));
 
             // All OnRender here
             m_TackRender.OnRender();

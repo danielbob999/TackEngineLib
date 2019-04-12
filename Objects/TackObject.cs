@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using TackEngineLib.Main;
 using TackEngineLib.Objects.Components;
 using TackEngineLib.Engine;
+using TackEngineLib.Math;
 
 namespace TackEngineLib.Objects
 {
@@ -76,7 +78,7 @@ namespace TackEngineLib.Objects
         {
             get
             {
-                return new Vector2f(1.0f * (float)Math.Sin(TackMath.DegToRad(m_Rotation)), 1.0f * (float)Math.Cos(TackMath.DegToRad(m_Rotation)));
+                return new Vector2f(1.0f * (float)System.Math.Sin(TackMath.DegToRad(m_Rotation)), 1.0f * (float)System.Math.Cos(TackMath.DegToRad(m_Rotation)));
             }
         }
 
@@ -87,7 +89,7 @@ namespace TackEngineLib.Objects
         {
             get
             {
-                return new Vector2f(1.0f * (float)Math.Sin(TackMath.DegToRad(m_Rotation + 90)), 1.0f * (float)Math.Cos(TackMath.DegToRad(m_Rotation + 90)));
+                return new Vector2f(1.0f * (float)System.Math.Sin(TackMath.DegToRad(m_Rotation + 90)), 1.0f * (float)System.Math.Cos(TackMath.DegToRad(m_Rotation + 90)));
             }
         }
 

@@ -26,11 +26,25 @@ namespace TackEngineLib.Main
         private List<string> m_Messages = new List<string>();
 
         private TextAreaStyle m_ConsoleUIStyle;
+        private InputField m_InputField;
+        private InputFieldStyle m_InputFieldStyle;
+        private string m_InputString;
 
         internal TackConsole()
         {
             // Set the static instance
             ActiveInstance = this;
+
+            m_InputField = new InputField();
+            m_InputFieldStyle = new InputFieldStyle();
+
+            m_InputFieldStyle.BackgroundColour = new Colour4b(200, 200, 200, 255);
+            m_InputFieldStyle.FontColour = new Colour4b(0, 0, 0, 255);
+            m_InputFieldStyle.SpriteTexture = Sprite.DefaultSprite;
+            m_InputFieldStyle.FontSize = 9f;
+            m_InputFieldStyle.VerticalAlignment = VerticalAlignment.Middle;
+
+            m_InputField.Shape = new RectangleShape(0, (TackEngine.ScreenHeight - 30), TackEngine.ScreenWidth, 30);
         }
 
         internal void OnStart()
@@ -42,10 +56,10 @@ namespace TackEngineLib.Main
 
             m_ConsoleUIStyle = new TextAreaStyle()
             {
-                BackgroundColour = new Colour4b(255, 255, 255, 255),
-                FontColour = new Colour4b(0, 0, 0, 255),
+                BackgroundColour = new Colour4b(0, 0, 0, 175),
+                FontColour = new Colour4b(0, 255, 0, 255),
                 FontFamilyId = 0,
-                FontSize = 8f,
+                FontSize = 9f,
             };
 
             EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
@@ -64,6 +78,20 @@ namespace TackEngineLib.Main
             if (TackInput.KeyDown(KeyboardKey.Enter) && m_ConsoleGUIActive)
             {
             }
+
+            if (TackInput.MouseButtonDown(MouseButtonKey.Left))
+            {
+                if (m_InputField.IsMouseInBounds())
+                {
+                    Console.WriteLine("Enabled TackConsole InputField input");
+                    m_InputField.ReceivingInput = true;
+                }
+                else
+                {
+                    Console.WriteLine("Disabled TackConsole InputField input");
+                    m_InputField.ReceivingInput = false;
+                }
+            }
         }
 
         internal void OnGUIRender()
@@ -79,6 +107,11 @@ namespace TackEngineLib.Main
                 }
 
                 TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, TackEngine.ScreenHeight - 30), consString, m_ConsoleUIStyle);
+
+                if (m_InputField.ReceivingInput)
+                    m_InputString = m_InputField.GetInput();
+
+                m_InputField.Render(m_InputString, m_InputFieldStyle);
             }
         }
 

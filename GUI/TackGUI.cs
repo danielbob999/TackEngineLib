@@ -248,9 +248,55 @@ namespace TackEngineLib.GUI
             graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
             graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
+            StringFormat format = new StringFormat();
+            //format.Alignment = StringAlignment.Center;
+            //format.LineAlignment = StringAlignment.Near;
+
+            // Set the horizontal alignment of the text
+            switch (_style.HorizontalAlignment)
+                {
+                    case HorizontalAlignment.Left:
+                        format.Alignment = StringAlignment.Near;
+                        break;
+
+                    case HorizontalAlignment.Middle:
+                        format.Alignment = StringAlignment.Center;
+                        break;
+
+                    case HorizontalAlignment.Right:
+                        format.Alignment = StringAlignment.Far;
+                        break;
+
+                    default:
+                        format.Alignment = StringAlignment.Center;
+                        break;
+                }
+
+            // Set the vertical alignment of the text
+            switch (_style.VerticalAlignment)
+            {
+                case VerticalAlignment.Top:
+                    format.LineAlignment = StringAlignment.Near;
+                    break;
+
+                case VerticalAlignment.Middle:
+                    format.LineAlignment = StringAlignment.Center;
+                    break;
+
+                case VerticalAlignment.Bottom:
+                    format.LineAlignment = StringAlignment.Far;
+                    break;
+
+                default:
+                    format.LineAlignment = StringAlignment.Near;
+                    break;
+            }
+
+
+
             //Here we draw the string on the Bitmap
             Color customColor = Color.FromArgb(_style.FontColour.A, _style.FontColour.R, _style.FontColour.G, _style.FontColour.B);
-            graphics.DrawString(_text, myFont, new SolidBrush(customColor), rect);
+            graphics.DrawString(_text, myFont, new SolidBrush(customColor), rect, format);
 
             Sprite textTexture = Sprite.LoadFromBitmap(cBmp);
             textTexture.Create(false);

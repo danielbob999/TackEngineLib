@@ -12,6 +12,8 @@ namespace TackEngineLib.GUI
     {
         private float m_FontSize;
         private Colour4b m_FontColour;
+        private VerticalAlignment m_VerticalAlignment;
+        private HorizontalAlignment m_HorizontalAlignment;
         private Colour4b m_Colour;
         private GUIBorder m_Border;
         private Sprite m_SpriteTexture;
@@ -49,6 +51,24 @@ namespace TackEngineLib.GUI
             }
         }
 
+        /// <summary>
+        /// The VerticalAlignment of this text
+        /// </summary>
+        public VerticalAlignment VerticalAlignment
+        {
+            get { return m_VerticalAlignment; }
+            set { m_VerticalAlignment = value; }
+        }
+
+        /// <summary>
+        /// The HorizontalAlignment of this text
+        /// </summary>
+        public HorizontalAlignment HorizontalAlignment
+        {
+            get { return m_HorizontalAlignment; }
+            set { m_HorizontalAlignment = value; }
+        }
+
         public InputFieldStyle()
         {
             m_SpriteTexture = Sprite.DefaultSprite;
@@ -79,7 +99,9 @@ namespace TackEngineLib.GUI
                 FontColour = m_FontColour,
                 FontFamilyId = 0,
                 FontSize = m_FontSize,
-                SpriteTexture = m_SpriteTexture
+                SpriteTexture = m_SpriteTexture,
+                HorizontalAlignment = m_HorizontalAlignment,
+                VerticalAlignment = m_VerticalAlignment
             };
 
             return style;

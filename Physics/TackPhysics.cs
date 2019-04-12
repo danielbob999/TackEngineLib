@@ -10,7 +10,6 @@ using TackEngineLib.Main;
 using TackEngineLib.Objects;
 using TackEngineLib.Engine;
 using TackEngineLib.Objects.Components;
-using TackEngineLib.Main;
 
 namespace TackEngineLib.Physics
 {
@@ -298,6 +297,7 @@ namespace TackEngineLib.Physics
             {
                 #region LeftMovement
 
+                /*
                 // If object wants to move left
                 if (dirX == MovementDirection.Left)
                 {
@@ -360,7 +360,47 @@ namespace TackEngineLib.Physics
 
                         //Console.WriteLine("isCollidingXAxis. Shape: " + shape.ToString() + " , stationaryShape: " + stationaryObjectShape.ToString());
                     }
+                }*/
+
+                if (dirX == MovementDirection.Left)
+                {
+                    // Find the left most vertex position
+                    Dictionary<int, Vector2f> movingObjVerts = new Dictionary<int, Vector2f>();
+                    movingObjVerts.Add(1, _tackObject.GetComponent<QuadRenderer>().FindVertexPoint(1));
+                    movingObjVerts.Add(2, _tackObject.GetComponent<QuadRenderer>().FindVertexPoint(2));
+                    movingObjVerts.Add(3, _tackObject.GetComponent<QuadRenderer>().FindVertexPoint(3));
+                    movingObjVerts.Add(4, _tackObject.GetComponent<QuadRenderer>().FindVertexPoint(4));
+
+                    TackObject[] tackObjects = TackObject.Get();
+
+                    foreach (TackObject stationaryObject in tackObjects)
+                    {
+                        if (stationaryObject == _tackObject)
+                            continue;
+
+                        if (stationaryObject.GetComponent<PhysicsComponent>().IsNullComponent())
+                            continue;
+
+                        Dictionary<int, Vector2f> stationaryObjVerts = new Dictionary<int, Vector2f>();
+                        stationaryObjVerts.Add(1, stationaryObject.GetComponent<QuadRenderer>().FindVertexPoint(1));
+                        stationaryObjVerts.Add(2, stationaryObject.GetComponent<QuadRenderer>().FindVertexPoint(2));
+                        stationaryObjVerts.Add(3, stationaryObject.GetComponent<QuadRenderer>().FindVertexPoint(3));
+                        stationaryObjVerts.Add(4, stationaryObject.GetComponent<QuadRenderer>().FindVertexPoint(4));
+
+                        PhysicsMovement.MovementLeft(_movementAmount, movingObjVerts, stationaryObjVerts);
+
+                        /*
+                        // Check if _tackObject is to the left of stationaryObjects right most point
+                        if ((shape.X + shape.Width) <= (stationaryObjectShape.X + stationaryObjectShape.Width))
+                        {
+                            continue;
+                        }*/
+
+                        //Console.WriteLine("isCollidingXAxis. Shape: " + shape.ToString() + " , stationaryShape: " + stationaryObjectShape.ToString());
+                    }
+
                 }
+
                 #endregion
 
                 #region RightMovement
