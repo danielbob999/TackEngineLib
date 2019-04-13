@@ -298,6 +298,9 @@ namespace TackEngineLib.Input
             if (_key == KeyboardKey.Space)
                 return 32;
 
+            if (_key == KeyboardKey.Period)
+                return 46;
+
             if (_key >= KeyboardKey.Number0 && _key <= KeyboardKey.Number9)
                 return ((int)_key - 61);
 
@@ -312,6 +315,9 @@ namespace TackEngineLib.Input
             return 0;
         }
 
+        /// <summary>
+        /// Clears the GUI input buffer
+        /// </summary>
         public static void ClearGUIInputBuffer()
         {
             m_InputBuffer.Clear();

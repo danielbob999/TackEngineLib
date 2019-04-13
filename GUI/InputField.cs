@@ -108,8 +108,6 @@ namespace TackEngineLib.GUI
             if (!string.IsNullOrEmpty(_value))
                 m_caretPosition = (_value.Length - 1);
 
-            Console.WriteLine(m_caretPosition);
-
             if (_style == null)
                 _style = new InputFieldStyle();
 
