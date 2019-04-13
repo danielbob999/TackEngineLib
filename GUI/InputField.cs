@@ -20,6 +20,7 @@ namespace TackEngineLib.GUI
         private int m_caretDisplaySpeed;
         private bool m_displayCaret;
         private Graphics m_stringMeasurer;
+        private List<TackCommand> m_ValidCommands = new List<TackCommand>();
 
         public event EventHandler SubmitInput;
 
@@ -114,7 +115,8 @@ namespace TackEngineLib.GUI
             {
                 if (bufferKey == KeyboardKey.BackSpace)
                 {
-                    m_InputString = m_InputString.Remove(m_InputString.Length - 1, 1);
+                    if (m_InputString.Length > 0)
+                        m_InputString = m_InputString.Remove(m_InputString.Length - 1, 1);
                 } else if (bufferKey == KeyboardKey.Space)
                 {
                     m_InputString += " ";
@@ -216,6 +218,11 @@ namespace TackEngineLib.GUI
             }
 
             return false;
+        }
+
+        private void ProcessCommand(object sender, EventArgs e)
+        {
+
         }
     }
 }

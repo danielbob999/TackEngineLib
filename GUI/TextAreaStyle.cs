@@ -18,6 +18,8 @@ namespace TackEngineLib.GUI
         private Colour4b m_FontColour;
         private Colour4b m_BackgroundColour;
         private Sprite m_SpriteTexture;
+        private float m_ScrollPosition = 0.0f;
+        private bool m_Scrollable;
 
         public float FontSize
         {
@@ -74,6 +76,24 @@ namespace TackEngineLib.GUI
         {
             get { return m_HorizontalAlignment; }
             set { m_HorizontalAlignment = value; }
+        }
+
+        /// <summary>
+        /// The scroll position of the text box
+        /// </summary>
+        public float ScrollPosition
+        {
+            get { return m_ScrollPosition; }
+            set { m_ScrollPosition = value; }
+        }
+
+        /// <summary>
+        /// Whether the textbox can be vertically scrolled
+        /// </summary>
+        public bool Scrollable
+        {
+            get { return m_Scrollable; }
+            set { m_Scrollable = value; }
         }
 
         public TextAreaStyle()

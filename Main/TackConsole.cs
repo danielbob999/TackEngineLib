@@ -43,16 +43,11 @@ namespace TackEngineLib.Main
             m_InputFieldStyle.BackgroundColour = new Colour4b(200, 200, 200, 255);
             m_InputFieldStyle.FontColour = new Colour4b(0, 0, 0, 255);
             m_InputFieldStyle.SpriteTexture = Sprite.DefaultSprite;
-            m_InputFieldStyle.FontSize = 9f;
+            m_InputFieldStyle.FontSize = 10f;
             m_InputFieldStyle.VerticalAlignment = VerticalAlignment.Middle;
             m_InputFieldStyle.FontFamilyId = TackGUI.LoadFontFromFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\cour.ttf");
 
             m_InputField.Shape = new RectangleShape(0, (TackEngine.ScreenHeight * 0.70f), TackEngine.ScreenWidth, 30);
-        }
-
-        private void M_InputField_SubmitInput(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         internal void OnStart()
@@ -64,11 +59,12 @@ namespace TackEngineLib.Main
 
             m_ConsoleUIStyle = new TextAreaStyle()
             {
-                BackgroundColour = new Colour4b(0, 0, 0, 175),
+                BackgroundColour = new Colour4b(0, 0, 0, 190),
                 FontColour = new Colour4b(0, 255, 0, 255),
                 FontFamilyId = TackGUI.GetFontFamilyId("Courier New"),
-                FontSize = 9f,
+                FontSize = 10f,
                 VerticalAlignment = VerticalAlignment.Bottom,
+                ScrollPosition = 0
             };
 
             m_CaretBoxStyle = new BoxStyle()
@@ -113,6 +109,11 @@ namespace TackEngineLib.Main
                     //Console.WriteLine("Disabled TackConsole InputField input");
                     m_InputField.ReceivingInput = false;
                 }
+            }
+
+            if (TackInput.KeyHeld(KeyboardKey.P))
+            {
+                m_ConsoleUIStyle.ScrollPosition += 0.006f;
             }
 
             m_InputString = m_InputField.InputString;

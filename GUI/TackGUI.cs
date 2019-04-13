@@ -19,6 +19,9 @@ using TackEngineLib.Input;
 
 namespace TackEngineLib.GUI
 {
+    /// <summary>
+    /// The main class for rendering GUI elements to the screen
+    /// </summary>
     public static class TackGUI
     {
         private static PrivateFontCollection fontCollection;
@@ -91,6 +94,11 @@ namespace TackEngineLib.GUI
             TackConsole.EngineLog(EngineLogType.Error, "The specfied family index is outside the bounds of the font collection Families array");
         }
 
+        /// <summary>
+        /// Renders a box to the screen
+        /// </summary>
+        /// <param name="_rect">The shape (Position and size) of the box</param>
+        /// <param name="_style">The BoxStyle used to render this box</param>
         public static void Box(RectangleShape _rect, BoxStyle _style = default(BoxStyle))
         {
             if (_style == null)
@@ -217,6 +225,12 @@ namespace TackEngineLib.GUI
             //_style.Destory();
         }
 
+        /// <summary>
+        /// Renders text to the screen
+        /// </summary>
+        /// <param name="_rect">The shape of box to render the text in</param>
+        /// <param name="_text">The text to render</param>
+        /// <param name="_style">The TextAreaStyle used to render this text</param>
         public static void TextArea(RectangleShape _rect, string _text, TextAreaStyle _style = default(TextAreaStyle))
         {
             if (_style == null)
@@ -231,14 +245,31 @@ namespace TackEngineLib.GUI
             // Render a box at the back of the TextArea
             Box(_rect, boxStyle);
 
-            // Generate Bitmap
-            Vector2i size = new Vector2i((int)(_rect.Width), (int)(_rect.Height));
-            Bitmap cBmp = new Bitmap(size.X, size.Y);
+            Graphics graphics;
+            Font myFont = new Font(fontCollection.Families[_style.FontFamilyId], _style.FontSize, FontStyle.Regular);
+            Bitmap cBmp;
+
+            if (_style.Scrollable)
+            {
+                graphics = Graphics.FromImage(new Bitmap(1, 1));
+                SizeF size = graphics.MeasureString(_text, myFont);
+
+                if (string.IsNullOrEmpty(_text))
+                    size = new SizeF(1, 1);
+
+                cBmp = new Bitmap((int)_rect.Width, (int)size.Height);
+            }
+            else
+            {
+                Vector2i size = new Vector2i((int)(_rect.Width), (int)(_rect.Height));
+
+                cBmp = new Bitmap((int)_rect.Width, (int)_rect.Height);
+
+                _style.ScrollPosition = 0;
+            }
 
             // Generate Graphics Object
-            Graphics graphics = Graphics.FromImage(cBmp);
-
-            Font myFont = new Font(fontCollection.Families[_style.FontFamilyId], _style.FontSize, FontStyle.Regular);
+            graphics = Graphics.FromImage(cBmp);
 
             //Get the perfect Image-Size so that Image-Size = String-Size
             RectangleF rect = new RectangleF(0, 0, cBmp.Width, cBmp.Height);
@@ -319,10 +350,10 @@ namespace TackEngineLib.GUI
             float[] vertexData = new float[32]
                 {
                     //       Position (XYZ)                                                                                              Colours (RGB)         TexCoords (XY)
-                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        1f, 1f, 1f,            1.0f, 0.0f,
-                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                1f, 1f, 1f,            1.0f, 1.0f,
-                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       1f, 1f, 1f,            0.0f, 1.0f,
-                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               1f, 1f, 1f,            0.0f, 0.0f
+                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        1f, 1f, 1f,            1.0f, (0 + _style.ScrollPosition),                        //1.0f, 0.0f,
+                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                1f, 1f, 1f,            1.0f, (1 + _style.ScrollPosition),                       //1.0f, 1.0f,
+                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       1f, 1f, 1f,            0.0f, (1 + _style.ScrollPosition),                        //0.0f, 1.0f,
+                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               1f, 1f, 1f,            0.0f, (0 + _style.ScrollPosition)                         //0.0f, 0.0f
                 };
 
             int[] indices = new int[]
@@ -368,8 +399,8 @@ namespace TackEngineLib.GUI
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
             // set the texture wrapping parameters
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);
 
 
 
