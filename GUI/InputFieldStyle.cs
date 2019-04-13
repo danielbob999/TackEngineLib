@@ -12,6 +12,7 @@ namespace TackEngineLib.GUI
     {
         private float m_FontSize;
         private Colour4b m_FontColour;
+        private int m_FontFamilyId;
         private VerticalAlignment m_VerticalAlignment;
         private HorizontalAlignment m_HorizontalAlignment;
         private Colour4b m_Colour;
@@ -49,6 +50,12 @@ namespace TackEngineLib.GUI
             {
                 m_SpriteTexture = value;
             }
+        }
+
+        public int FontFamilyId
+        {
+            get { return m_FontFamilyId; }
+            set { m_FontFamilyId = value; }
         }
 
         /// <summary>
@@ -97,7 +104,7 @@ namespace TackEngineLib.GUI
             {
                 BackgroundColour = m_Colour,
                 FontColour = m_FontColour,
-                FontFamilyId = 0,
+                FontFamilyId = m_FontFamilyId,
                 FontSize = m_FontSize,
                 SpriteTexture = m_SpriteTexture,
                 HorizontalAlignment = m_HorizontalAlignment,

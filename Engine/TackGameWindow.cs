@@ -67,6 +67,8 @@ namespace TackEngineLib.Engine
 
             Sprite.LoadDefaultSprite();
 
+            TackGUI.OnStart();
+
             m_TackConsole = new TackConsole();
             m_TackConsole.OnStart();
 
@@ -95,8 +97,6 @@ namespace TackEngineLib.Engine
 
             // All OnStart here
             TackInput.OnStart();
-
-            TackGUI.OnStart();
 
             //testTex = Sprite.LoadFromFile("Resources/DabEmoji.bmp");
             //testTex.Create();

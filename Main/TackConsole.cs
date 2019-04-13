@@ -9,6 +9,7 @@ using TackEngineLib.Input;
 using TackEngineLib.Engine;
 using TackEngineLib.GUI;
 using TackEngineLib.Main;
+using System.IO;
 
 namespace TackEngineLib.Main
 {
@@ -44,6 +45,7 @@ namespace TackEngineLib.Main
             m_InputFieldStyle.SpriteTexture = Sprite.DefaultSprite;
             m_InputFieldStyle.FontSize = 9f;
             m_InputFieldStyle.VerticalAlignment = VerticalAlignment.Middle;
+            m_InputFieldStyle.FontFamilyId = TackGUI.LoadFontFromFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\cour.ttf");
 
             m_InputField.Shape = new RectangleShape(0, (TackEngine.ScreenHeight * 0.70f), TackEngine.ScreenWidth, 30);
         }
@@ -59,9 +61,9 @@ namespace TackEngineLib.Main
             {
                 BackgroundColour = new Colour4b(0, 0, 0, 175),
                 FontColour = new Colour4b(0, 255, 0, 255),
-                FontFamilyId = 0,
+                FontFamilyId = TackGUI.GetFontFamilyId("Courier New"),
                 FontSize = 9f,
-                VerticalAlignment = VerticalAlignment.Bottom
+                VerticalAlignment = VerticalAlignment.Bottom,
             };
 
             m_CaretBoxStyle = new BoxStyle()
