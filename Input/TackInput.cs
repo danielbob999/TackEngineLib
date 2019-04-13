@@ -33,9 +33,7 @@ namespace TackEngineLib.Input
 
         private static bool[] locker_m_MouseKeysDownPerFrame;
 
-        // An input buffer that is used to get characters from key presses when
-        //      a TackGUI.InputField is being used
-        private static List<char> m_InputBuffer = new List<char>();
+        private static List<KeyboardKey> m_InputBuffer = new List<KeyboardKey>();
 
         private static bool m_InputBufferCapsLock = false;
 
@@ -53,6 +51,11 @@ namespace TackEngineLib.Input
                 m_GUIInputRequired = value;
                 //TackConsole.EngineLog(EngineLogType.Message, string.Format("{0} GUI input", m_GUIInputRequired ? "Enabled" : "Disabled"));
             }
+        }
+
+        internal static bool InputBufferCapsLock
+        {
+            get { return m_InputBufferCapsLock; }
         }
 
         internal static void OnStart()
@@ -108,6 +111,12 @@ namespace TackEngineLib.Input
 
             if (m_GUIInputRequired)
             {
+                m_InputBuffer.Add(_key);
+
+                if (_key == KeyboardKey.CapsLock)
+                    m_InputBufferCapsLock = !m_InputBufferCapsLock;
+
+                /*
                 if (FindCharacterFromKeyCode(_key) == 8)
                 {
                     if (m_InputBuffer.Count > 0)
@@ -116,7 +125,7 @@ namespace TackEngineLib.Input
                 else if (FindCharacterFromKeyCode(_key) != 0)
                 {
                     m_InputBuffer.Add((char)FindCharacterFromKeyCode(_key));
-                }
+                }*/
             }
 
             if (!locker_m_KeysDownPerFrame[(int)_key]) // if the down key isn't locked
@@ -318,9 +327,27 @@ namespace TackEngineLib.Input
         /// <summary>
         /// Clears the GUI input buffer
         /// </summary>
-        public static void ClearGUIInputBuffer()
+        public static void ClearInputBuffer()
         {
             m_InputBuffer.Clear();
+        }
+
+        /// <summary>
+        /// Gets the first element in the input buffer, then removes it
+        /// </summary>
+        /// <param name="a_outKey"></param>
+        /// <returns></returns>
+        public static bool GetKeyFromInputBuffer(out KeyboardKey a_outKey)
+        {
+            if (m_InputBuffer.Count == 0)
+            {
+                a_outKey = KeyboardKey.A;
+                return false;
+            }
+
+            a_outKey = m_InputBuffer[0];
+            m_InputBuffer.RemoveAt(0);
+            return true;
         }
     }
 }

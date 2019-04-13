@@ -50,6 +50,11 @@ namespace TackEngineLib.Main
             m_InputField.Shape = new RectangleShape(0, (TackEngine.ScreenHeight * 0.70f), TackEngine.ScreenWidth, 30);
         }
 
+        private void M_InputField_SubmitInput(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         internal void OnStart()
         {
             Stopwatch timer = new Stopwatch();
@@ -92,6 +97,8 @@ namespace TackEngineLib.Main
                 string consoleInput = m_InputString;
 
                 EngineLog(EngineLogType.Message, "Input: " + consoleInput);
+
+                // Process command
             }
 
             if (TackInput.MouseButtonDown(MouseButtonKey.Left))
@@ -107,6 +114,8 @@ namespace TackEngineLib.Main
                     m_InputField.ReceivingInput = false;
                 }
             }
+
+            m_InputString = m_InputField.InputString;
         }
 
         internal void OnGUIRender()
@@ -123,9 +132,10 @@ namespace TackEngineLib.Main
 
                 TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, (TackEngine.ScreenHeight * 0.70f)), consString, m_ConsoleUIStyle);
 
+                /*
                 if (m_InputField.ReceivingInput)
                     m_InputString = m_InputField.GetInput();
-
+                    */
                 m_InputField.Render(m_InputString, m_InputFieldStyle);
             }
         }
