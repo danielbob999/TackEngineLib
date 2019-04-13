@@ -51,7 +51,7 @@ namespace TackEngineLib.Input
             set
             {
                 m_GUIInputRequired = value;
-                TackConsole.EngineLog(EngineLogType.Message, string.Format("{0} GUI input", m_GUIInputRequired ? "Enabled" : "Disabled"));
+                //TackConsole.EngineLog(EngineLogType.Message, string.Format("{0} GUI input", m_GUIInputRequired ? "Enabled" : "Disabled"));
             }
         }
 
@@ -88,6 +88,7 @@ namespace TackEngineLib.Input
 
         internal static void KeyDownEvent(KeyboardKey _key)
         {
+            /*
             // Add character to the input buffer.
             // NOTE: Don't register the key as being pressed
             if (m_GUIInputRequired)
@@ -103,6 +104,19 @@ namespace TackEngineLib.Input
                     m_InputBuffer.Add((char)FindCharacterFromKeyCode(_key));
 
                 return;
+            }*/
+
+            if (m_GUIInputRequired)
+            {
+                if (FindCharacterFromKeyCode(_key) == 8)
+                {
+                    if (m_InputBuffer.Count > 0)
+                        m_InputBuffer.RemoveAt(m_InputBuffer.Count - 1);
+                }
+                else if (FindCharacterFromKeyCode(_key) != 0)
+                {
+                    m_InputBuffer.Add((char)FindCharacterFromKeyCode(_key));
+                }
             }
 
             if (!locker_m_KeysDownPerFrame[(int)_key]) // if the down key isn't locked
@@ -149,29 +163,59 @@ namespace TackEngineLib.Input
 
         public static bool KeyDown(KeyboardKey _keyCode)
         {
-            /*
-            if (m_LastFramesKeys[_keyCode] == false && keys[_keyCode] == true)
-                return true;
-
-            return false;*/
+            if (GUIInputRequired)
+                return false;
 
             return m_KeysDownPerFrame[(int)_keyCode];
         }
 
+        /// <summary>
+        /// Returns true if the specified KeyboardKey was depressed during the last frame.
+        ///     Should only be used when the a GUI InputField is getting input
+        /// </summary>
+        /// <param name="a_keyCode"></param>
+        /// <returns></returns>
+        internal static bool InputActiveKeyDown(KeyboardKey a_keyCode)
+        {
+            return m_KeysDownPerFrame[(int)a_keyCode];
+        }
+
         public static bool KeyHeld(KeyboardKey _keyCode)
         {
+            if (GUIInputRequired)
+                return false;
+
             return m_KeysHeld[(int)_keyCode];
+        }
+
+        /// <summary>
+        /// Returns true if the specified KeyboardKey was held during the last frame.
+        ///     Should only be used when the a GUI InputField is getting input
+        /// </summary>
+        /// <param name="a_keyCode"></param>
+        /// <returns></returns>
+        internal static bool InputActiveKeyHeld(KeyboardKey a_keyCode)
+        { 
+            return m_KeysHeld[(int)a_keyCode];
         }
 
         public static bool KeyUp(KeyboardKey _keyCode)
         {
-            /*
-            if (m_LastFramesKeys[_keyCode] == true && keys[_keyCode] == false)
-                return true;
-
-            return false;*/
+            if (GUIInputRequired)
+                return false;
 
             return m_KeysUpPerFrame[(int)_keyCode];
+        }
+
+        /// <summary>
+        /// Returns true if the specified KeyboardKey was lifted during the last frame.
+        ///     Should only be used when the a GUI InputField is getting input
+        /// </summary>
+        /// <param name="a_keyCode"></param>
+        /// <returns></returns>
+        internal static bool InputActiveKeyUp(KeyboardKey a_keyCode)
+        {
+            return m_KeysUpPerFrame[(int)a_keyCode];
         }
 
         public static bool MouseButtonDown(MouseButtonKey _key)
@@ -236,8 +280,8 @@ namespace TackEngineLib.Input
         /// Gets a character based on a KeyboardKey code.
         /// </summary>
         /// <param name="_key"></param>
-        /// <returns>Returns and ASCII keycode that represents the letter than has been pressed.
-        /// - Returns -1 if backspace has been pressed
+        /// <returns>Returns an ASCII keycode that represents the letter than has been pressed.
+        /// - Returns 8 if backspace has been pressed
         /// - Returns 0 if useless button was pressed (Caps lock, shift, ect)
         /// </returns>
         internal static int FindCharacterFromKeyCode(KeyboardKey _key)

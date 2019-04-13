@@ -44,7 +44,7 @@ namespace TackEngineLib.Main
             m_InputFieldStyle.FontSize = 9f;
             m_InputFieldStyle.VerticalAlignment = VerticalAlignment.Middle;
 
-            m_InputField.Shape = new RectangleShape(0, (TackEngine.ScreenHeight - 30), TackEngine.ScreenWidth, 30);
+            m_InputField.Shape = new RectangleShape(0, (TackEngine.ScreenHeight * 0.66f) - 30, TackEngine.ScreenWidth, 30);
         }
 
         internal void OnStart()
@@ -60,6 +60,7 @@ namespace TackEngineLib.Main
                 FontColour = new Colour4b(0, 255, 0, 255),
                 FontFamilyId = 0,
                 FontSize = 9f,
+                VerticalAlignment = VerticalAlignment.Bottom
             };
 
             EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
@@ -69,26 +70,30 @@ namespace TackEngineLib.Main
         internal void OnUpdate()
         {
             // Check to see if user wants to display the TackConsole GUI
-            if (TackInput.KeyDown(m_ActivationKey))
+            if (TackInput.InputActiveKeyDown(m_ActivationKey))
             {
                 m_ConsoleGUIActive = !m_ConsoleGUIActive;
             }
 
             // Check to see if user has submitted a command [ENTER]
-            if (TackInput.KeyDown(KeyboardKey.Enter) && m_ConsoleGUIActive)
+            if (TackInput.InputActiveKeyDown(KeyboardKey.Enter) && m_ConsoleGUIActive)
             {
+                //Console.WriteLine("Hello");
+                string consoleInput = m_InputString;
+
+                EngineLog(EngineLogType.Message, "Input: " + consoleInput);
             }
 
             if (TackInput.MouseButtonDown(MouseButtonKey.Left))
             {
                 if (m_InputField.IsMouseInBounds())
                 {
-                    Console.WriteLine("Enabled TackConsole InputField input");
+                    //Console.WriteLine("Enabled TackConsole InputField input");
                     m_InputField.ReceivingInput = true;
                 }
                 else
                 {
-                    Console.WriteLine("Disabled TackConsole InputField input");
+                    //Console.WriteLine("Disabled TackConsole InputField input");
                     m_InputField.ReceivingInput = false;
                 }
             }
@@ -106,7 +111,7 @@ namespace TackEngineLib.Main
                     consString += str + "\n";
                 }
 
-                TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, TackEngine.ScreenHeight - 30), consString, m_ConsoleUIStyle);
+                TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, (TackEngine.ScreenHeight * 0.98f) - 30), consString, m_ConsoleUIStyle);
 
                 if (m_InputField.ReceivingInput)
                     m_InputString = m_InputField.GetInput();
@@ -125,7 +130,7 @@ namespace TackEngineLib.Main
             if (string.IsNullOrEmpty(_msg))
                 return;
 
-            ActiveInstance.m_Messages.Add(string.Format("{0}:{1:00}:{2:00}:{3:000} {4}",
+            ActiveInstance.m_Messages.Add(string.Format("{0}:{1:00}:{2:00}.{3:000} {4}",
                 DateTime.Now.Hour,
                 DateTime.Now.Minute,
                 DateTime.Now.Second,
@@ -137,7 +142,7 @@ namespace TackEngineLib.Main
         {
             if (ActiveInstance == null)
             {
-                MessageBacklog.Add(string.Format("{0}:{1:00}:{2:00}:{3:000} [{4}] {5}",
+                MessageBacklog.Add(string.Format("{0}:{1:00}:{2:00}.{3:000} [{4}] {5}",
                 DateTime.Now.Hour,
                 DateTime.Now.Minute,
                 DateTime.Now.Second,
@@ -149,19 +154,22 @@ namespace TackEngineLib.Main
 
             if (_type == EngineLogType.ModuleStart)
             {
-                ActiveInstance.m_Messages.Add(string.Format("{0}:{1:00}:{2:00}:{3:000} [{4}] {5}. ({6}ms)",
+                StackTrace trace = new StackTrace();
+
+                ActiveInstance.m_Messages.Add(string.Format("{0}:{1:00}:{2:00}.{3:000} [{4}] {5}.{6} ({7}ms)",
                     DateTime.Now.Hour,
                     DateTime.Now.Minute,
                     DateTime.Now.Second,
                     DateTime.Now.Millisecond,
                     _type.ToString(),
-                    _msg,
+                    trace.GetFrame(1).GetMethod().DeclaringType.Name,
+                    trace.GetFrame(1).GetMethod().Name,
                     _params[0].ToString()));
                 return;
             }
 
 
-            ActiveInstance.m_Messages.Add(string.Format("{0}:{1:00}:{2:00}:{3:000} [{4}] {5}",
+            ActiveInstance.m_Messages.Add(string.Format("{0}:{1:00}:{2:00}.{3:000} [{4}] {5}",
                 DateTime.Now.Hour,
                 DateTime.Now.Minute,
                 DateTime.Now.Second,
@@ -169,7 +177,7 @@ namespace TackEngineLib.Main
                 _type.ToString(),
                 _msg));
 
-            Console.WriteLine(string.Format("{0}:{1:00}:{2:00}:{3:000} [{4}] {5}",
+            Console.WriteLine(string.Format("{0}:{1:00}:{2:00}.{3:000} [{4}] {5}",
                 DateTime.Now.Hour,
                 DateTime.Now.Minute,
                 DateTime.Now.Second,
