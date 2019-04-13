@@ -463,5 +463,20 @@ namespace TackEngineLib.GUI
             TackConsole.EngineLog(EngineLogType.Error, string.Format("No FontFamily with name: {0} was found in the font collection", _familyName));
             return -1;
         }
+
+        /// <summary>
+        /// Gets the FontFamily at a specified index
+        /// </summary>
+        /// <param name="a_fontId">The index of the FontFamily in the collection</param>
+        /// <returns></returns>
+        public static FontFamily GetFontFamily(int a_fontId)
+        {
+            if (a_fontId < fontCollection.Families.Length)
+            {
+                return fontCollection.Families[a_fontId];
+            }
+
+            return fontCollection.Families[0];
+        }
     }
 }

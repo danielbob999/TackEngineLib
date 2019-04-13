@@ -28,6 +28,7 @@ namespace TackEngineLib.Main
         private TextAreaStyle m_ConsoleUIStyle;
         private InputField m_InputField;
         private InputFieldStyle m_InputFieldStyle;
+        private BoxStyle m_CaretBoxStyle;
         private string m_InputString;
 
         internal TackConsole()
@@ -44,7 +45,7 @@ namespace TackEngineLib.Main
             m_InputFieldStyle.FontSize = 9f;
             m_InputFieldStyle.VerticalAlignment = VerticalAlignment.Middle;
 
-            m_InputField.Shape = new RectangleShape(0, (TackEngine.ScreenHeight * 0.66f) - 30, TackEngine.ScreenWidth, 30);
+            m_InputField.Shape = new RectangleShape(0, (TackEngine.ScreenHeight * 0.70f), TackEngine.ScreenWidth, 30);
         }
 
         internal void OnStart()
@@ -63,12 +64,19 @@ namespace TackEngineLib.Main
                 VerticalAlignment = VerticalAlignment.Bottom
             };
 
+            m_CaretBoxStyle = new BoxStyle()
+            {
+                Colour = new Colour4b(255, 0, 0, 255),
+            };
+
             EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
             timer.Stop();
         }
 
         internal void OnUpdate()
         {
+            m_InputField.Update();
+
             // Check to see if user wants to display the TackConsole GUI
             if (TackInput.InputActiveKeyDown(m_ActivationKey))
             {
@@ -111,7 +119,7 @@ namespace TackEngineLib.Main
                     consString += str + "\n";
                 }
 
-                TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, (TackEngine.ScreenHeight * 0.98f) - 30), consString, m_ConsoleUIStyle);
+                TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, (TackEngine.ScreenHeight * 0.70f)), consString, m_ConsoleUIStyle);
 
                 if (m_InputField.ReceivingInput)
                     m_InputString = m_InputField.GetInput();
