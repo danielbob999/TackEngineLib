@@ -249,7 +249,7 @@ namespace TackEngineLib.Main
                         if (methodAttribute.GetType() == typeof(CommandMethod))
                         {
                             //Console.WriteLine("Class: {0}, Method: {1}, Attribute: {3}", classType.Name, methodInfo.Name, methodAttribute.GetType().Name);
-                            m_ValidCommands.Add(new TackCommand((classType.Name.ToLower() + "." + methodInfo.Name.ToLower()), (EngineDelegates.CommandDelegate)methodInfo.CreateDelegate(typeof(EngineDelegates.CommandDelegate)), ((CommandMethod)methodAttribute).GetArgList().ToList()));
+                            m_ValidCommands.Add(new TackCommand(((CommandMethod)methodAttribute).GetCallString(), (EngineDelegates.CommandDelegate)methodInfo.CreateDelegate(typeof(EngineDelegates.CommandDelegate)), ((CommandMethod)methodAttribute).GetArgList().ToList()));
                             i++;
                         }
                     }
@@ -277,7 +277,7 @@ namespace TackEngineLib.Main
             m_InputField.InputString = "";
         }
 
-        [CommandMethod("", "<string:commandName>")]
+        [CommandMethod("help", "", "<string:commandName>")]
         public static void Help(string[] a_args)
         {
             if (a_args.Length == 1)
@@ -297,25 +297,28 @@ namespace TackEngineLib.Main
 
                 foreach (TackCommand command in ActiveInstance.m_ValidCommands)
                 {
-                    if (a_args[0] == command.CommandCallString)
+                    if (a_args[1] == command.CommandCallString)
                     {
                         com = command;
                     }
                 }
 
-                EngineLog(EngineLogType.Message, com.CommandCallString + ":");
-
-                foreach (string overloadArgs in com.CommandArgList)
+                if (com != null)
                 {
-                    EngineLog(EngineLogType.Message, "     " + overloadArgs);
+                    EngineLog(EngineLogType.Message, com.CommandCallString + ":");
+
+                    foreach (string overloadArgs in com.CommandArgList)
+                    {
+                        EngineLog(EngineLogType.Message, "     " + overloadArgs);
+                    }
                 }
 
                 return;
             }
         }
 
-        [CommandMethod("<int>", "<float> <int>")]
-        private void TestMeth(string[] a_args)
+        [CommandMethod("testmeth", "<int>", "<float> <int>")]
+        public static void TestMeth(string[] a_args)
         {
 
         }
