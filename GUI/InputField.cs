@@ -20,7 +20,6 @@ namespace TackEngineLib.GUI
         private int m_caretDisplaySpeed;
         private bool m_displayCaret;
         private Graphics m_stringMeasurer;
-        private List<TackCommand> m_ValidCommands = new List<TackCommand>();
 
         public event EventHandler SubmitInput;
 
@@ -53,6 +52,7 @@ namespace TackEngineLib.GUI
         public string InputString
         {
             get { return m_InputString; }
+            set { m_InputString = value; }
         }
 
         /// <summary>
@@ -140,7 +140,10 @@ namespace TackEngineLib.GUI
 
             if (Input.TackInput.InputActiveKeyDown(KeyboardKey.Enter))
             {
-                SubmitInput.Invoke(this, EventArgs.Empty);
+                if (SubmitInput != null)
+                {
+                    SubmitInput.Invoke(this, EventArgs.Empty);
+                }
             }
         }
 
@@ -148,16 +151,16 @@ namespace TackEngineLib.GUI
         /// Renders this InputField to the screen
         /// </summary>
         /// <param name="_value">The string to be rendered in this InputField</param>
-        public void Render(string _value, InputFieldStyle _style = default(InputFieldStyle))
+        public void Render(InputFieldStyle _style = default(InputFieldStyle))
         {
-            if (!string.IsNullOrEmpty(_value))
-                m_caretPosition = (_value.Length - 1);
+            if (!string.IsNullOrEmpty(m_InputString))
+                m_caretPosition = (m_InputString.Length - 1);
 
             if (_style == null)
                 _style = new InputFieldStyle();
 
             TackGUI.Box(m_Shape, _style.GetBoxStyle());
-            TackGUI.TextArea(m_Shape, _value, _style.GetTextStyle());
+            TackGUI.TextArea(m_Shape, m_InputString, _style.GetTextStyle());
 
             if (m_ReceivingInput)
             {
@@ -169,14 +172,21 @@ namespace TackEngineLib.GUI
 
                 if (m_displayCaret)
                 {
-                    if (!string.IsNullOrEmpty(_value))
+                    if (!string.IsNullOrEmpty(m_InputString))
                     {
-                        m_caretPosition = _value.Length;
-                        string selectedInputStr = _value.Substring(0, m_caretPosition);
+                        m_caretPosition = m_InputString.Length;
+                        string selectedInputStr = m_InputString.Substring(0, m_caretPosition);
                         SizeF stringLengthPx = m_stringMeasurer.MeasureString(selectedInputStr, new Font(TackGUI.GetFontFamily(_style.FontFamilyId), _style.FontSize));
 
                         int totalPadding = (int)(m_Shape.Height - stringLengthPx.Height);
                         TackGUI.Box(new RectangleShape(stringLengthPx.Width - 3.0f, (TackEngine.ScreenHeight * 0.70f) + (totalPadding / 2), 1, (stringLengthPx.Height)), m_CaretStyle);
+                    }
+                    else
+                    {
+                        SizeF stringLengthPx = m_stringMeasurer.MeasureString("l", new Font(TackGUI.GetFontFamily(_style.FontFamilyId), _style.FontSize));
+
+                        int totalPadding = (int)(m_Shape.Height - stringLengthPx.Height);
+                        TackGUI.Box(new RectangleShape(3.0f, (TackEngine.ScreenHeight * 0.70f) + (totalPadding / 2), 1, (stringLengthPx.Height)), m_CaretStyle);
                     }
                 }
 
@@ -218,11 +228,6 @@ namespace TackEngineLib.GUI
             }
 
             return false;
-        }
-
-        private void ProcessCommand(object sender, EventArgs e)
-        {
-
         }
     }
 }

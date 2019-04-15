@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 
 using TackEngineLib.Input;
 using TackEngineLib.Engine;
 using TackEngineLib.GUI;
 using TackEngineLib.Main;
-using System.IO;
 
 namespace TackEngineLib.Main
 {
@@ -25,6 +26,7 @@ namespace TackEngineLib.Main
         private KeyboardKey m_ActivationKey;
 
         private List<string> m_Messages = new List<string>();
+        private List<TackCommand> m_ValidCommands = new List<TackCommand>();
 
         private TextAreaStyle m_ConsoleUIStyle;
         private InputField m_InputField;
@@ -40,14 +42,14 @@ namespace TackEngineLib.Main
             m_InputField = new InputField();
             m_InputFieldStyle = new InputFieldStyle();
 
+            m_InputField.SubmitInput += ProcessCommand;
+
             m_InputFieldStyle.BackgroundColour = new Colour4b(200, 200, 200, 255);
             m_InputFieldStyle.FontColour = new Colour4b(0, 0, 0, 255);
             m_InputFieldStyle.SpriteTexture = Sprite.DefaultSprite;
             m_InputFieldStyle.FontSize = 10f;
             m_InputFieldStyle.VerticalAlignment = VerticalAlignment.Middle;
             m_InputFieldStyle.FontFamilyId = TackGUI.LoadFontFromFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\cour.ttf");
-
-            m_InputField.Shape = new RectangleShape(0, (TackEngine.ScreenHeight * 0.70f), TackEngine.ScreenWidth, 30);
         }
 
         internal void OnStart()
@@ -63,8 +65,9 @@ namespace TackEngineLib.Main
                 FontColour = new Colour4b(0, 255, 0, 255),
                 FontFamilyId = TackGUI.GetFontFamilyId("Courier New"),
                 FontSize = 10f,
-                VerticalAlignment = VerticalAlignment.Bottom,
-                ScrollPosition = 0
+                VerticalAlignment = VerticalAlignment.Middle,
+                ScrollPosition = 0,
+                Scrollable = false
             };
 
             m_CaretBoxStyle = new BoxStyle()
@@ -72,29 +75,21 @@ namespace TackEngineLib.Main
                 Colour = new Colour4b(255, 0, 0, 255),
             };
 
+            GetCommandsFromAssembly(typeof(TackEngine).Assembly.FullName);
+
             EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
             timer.Stop();
         }
 
         internal void OnUpdate()
         {
+            m_InputField.Shape = new RectangleShape(0, (TackEngine.ScreenHeight * 0.7f), TackEngine.ScreenWidth, 30);
             m_InputField.Update();
 
             // Check to see if user wants to display the TackConsole GUI
             if (TackInput.InputActiveKeyDown(m_ActivationKey))
             {
                 m_ConsoleGUIActive = !m_ConsoleGUIActive;
-            }
-
-            // Check to see if user has submitted a command [ENTER]
-            if (TackInput.InputActiveKeyDown(KeyboardKey.Enter) && m_ConsoleGUIActive)
-            {
-                //Console.WriteLine("Hello");
-                string consoleInput = m_InputString;
-
-                EngineLog(EngineLogType.Message, "Input: " + consoleInput);
-
-                // Process command
             }
 
             if (TackInput.MouseButtonDown(MouseButtonKey.Left))
@@ -111,9 +106,16 @@ namespace TackEngineLib.Main
                 }
             }
 
-            if (TackInput.KeyHeld(KeyboardKey.P))
+            if (TackInput.KeyDown(KeyboardKey.PageUp))
             {
-                m_ConsoleUIStyle.ScrollPosition += 0.006f;
+                if (m_ConsoleUIStyle.ScrollPosition < m_Messages.Count - 1)
+                    m_ConsoleUIStyle.ScrollPosition += 1.0f;
+            }
+
+            if (TackInput.KeyDown(KeyboardKey.PageDown))
+            {
+                if (m_ConsoleUIStyle.ScrollPosition > 0)
+                    m_ConsoleUIStyle.ScrollPosition -= 1.0f;
             }
 
             m_InputString = m_InputField.InputString;
@@ -124,20 +126,33 @@ namespace TackEngineLib.Main
             // Only display GUI when m_ConsoleGUIActive=true
             if (m_ConsoleGUIActive)
             {
-                string consString = "";
+                int nextPosition = (int)(TackEngine.ScreenHeight * 0.70f) - 14;
 
-                foreach (string str in m_Messages)
+                for (int i = m_Messages.Count - (1 + (int)m_ConsoleUIStyle.ScrollPosition); i > 0; i--)
                 {
-                    consString += str + "\n";
+                    TackGUI.TextArea(new Main.RectangleShape(0, nextPosition, TackEngine.ScreenWidth, 14), m_Messages[i], m_ConsoleUIStyle);
+
+                    nextPosition -= 14;
                 }
 
-                TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, (TackEngine.ScreenHeight * 0.70f)), consString, m_ConsoleUIStyle);
+                while (nextPosition > -14)
+                {
+                    TackGUI.Box(new RectangleShape(0, nextPosition, TackEngine.ScreenWidth, 14), new BoxStyle() { Colour = new Colour4b(0, 0, 0, 190) });
+                    nextPosition -= 14;
+                }
 
                 /*
-                if (m_InputField.ReceivingInput)
-                    m_InputString = m_InputField.GetInput();
-                    */
-                m_InputField.Render(m_InputString, m_InputFieldStyle);
+                for (int i = m_Messages.Count - 1; i > m_Messages.Count - (1 + m_ConsoleUIStyle.ScrollPosition); i--)
+                {
+                    //Console.WriteLine("Rendering message[" + i + "] at PosY: " + nextPosition);
+                    TackGUI.TextArea(new Main.RectangleShape(0, nextPosition, TackEngine.ScreenWidth, 14), m_Messages[i], m_ConsoleUIStyle);
+
+                    nextPosition -= 14;
+                }*/
+
+                //TackGUI.TextArea(new Main.RectangleShape(0, nextPosition - 14, TackEngine.ScreenWidth, 14), m_Messages[m_Messages.Count - 1], m_ConsoleUIStyle);
+
+                m_InputField.Render(m_InputFieldStyle);
             }
         }
 
@@ -205,6 +220,104 @@ namespace TackEngineLib.Main
                 DateTime.Now.Millisecond,
                 _type.ToString(),
                 _msg));
+        }
+
+        private void GetCommandsFromAssembly(string a_assemblyName)
+        {
+            Assembly assembly;
+
+            try
+            {
+                assembly = Assembly.Load(a_assemblyName);
+            }
+            catch (Exception e)
+            {
+                EngineLog(EngineLogType.Error, "Failed to load assembly with name: " + a_assemblyName);
+                EngineLog(EngineLogType.Error, e.Message);
+                return;
+            }
+
+            int i = 0;
+
+            EngineLog(EngineLogType.Message, "Looking for ConsoleMethods in Assembly: " + assembly.FullName);
+            foreach (Type classType in assembly.GetTypes())
+            {
+                foreach (MethodInfo methodInfo in classType.GetMethods())
+                {
+                    foreach (Attribute methodAttribute in methodInfo.GetCustomAttributes())
+                    {
+                        if (methodAttribute.GetType() == typeof(CommandMethod))
+                        {
+                            //Console.WriteLine("Class: {0}, Method: {1}, Attribute: {3}", classType.Name, methodInfo.Name, methodAttribute.GetType().Name);
+                            m_ValidCommands.Add(new TackCommand((classType.Name.ToLower() + "." + methodInfo.Name.ToLower()), (EngineDelegates.CommandDelegate)methodInfo.CreateDelegate(typeof(EngineDelegates.CommandDelegate)), ((CommandMethod)methodAttribute).GetArgList().ToList()));
+                            i++;
+                        }
+                    }
+                }
+            }
+
+            EngineLog(EngineLogType.Message, "Found " + i + " valid CommandMethods in Assembly: " + assembly.FullName);
+        }
+
+        private void ProcessCommand(object sender, EventArgs e)
+        {
+            string commandInput = m_InputString;
+            EngineLog(EngineLogType.Message, ">" + commandInput);
+
+            string[] splitCommandBySpaces = commandInput.Split(' ');
+
+            foreach (TackCommand command in m_ValidCommands)
+            {
+                if (splitCommandBySpaces[0] == command.CommandCallString)
+                {
+                    command.CommandDelegate.Invoke(splitCommandBySpaces);
+                }
+            }
+
+            m_InputField.InputString = "";
+        }
+
+        [CommandMethod("", "<string:commandName>")]
+        public static void Help(string[] a_args)
+        {
+            if (a_args.Length == 1)
+            {
+                EngineLog(EngineLogType.Message, "Commands:");
+
+                foreach (TackCommand command in ActiveInstance.m_ValidCommands)
+                {
+                    Console.WriteLine(command.CommandCallString);
+                    EngineLog(EngineLogType.Message, "     " + command.CommandCallString);
+                }
+            }
+
+            if (a_args.Length == 2)
+            {
+                TackCommand com = null;
+
+                foreach (TackCommand command in ActiveInstance.m_ValidCommands)
+                {
+                    if (a_args[0] == command.CommandCallString)
+                    {
+                        com = command;
+                    }
+                }
+
+                EngineLog(EngineLogType.Message, com.CommandCallString + ":");
+
+                foreach (string overloadArgs in com.CommandArgList)
+                {
+                    EngineLog(EngineLogType.Message, "     " + overloadArgs);
+                }
+
+                return;
+            }
+        }
+
+        [CommandMethod("<int>", "<float> <int>")]
+        private void TestMeth(string[] a_args)
+        {
+
         }
     }
 }

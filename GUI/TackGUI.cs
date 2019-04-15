@@ -245,34 +245,42 @@ namespace TackEngineLib.GUI
             // Render a box at the back of the TextArea
             Box(_rect, boxStyle);
 
-            Graphics graphics;
+            Graphics graphics = Graphics.FromImage(new Bitmap(1, 1));
             Font myFont = new Font(fontCollection.Families[_style.FontFamilyId], _style.FontSize, FontStyle.Regular);
             Bitmap cBmp;
+            SizeF stringSize;
 
             if (_style.Scrollable)
             {
-                graphics = Graphics.FromImage(new Bitmap(1, 1));
-                SizeF size = graphics.MeasureString(_text, myFont);
+                stringSize = graphics.MeasureString(_text, myFont);
 
                 if (string.IsNullOrEmpty(_text))
-                    size = new SizeF(1, 1);
+                    stringSize = new SizeF(1, 1);
 
-                cBmp = new Bitmap((int)_rect.Width, (int)size.Height);
+                cBmp = new Bitmap((int)_rect.Width, (int)stringSize.Height);
             }
             else
             {
                 Vector2i size = new Vector2i((int)(_rect.Width), (int)(_rect.Height));
+                stringSize = graphics.MeasureString(_text, myFont);
 
                 cBmp = new Bitmap((int)_rect.Width, (int)_rect.Height);
-
-                _style.ScrollPosition = 0;
             }
 
             // Generate Graphics Object
             graphics = Graphics.FromImage(cBmp);
 
             //Get the perfect Image-Size so that Image-Size = String-Size
-            RectangleF rect = new RectangleF(0, 0, cBmp.Width, cBmp.Height);
+            RectangleF rect = new RectangleF(1, 1, 1, 1);
+
+            if (_style.VerticalAlignment == VerticalAlignment.Top || _style.VerticalAlignment == VerticalAlignment.Middle)
+                rect = new RectangleF(0, 0, cBmp.Width, cBmp.Height);
+
+            if (_style.VerticalAlignment == VerticalAlignment.Bottom)
+            {
+                float leftOver = stringSize.Height - _rect.Height;
+                rect = new RectangleF(0, 0, cBmp.Width, stringSize.Height);
+            }
 
             //Use this to become better Text-Quality on Bitmap.
             graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
@@ -322,8 +330,6 @@ namespace TackEngineLib.GUI
                     format.LineAlignment = StringAlignment.Near;
                     break;
             }
-
-
 
             //Here we draw the string on the Bitmap
             Color customColor = Color.FromArgb(_style.FontColour.A, _style.FontColour.R, _style.FontColour.G, _style.FontColour.B);
@@ -399,8 +405,8 @@ namespace TackEngineLib.GUI
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
             // set the texture wrapping parameters
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
 
 

@@ -56,6 +56,8 @@
     <Compile Include="GUI\InputFieldStyle.cs" />
     <Compile Include="GUI\TextAreaStyle.cs" />
     <Compile Include="GUI\VerticalAlignment.cs" />
+    <Compile Include="Main\CommandMethod.cs" />
+    <Compile Include="Main\TackCommand.cs" />
     <Compile Include="Math\LinearEquation.cs" />
     <Compile Include="Objects\Components\AudioComponent.cs" />
     <Compile Include="Physics\MovementDirection.cs" />
