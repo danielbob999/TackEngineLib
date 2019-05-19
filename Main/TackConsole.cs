@@ -65,9 +65,9 @@ namespace TackEngineLib.Main
                 FontColour = new Colour4b(0, 255, 0, 255),
                 FontFamilyId = TackGUI.GetFontFamilyId("Courier New"),
                 FontSize = 10f,
-                VerticalAlignment = VerticalAlignment.Middle,
+                VerticalAlignment = VerticalAlignment.Top,
                 ScrollPosition = 0,
-                Scrollable = false
+                Scrollable = true
             };
 
             m_CaretBoxStyle = new BoxStyle()
@@ -127,7 +127,7 @@ namespace TackEngineLib.Main
             if (m_ConsoleGUIActive)
             {
                 int nextPosition = (int)(TackEngine.ScreenHeight * 0.70f) - 14;
-
+                /*
                 for (int i = m_Messages.Count - (1 + (int)m_ConsoleUIStyle.ScrollPosition); i > 0; i--)
                 {
                     TackGUI.TextArea(new Main.RectangleShape(0, nextPosition, TackEngine.ScreenWidth, 14), m_Messages[i], m_ConsoleUIStyle);
@@ -139,18 +139,16 @@ namespace TackEngineLib.Main
                 {
                     TackGUI.Box(new RectangleShape(0, nextPosition, TackEngine.ScreenWidth, 14), new BoxStyle() { Colour = new Colour4b(0, 0, 0, 190) });
                     nextPosition -= 14;
-                }
-
-                /*
-                for (int i = m_Messages.Count - 1; i > m_Messages.Count - (1 + m_ConsoleUIStyle.ScrollPosition); i--)
-                {
-                    //Console.WriteLine("Rendering message[" + i + "] at PosY: " + nextPosition);
-                    TackGUI.TextArea(new Main.RectangleShape(0, nextPosition, TackEngine.ScreenWidth, 14), m_Messages[i], m_ConsoleUIStyle);
-
-                    nextPosition -= 14;
                 }*/
 
-                //TackGUI.TextArea(new Main.RectangleShape(0, nextPosition - 14, TackEngine.ScreenWidth, 14), m_Messages[m_Messages.Count - 1], m_ConsoleUIStyle);
+                string consoleString = "";
+
+                foreach (string str in m_Messages)
+                {
+                    consoleString += (str + "\n");
+                }
+
+                TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, (TackEngine.ScreenHeight * 0.70f)), consoleString, m_ConsoleUIStyle);
 
                 m_InputField.Render(m_InputFieldStyle);
             }
@@ -271,15 +269,31 @@ namespace TackEngineLib.Main
                 if (splitCommandBySpaces[0] == command.CommandCallString)
                 {
                     command.CommandDelegate.Invoke(splitCommandBySpaces);
+
+                    m_InputField.InputString = "";
+                    return;
                 }
             }
 
+            EngineLog(EngineLogType.Message, "No valid TackCommand with call string '" + splitCommandBySpaces[0] + "'");
             m_InputField.InputString = "";
         }
 
         [CommandMethod("help", "", "<string:commandName>")]
         public static void Help(string[] a_args)
         {
+            /* Default TackCommand delegate method checking starts */
+            MethodBase methodBase = MethodBase.GetCurrentMethod();
+            CommandMethod commandMethodObject = methodBase.GetCustomAttribute<CommandMethod>();
+
+            // If this method doesn't have a CommandMethod attribute attached
+            if (commandMethodObject == null)
+            {
+                EngineLog(EngineLogType.Error, "No CommandMethod attribute connected to this delegate method. Exiting...");
+                return;
+            }
+            /* Checking ends */
+
             if (a_args.Length == 1)
             {
                 EngineLog(EngineLogType.Message, "Commands:");
@@ -289,6 +303,8 @@ namespace TackEngineLib.Main
                     Console.WriteLine(command.CommandCallString);
                     EngineLog(EngineLogType.Message, "     " + command.CommandCallString);
                 }
+
+                return;
             }
 
             if (a_args.Length == 2)
@@ -315,12 +331,24 @@ namespace TackEngineLib.Main
 
                 return;
             }
+
+            EngineLog(EngineLogType.Message, "The TackCommand with call string '" + commandMethodObject.GetCallString() +  "' has no definition that takes " + a_args.Length + " arguments");
         }
 
         [CommandMethod("testmeth", "<int>", "<float> <int>")]
         public static void TestMeth(string[] a_args)
         {
+            /* Default TackCommand delegate method checking starts */
+            MethodBase methodBase = MethodBase.GetCurrentMethod();
+            CommandMethod commandMethodObject = methodBase.GetCustomAttribute<CommandMethod>();
 
+            // If this method doesn't have a CommandMethod attribute attached
+            if (commandMethodObject == null)
+            {
+                EngineLog(EngineLogType.Error, "No CommandMethod attribute connected to this delegate method. Exiting...");
+                return;
+            }
+            /* Checking ends */
         }
     }
 }

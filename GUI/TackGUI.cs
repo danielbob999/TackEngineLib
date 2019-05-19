@@ -22,7 +22,7 @@ namespace TackEngineLib.GUI
     /// <summary>
     /// The main class for rendering GUI elements to the screen
     /// </summary>
-    public static class TackGUI
+    internal static class TackGUI
     {
         private static PrivateFontCollection fontCollection;
         private static FontFamily activeFontFamily;
@@ -248,23 +248,21 @@ namespace TackEngineLib.GUI
             Graphics graphics = Graphics.FromImage(new Bitmap(1, 1));
             Font myFont = new Font(fontCollection.Families[_style.FontFamilyId], _style.FontSize, FontStyle.Regular);
             Bitmap cBmp;
-            SizeF stringSize;
+            SizeF stringSize = graphics.MeasureString(_text, myFont);
 
             if (_style.Scrollable)
             {
-                stringSize = graphics.MeasureString(_text, myFont);
 
                 if (string.IsNullOrEmpty(_text))
                     stringSize = new SizeF(1, 1);
 
-                cBmp = new Bitmap((int)_rect.Width, (int)stringSize.Height);
+                cBmp = new Bitmap((int)_rect.Width, (int)stringSize.Height + 40);
+                //Console.WriteLine("Is Scrollable");
             }
             else
             {
-                Vector2i size = new Vector2i((int)(_rect.Width), (int)(_rect.Height));
-                stringSize = graphics.MeasureString(_text, myFont);
-
-                cBmp = new Bitmap((int)_rect.Width, (int)_rect.Height);
+                //Vector2i size = new Vector2i((int)(_rect.Width), (int)(_rect.Height));
+                cBmp = new Bitmap((int)_rect.Width, (int)_rect.Height + 40);
             }
 
             // Generate Graphics Object
@@ -274,13 +272,14 @@ namespace TackEngineLib.GUI
             RectangleF rect = new RectangleF(1, 1, 1, 1);
 
             if (_style.VerticalAlignment == VerticalAlignment.Top || _style.VerticalAlignment == VerticalAlignment.Middle)
-                rect = new RectangleF(0, 0, cBmp.Width, cBmp.Height);
+                rect = new RectangleF(0, 0, cBmp.Width, cBmp.Height + 40);
 
             if (_style.VerticalAlignment == VerticalAlignment.Bottom)
             {
-                float leftOver = stringSize.Height - _rect.Height;
-                rect = new RectangleF(0, 0, cBmp.Width, stringSize.Height);
+                rect = new RectangleF(0, 0, cBmp.Width, cBmp.Height + 40);
             }
+
+            //Console.WriteLine("Render text area. RectHeight: " + _rect.Height + ", stringSizeHeight: " + stringSize.Height);
 
             //Use this to become better Text-Quality on Bitmap.
             graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
@@ -350,16 +349,26 @@ namespace TackEngineLib.GUI
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
+            //_style.ScrollPosition = 0.1f;
+            float upBoi;
+
+            if (stringSize.Height > _rect.Height)
+                upBoi = _rect.Height / stringSize.Height;
+            else
+                upBoi = 1;
+
+            //Console.WriteLine("UpBoi: " + upBoi);
+
             // Tell OpenGL to use the compiled and linker shader program at m_ShaderProgramId
             GL.UseProgram(uiShaderProgram);
 
             float[] vertexData = new float[32]
                 {
                     //       Position (XYZ)                                                                                              Colours (RGB)         TexCoords (XY)
-                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        1f, 1f, 1f,            1.0f, (0 + _style.ScrollPosition),                        //1.0f, 0.0f,
-                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                1f, 1f, 1f,            1.0f, (1 + _style.ScrollPosition),                       //1.0f, 1.0f,
-                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       1f, 1f, 1f,            0.0f, (1 + _style.ScrollPosition),                        //0.0f, 1.0f,
-                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               1f, 1f, 1f,            0.0f, (0 + _style.ScrollPosition)                         //0.0f, 0.0f
+                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        1f, 1f, 1f,            1.0f, (0 + (1 - 1)),                        //1.0f, 0.0f,
+                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                1f, 1f, 1f,            1.0f, (1.5f),                       //1.0f, 1.0f,
+                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       1f, 1f, 1f,            0.0f, (1.5f),                        //0.0f, 1.0f,
+                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               1f, 1f, 1f,            0.0f, (0 + ( 1 - 1))                         //0.0f, 0.0f
                 };
 
             int[] indices = new int[]
@@ -405,8 +414,8 @@ namespace TackEngineLib.GUI
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
             // set the texture wrapping parameters
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);
 
 
 
