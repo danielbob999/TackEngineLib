@@ -45,13 +45,13 @@ namespace TackEngineLib.Physics
 
             shouldLoop = true;
             int targetUR = (int)((double)_targetUpdateRatePerSec);
-            targetUpdateRate = targetUR <= 0 ? 60 : targetUR;
-            StartPhysicsLoop(targetUR <= 0 ? 60 : targetUR);
+            targetUpdateRate = targetUR;
+            StartPhysicsLoop(targetUR);
         }
 
         private static void StartPhysicsLoop(int _ur)
         {
-            TackConsole.EngineLog(EngineLogType.Message, string.Format("Starting TackPhysics on a new thread ({0}) with priority: {1}", Thread.CurrentThread.ManagedThreadId, Thread.CurrentThread.Priority));
+            TackConsole.EngineLog(EngineLogType.Message, string.Format("Starting TackPhysics on a new thread ({0}) with priority: {1}", Thread.CurrentThread.ManagedThreadId, Thread.CurrentThread.Priority)) ;
 
             if (Thread.CurrentThread.ThreadState == System.Threading.ThreadState.Running)
             {
@@ -81,11 +81,11 @@ namespace TackEngineLib.Physics
                 // Do physics calculations here
                 try
                 {
-                    OnUpdateGravityMovement();
+                    GravityMovement();
                 }
                 catch (Exception e)
                 {
-                    TackConsole.EngineLog(EngineLogType.Error, "TackPhysics has encountered a serious problem and has crashed.");
+                    TackConsole.EngineLog(EngineLogType.Error, string.Format("TackPhysics has encountered a serious problem and has crashed."));
                     TackConsole.EngineLog(EngineLogType.Error, string.Format("ErrorCode: {0}, ProblematicMethod: {1}, StackTrace: {2}", e.HResult, e.TargetSite, e.StackTrace));
                     Stop();
                     continue;
@@ -109,7 +109,7 @@ namespace TackEngineLib.Physics
                 updateCounter++;
                 timeTakenLastUpdate = (int)timer.ElapsedMilliseconds;
 
-                m_CycleTimeDelta = timeTakenLastUpdate / (1000 / targetUpdateRate); 
+                m_CycleTimeDelta = timeTakenLastUpdate / (1000 / targetUpdateRate);
             }
 
         }
@@ -122,9 +122,11 @@ namespace TackEngineLib.Physics
         }
 
         /// <summary>
-        /// 
+        /// To be run every Physics update cycle. Adds a gravity effect
+        ///     to all PhysicsComponents where SimulateGravity=true.
+        ///     
         /// </summary>
-        internal static void OnUpdatePhysicsComponent()
+        internal static void GravityMovement()
         {
             TackObject[] tackObjects = TackObject.Get();
 
@@ -138,32 +140,8 @@ namespace TackEngineLib.Physics
                     if (physicsComponent.SimulateGravity)
                     {
                         Vector2f movementVector = new Vector2f(gravityForce.X * m_CycleTimeDelta, gravityForce.Y * m_CycleTimeDelta);
-                        physicsComponent.parentObject.Move(movementVector);
-                    }
-                }
-            }
-        }
 
-        /// <summary>
-        /// To be run every Physics update cycle. Adds a gravity effect
-        ///     to all PhysicsComponents where SimulateGravity=true.
-        ///     
-        /// </summary>
-        internal static void OnUpdateGravityMovement()
-        {
-            TackObject[] tackObjects = TackObject.Get();
-
-            foreach (TackObject obj in tackObjects)
-            {
-                if (!obj.GetComponent<PhysicsComponent>().IsNullComponent())
-                {
-                    PhysicsComponent physicsComponent = obj.GetComponent<PhysicsComponent>();
-
-                    // Update components affected by gravity
-                    if (physicsComponent.SimulateGravity)
-                    {
-                        Vector2f movementVector = new Vector2f(gravityForce.X * m_CycleTimeDelta, gravityForce.Y *m_CycleTimeDelta);
-                        obj.Move(CheckObjectMovementAmount(obj, movementVector));
+                        physicsComponent.Move(CheckObjectMovementAmount(obj, movementVector));
                     }
                 }
             }
@@ -198,8 +176,10 @@ namespace TackEngineLib.Physics
                 _tackObject.Scale.X * physComp.ColliderSizeMultiplier.X,
                 _tackObject.Scale.Y * physComp.ColliderSizeMultiplier.Y);
 
+
             if (dirY != MovementDirection.NULL)
             {
+                #region DownwardsMovement
                 // If Object needs to move down
                 if (dirY == MovementDirection.Down)
                 {
@@ -221,6 +201,10 @@ namespace TackEngineLib.Physics
                             obj.Scale.X,
                             obj.Scale.Y);
 
+                        // Check to see if _tackObjects top line is exactly at the position of objs bottom line
+                        if (shape.Y == (objShape.Y - objShape.Height))
+                            continue;
+
                         // Check to see if _tackObject is below obj
                         if (shape.Y < (objShape.Y - objShape.Height))
                         {
@@ -234,12 +218,258 @@ namespace TackEngineLib.Physics
 
                             if (shape.X < (objShape.X + objShape.Width) && (shape.X + shape.Width) > objShape.X)
                             {
-                                finalMovementAmount.Y = _movementAmount.Y - (newBottomPos - objShape.Y);
+                                if (obj.GetComponent<PhysicsComponent>().AllowedToMove)
+                                {
+                                    finalMovementAmount = _movementAmount;
+                                    obj.GetComponent<PhysicsComponent>().Move(new Vector2f(0, (newBottomPos - objShape.Y)));
+                                }
+                                else
+                                {
+                                    finalMovementAmount.Y = _movementAmount.Y - (newBottomPos - objShape.Y);
+                                }
+
                                 break;
                             }
                         }
                     }
                 }
+                #endregion
+
+                #region UpwardsMovement
+
+                // if Object needs to move up
+                if (dirY == MovementDirection.Up)
+                {
+                    float newTopPos = (shape.Y) + _movementAmount.Y;
+
+                    TackObject[] tackObjects = TackObject.Get();
+
+                    foreach (TackObject obj in tackObjects)
+                    {
+                        // Continue if obj is the same TackObject has the one being evaluated
+                        if (obj == _tackObject)
+                            continue;
+
+                        // Continue if the TackObject (obj) has no PhysicsComponent
+                        if (obj.GetComponent<PhysicsComponent>().IsNullComponent())
+                            continue;
+
+                        RectangleShape stationaryObjectShape = new RectangleShape(
+                            obj.Position.X - ((obj.Scale.X / 2)),
+                            obj.Position.Y + ((obj.Scale.Y / 2)),
+                            obj.Scale.X,
+                            obj.Scale.Y);
+
+
+                        // Check to see if _tackObject's bottom is exactly the position of obj's top line
+                        if ((shape.Y - shape.Height) == stationaryObjectShape.Y)
+                            continue;
+
+                        // Check to see if _tackObject is above obj
+                        if ((shape.Y - shape.Height) > (stationaryObjectShape.Y))
+                        {
+                            continue;
+                        }
+
+                        if ((stationaryObjectShape.Y - stationaryObjectShape.Height) < newTopPos) // changed from > to <
+                        {
+                            if (shape.X < (stationaryObjectShape.X + stationaryObjectShape.Width) && (shape.X + shape.Width) > stationaryObjectShape.X)
+                            {
+                                if (obj.GetComponent<PhysicsComponent>().AllowedToMove)
+                                {
+                                    finalMovementAmount = _movementAmount;
+                                    obj.GetComponent<PhysicsComponent>().Move(new Vector2f(0, (newTopPos - (stationaryObjectShape.Y - stationaryObjectShape.Height))));
+                                }
+                                else
+                                {
+                                    finalMovementAmount.Y = _movementAmount.Y - (newTopPos - (stationaryObjectShape.Y - stationaryObjectShape.Height));
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+                }
+                #endregion
+            }
+
+            if (dirX != MovementDirection.NULL)
+            {
+                #region LeftMovement
+
+                /*
+                // If object wants to move left
+                if (dirX == MovementDirection.Left)
+                {
+                    // Calc new left pos
+                    float newLeftPosition = shape.X + _movementAmount.X;
+
+                    TackObject[] tackObjects = TackObject.Get();
+
+                    foreach (TackObject stationaryObject in tackObjects)
+                    {
+                        if (stationaryObject == _tackObject)
+                            continue;
+
+                        if (stationaryObject.GetComponent<PhysicsComponent>().IsNullComponent())
+                            continue;
+
+                        RectangleShape stationaryObjectShape = new RectangleShape(
+                            stationaryObject.Position.X - ((stationaryObject.Scale.X / 2)),
+                            stationaryObject.Position.Y + ((stationaryObject.Scale.Y / 2)),
+                            stationaryObject.Scale.X,
+                            stationaryObject.Scale.Y);
+
+                        // Check if _tackObject is to the left of stationaryObjects right most point
+                        if ((shape.X + shape.Width) <= (stationaryObjectShape.X + stationaryObjectShape.Width))
+                        {
+                            continue;
+                        }
+
+                        bool isCollidingXAxis = false;
+
+                        if (
+                            ((stationaryObjectShape.Y < shape.Y) && (stationaryObjectShape.Y > (shape.Y - shape.Height))) ||
+                            ((stationaryObjectShape.Y - stationaryObjectShape.Height) > (shape.Y - shape.Height)) && (stationaryObjectShape.Y - stationaryObjectShape.Height) < shape.Y)
+                        {
+                            isCollidingXAxis = true;
+                        }
+
+                        if ((shape.Y <= stationaryObjectShape.Y) && ((shape.Y - shape.Height) >= (stationaryObjectShape.Y - stationaryObjectShape.Height)))
+                        {
+                            isCollidingXAxis = true;
+                        }
+
+                        if (isCollidingXAxis)
+                        {
+                            if (newLeftPosition < (stationaryObjectShape.X + stationaryObjectShape.Width))
+                            {
+                                if (stationaryObject.GetComponent<PhysicsComponent>().AllowedToMove)
+                                {
+                                    finalMovementAmount = _movementAmount;
+                                    stationaryObject.GetComponent<PhysicsComponent>().Move(new Vector2f((newLeftPosition - (stationaryObjectShape.X + stationaryObjectShape.Width)), 0));
+                                }
+                                else
+                                {
+                                    finalMovementAmount.X = _movementAmount.X - (newLeftPosition - (stationaryObjectShape.X + stationaryObjectShape.Width));
+                                }
+
+                                break;
+                            }
+                        }
+
+                        //Console.WriteLine("isCollidingXAxis. Shape: " + shape.ToString() + " , stationaryShape: " + stationaryObjectShape.ToString());
+                    }
+                }*/
+
+                if (dirX == MovementDirection.Left)
+                {
+                    // Find the left most vertex position
+                    Dictionary<int, Vector2f> movingObjVerts = new Dictionary<int, Vector2f>();
+                    movingObjVerts.Add(1, _tackObject.GetComponent<QuadRenderer>().FindVertexPoint(1));
+                    movingObjVerts.Add(2, _tackObject.GetComponent<QuadRenderer>().FindVertexPoint(2));
+                    movingObjVerts.Add(3, _tackObject.GetComponent<QuadRenderer>().FindVertexPoint(3));
+                    movingObjVerts.Add(4, _tackObject.GetComponent<QuadRenderer>().FindVertexPoint(4));
+
+                    TackObject[] tackObjects = TackObject.Get();
+
+                    foreach (TackObject stationaryObject in tackObjects)
+                    {
+                        if (stationaryObject == _tackObject)
+                            continue;
+
+                        if (stationaryObject.GetComponent<PhysicsComponent>().IsNullComponent())
+                            continue;
+
+                        Dictionary<int, Vector2f> stationaryObjVerts = new Dictionary<int, Vector2f>();
+                        stationaryObjVerts.Add(1, stationaryObject.GetComponent<QuadRenderer>().FindVertexPoint(1));
+                        stationaryObjVerts.Add(2, stationaryObject.GetComponent<QuadRenderer>().FindVertexPoint(2));
+                        stationaryObjVerts.Add(3, stationaryObject.GetComponent<QuadRenderer>().FindVertexPoint(3));
+                        stationaryObjVerts.Add(4, stationaryObject.GetComponent<QuadRenderer>().FindVertexPoint(4));
+
+                        PhysicsMovement.MovementLeft(_movementAmount, movingObjVerts, stationaryObjVerts);
+
+                        /*
+                        // Check if _tackObject is to the left of stationaryObjects right most point
+                        if ((shape.X + shape.Width) <= (stationaryObjectShape.X + stationaryObjectShape.Width))
+                        {
+                            continue;
+                        }*/
+
+                        //Console.WriteLine("isCollidingXAxis. Shape: " + shape.ToString() + " , stationaryShape: " + stationaryObjectShape.ToString());
+                    }
+
+                }
+
+                #endregion
+
+                #region RightMovement
+
+                // If object wants to move left
+                if (dirX == MovementDirection.Right)
+                {
+                    // Calc new right pos
+                    float newRightPosition = (shape.X + shape.Width) + _movementAmount.X;
+
+                    TackObject[] tackObjects = TackObject.Get();
+
+                    foreach (TackObject stationaryObject in tackObjects)
+                    {
+                        if (stationaryObject == _tackObject)
+                            continue;
+
+                        if (stationaryObject.GetComponent<PhysicsComponent>().IsNullComponent())
+                            continue;
+
+                        RectangleShape stationaryObjectShape = new RectangleShape(
+                            stationaryObject.Position.X - ((stationaryObject.Scale.X / 2)),
+                            stationaryObject.Position.Y + ((stationaryObject.Scale.Y / 2)),
+                            stationaryObject.Scale.X,
+                            stationaryObject.Scale.Y);
+
+                        // Check if _tackObject is to the right of stationaryObjects right most point
+                        if ((shape.X) >= (stationaryObjectShape.X + stationaryObjectShape.Width))
+                        {
+                            continue;
+                        }
+
+                        bool isCollidingXAxis = false;
+
+                        if (
+                            ((stationaryObjectShape.Y < shape.Y) && (stationaryObjectShape.Y > (shape.Y - shape.Height))) ||
+                            ((stationaryObjectShape.Y - stationaryObjectShape.Height) > (shape.Y - shape.Height)) && (stationaryObjectShape.Y - stationaryObjectShape.Height) < shape.Y)
+                        {
+                            isCollidingXAxis = true;
+                        }
+
+                        if ((shape.Y <= stationaryObjectShape.Y) && ((shape.Y - shape.Height) >= (stationaryObjectShape.Y - stationaryObjectShape.Height)))
+                        {
+                            isCollidingXAxis = true;
+                        }
+
+                        if (isCollidingXAxis)
+                        {
+                            if (newRightPosition > (stationaryObjectShape.X))
+                            {
+                                if (stationaryObject.GetComponent<PhysicsComponent>().AllowedToMove)
+                                {
+                                    finalMovementAmount = _movementAmount;
+                                    stationaryObject.GetComponent<PhysicsComponent>().Move(new Vector2f((newRightPosition - (stationaryObjectShape.X)), 0));
+                                }
+                                else
+                                {
+                                    finalMovementAmount.X = _movementAmount.X - (newRightPosition - (stationaryObjectShape.X));
+                                }
+
+                                break;
+                            }
+                        }
+
+                        //Console.WriteLine("isCollidingXAxis. Shape: " + shape.ToString() + " , stationaryShape: " + stationaryObjectShape.ToString());
+                    }
+                }
+
+                #endregion
             }
 
             return finalMovementAmount;
@@ -266,7 +496,8 @@ namespace TackEngineLib.Physics
         /// <summary>
         /// Returns the actual update rate of the physics thread
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The current update rate of the Physics thread</returns>
+        /// <returntype>int</returntype>
         public static int GetUpdateRate()
         {
             return updateRate;

@@ -22,7 +22,6 @@ namespace TackEngineLib.GUI
             get { return m_Sprite; }
             set
             {
-                m_Sprite.Destory(false);
 
                 m_Sprite = value;
             }
@@ -37,15 +36,13 @@ namespace TackEngineLib.GUI
         public BoxStyle()
         {
             m_Colour = new Colour4b(255, 255, 255, 255);
-            m_Sprite = Sprite.LoadFromBitmap(TackEngineLib.Properties.Resources.DefaultSprite);
-            m_Sprite.Create(false);
+            m_Sprite = Sprite.DefaultSprite;
 
             m_Border = null;
         }
 
         public void Destory()
         {
-            m_Sprite.Destory(false);
         }
     }
 }

@@ -123,23 +123,23 @@ namespace TackEngineLib.Renderer
                  */
                 
                 
+                //m_VertexData = new float[32]
+                //{
+                    //       Position (XYZ)                                                                                                      Colours (RGB)                                                                                  TexCoords (XY)
+                    /* v1 */ //(tackObjectBounds.X + tackObjectBounds.Width), (tackObjectBounds.Y), 1.0f,                                          (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   1.0f, 0.0f,
+                    /* v2 */ //(tackObjectBounds.X + tackObjectBounds.Width), (tackObjectBounds.Y - tackObjectBounds.Height), 1.0f,                (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   1.0f, 1.0f,
+                    /* v3 */ //(tackObjectBounds.X), (tackObjectBounds.Y - tackObjectBounds.Height), 1.0f,                                         (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   0.0f, 1.0f,
+                    /* v4 */ //(tackObjectBounds.X), (tackObjectBounds.Y), 1.0f,                                                                   (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   0.0f, 0.0f
+                //};
+
                 m_VertexData = new float[32]
                 {
                     //       Position (XYZ)                                                                                                      Colours (RGB)                                                                                  TexCoords (XY)
-                    /* v1 */ (tackObjectBounds.X + tackObjectBounds.Width), (tackObjectBounds.Y), 1.0f,                                          (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   1.0f, 0.0f,
-                    /* v2 */ (tackObjectBounds.X + tackObjectBounds.Width), (tackObjectBounds.Y - tackObjectBounds.Height), 1.0f,                (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   1.0f, 1.0f,
-                    /* v3 */ (tackObjectBounds.X), (tackObjectBounds.Y - tackObjectBounds.Height), 1.0f,                                         (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   0.0f, 1.0f,
-                    /* v4 */ (tackObjectBounds.X), (tackObjectBounds.Y), 1.0f,                                                                   (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   0.0f, 0.0f
+                    /* v1 */ FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(1)).X, FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(1)).Y, 1.0f,                                          (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   1.0f, 0.0f,
+                    /* v2 */ FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(2)).X, FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(2)).Y, 1.0f,                (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   1.0f, 1.0f,
+                    /* v3 */ FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(3)).X, FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(3)).Y, 1.0f,                                         (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   0.0f, 1.0f,
+                    /* v4 */ FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(4)).X, FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(4)).Y, 1.0f,                                                                   (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   0.0f, 0.0f
                 };
-
-                //float[] vertexData = new float[32]
-                //{
-                    //       Position (XYZ)                                                                                                      Colours (RGB)                                                                                  TexCoords (XY)
-                    /* v1 */ //0.5f, 0.5f, 1.0f,                 1f, 1f, 1f,    1.0f, 0.0f,
-                    /* v2 */ //0.5f, -0.5f, 1.0f,                1f, 1f, 1f,    1.0f, 1.0f,
-                    /* v3 */ //-0.5f, -0.5f, 1.0f,               1f, 1f, 1f,    1.0f, 1.0f,
-                    /* v4 */ //-0.5f, 0.5f, 1.0f,                1f, 1f, 1f,    0.0f, 0.0f
-                //};
 
                 int[] indices = new int[]
                 {
@@ -212,6 +212,17 @@ namespace TackEngineLib.Renderer
                 GL.DeleteBuffer(VBO);
                 GL.DeleteVertexArray(VAO);
             }
+        }
+
+        private Vector2f FindScreenCoordsFromPosition(Vector2f _pos)
+        {
+            Vector2f vec = new Vector2f()
+            {
+                X = ((_pos.X - TackEngine.MainCamera.parentObject.Position.X) / (TackEngine.ScreenWidth / 2)),
+                Y = ((_pos.Y + TackEngine.MainCamera.parentObject.Position.Y) / (TackEngine.ScreenHeight / 2))
+            };
+
+            return vec;
         }
 
         /*

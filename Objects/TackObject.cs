@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using TackEngineLib.Main;
 using TackEngineLib.Objects.Components;
 using TackEngineLib.Engine;
+using TackEngineLib.Math;
 
 namespace TackEngineLib.Objects
 {
+    /// <summary>
+    /// The main class used by the TackEngineLib to represent and object
+    /// </summary>
     public class TackObject
     {
         // MEMBERS
@@ -19,28 +24,73 @@ namespace TackEngineLib.Objects
         private string m_Name;
         private Vector2f m_Position;
         private Vector2f m_Scale;
+        private float m_Rotation;
+        private Vector2f m_Up;
+        private Vector2f m_Right;
 
         internal List<object> objectComponents = new List<object>();
         internal List<string> usedHashCodes = new List<string>();
 
-        // PROPERTIES
-
+        /// <summary>
+        /// The name of this TackObject
+        /// </summary>
+        /// <datatype>string</datatype>
         public string Name
         {
             get { return m_Name; }
             set { m_Name = value; }
         }
 
+        /// <summary>
+        /// The position of this TackObject
+        /// </summary>
+        /// <datatype>Vector2f</datatype>
         public Vector2f Position
         {
             get { return m_Position; }
             set { m_Position = value; }
         }
 
+        /// <summary>
+        /// The scale of this TackObject
+        /// </summary>
+        /// <datatype>Vector2f</datatype>
         public Vector2f Scale
         {
             get { return m_Scale; }
             set { m_Scale = value; }
+        }
+
+        /// <summary>
+        /// The rotation value of this TackObject
+        /// </summary>
+        /// <datatype>float</datatype>
+        public float Rotation
+        {
+            get { return m_Rotation; }
+            set { m_Rotation = value; }
+        }
+
+        /// <summary>
+        /// The vector of moving the TackObject directly forward based on rotation
+        /// </summary>
+        public Vector2f Up
+        {
+            get
+            {
+                return new Vector2f(1.0f * (float)System.Math.Sin(TackMath.DegToRad(m_Rotation)), 1.0f * (float)System.Math.Cos(TackMath.DegToRad(m_Rotation)));
+            }
+        }
+
+        /// <summary>
+        /// The vector of moving the TackObject directly right based on rotation
+        /// </summary>
+        public Vector2f Right
+        {
+            get
+            {
+                return new Vector2f(1.0f * (float)System.Math.Sin(TackMath.DegToRad(m_Rotation + 90)), 1.0f * (float)System.Math.Cos(TackMath.DegToRad(m_Rotation + 90)));
+            }
         }
 
         // CONSTRUCTORS
@@ -51,6 +101,7 @@ namespace TackEngineLib.Objects
             m_Name = "New GameObject";
             m_Position = new Vector2f();
             m_Scale = new Vector2f();
+            m_Rotation = 0;
 
             TackObjectManager.AddTackObject(this);
 
@@ -63,6 +114,7 @@ namespace TackEngineLib.Objects
             m_Name = _n;
             m_Position = new Vector2f();
             m_Scale = new Vector2f();
+            m_Rotation = 0;
 
             TackObjectManager.AddTackObject(this);
 
@@ -75,6 +127,7 @@ namespace TackEngineLib.Objects
             m_Name = _n;
             m_Position = _p;
             m_Scale = new Vector2f();
+            m_Rotation = 0;
 
             TackObjectManager.AddTackObject(this);
 

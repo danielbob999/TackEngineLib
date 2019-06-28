@@ -44,9 +44,28 @@ namespace TackEngineLib.Engine
             get { return currentWindow.Height; }
         }
 
-        public static Camera MainCamera
-        {
-            get { return m_MainCameraTackObject.GetComponent<Camera>(); }
+        public static Camera MainCamera {
+            get {
+                if (m_MainCameraTackObject == null)
+                {
+                    TackConsole.EngineLog(EngineLogType.Error, "The active Camera TackObject is currently equal to null. Creating a new TackObject...");
+
+                    m_MainCameraTackObject = new TackObject("MainCamera", new Vector2f(0, 0));
+                }
+
+                if (m_MainCameraTackObject != null && m_MainCameraTackObject.GetComponent<Camera>() == null)
+                {
+                    TackConsole.EngineLog(EngineLogType.Error, "The active Camera TackObject does not have a component of type TackComponent.Camera. Adding one...");
+
+                    Camera newCamera = new Camera();
+                    newCamera.CameraScreenHeight = ScreenHeight;
+                    newCamera.CameraScreenWidth = ScreenWidth;
+
+                    m_MainCameraTackObject.AddComponent(newCamera);
+                }
+
+                return m_MainCameraTackObject.GetComponent<Camera>();
+            }
         }
 
         public static void Init(int _windowWidth, int _windowHeight, int _updatesPerSec, int _framesPerSec, bool _vsync, string _windowName, EngineDelegates.OnStart _st, EngineDelegates.OnUpdate _up, EngineDelegates.OnGUIRender _guirend, EngineDelegates.OnClose _clos)

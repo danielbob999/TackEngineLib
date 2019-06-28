@@ -52,7 +52,8 @@ namespace TackEngineLib.Engine
         public static int ColourShaderProgramInt { get { return colourShaderProgramId; } }
         public static int ImageShaderProgramInt { get { return imageShaderProgramId; } }
 
-        public TackGameWindow(int _width, int _height, string _n, EngineDelegates.OnStart _strtFunc, EngineDelegates.OnUpdate _updtFunc, EngineDelegates.OnGUIRender _guiRendFunc, EngineDelegates.OnClose _onCloseFunc) : base(_width, _height, GraphicsMode.Default, _n)
+        public TackGameWindow(int _width, int _height, string _n, EngineDelegates.OnStart _strtFunc, EngineDelegates.OnUpdate _updtFunc, EngineDelegates.OnGUIRender _guiRendFunc, EngineDelegates.OnClose _onCloseFunc) 
+            : base(_width, _height, GraphicsMode.Default, _n)
         {
             onStartFunction = _strtFunc;
             onUpdateFunction = _updtFunc;
@@ -63,6 +64,10 @@ namespace TackEngineLib.Engine
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            Sprite.LoadDefaultSprite();
+
+            TackGUI.OnStart();
 
             m_TackConsole = new TackConsole();
             m_TackConsole.OnStart();
@@ -92,8 +97,6 @@ namespace TackEngineLib.Engine
 
             // All OnStart here
             TackInput.OnStart();
-
-            TackGUI.OnStart();
 
             //testTex = Sprite.LoadFromFile("Resources/DabEmoji.bmp");
             //testTex.Create();
@@ -131,7 +134,7 @@ namespace TackEngineLib.Engine
             base.OnRenderFrame(e);
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.ClearColor(new OpenTK.Graphics.Color4(255, 0, 0, 255));
+            GL.ClearColor(new OpenTK.Graphics.Color4(127, 146, 150, 255));
 
             // All OnRender here
             m_TackRender.OnRender();
@@ -155,6 +158,14 @@ namespace TackEngineLib.Engine
             m_AudioManager.OnClose();
             SpriteManager.OnClose();
             m_TackConsole.OnClose();
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            TackEngine.MainCamera.UpdateCameraDimensions(Width, Height);
+            GL.Viewport(0, 0, Width, Height);
         }
 
         protected override void OnKeyDown(KeyboardKeyEventArgs e)

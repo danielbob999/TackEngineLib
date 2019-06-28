@@ -12,6 +12,9 @@ namespace TackEngineLib.GUI
     {
         private float m_FontSize;
         private Colour4b m_FontColour;
+        private int m_FontFamilyId;
+        private VerticalAlignment m_VerticalAlignment;
+        private HorizontalAlignment m_HorizontalAlignment;
         private Colour4b m_Colour;
         private GUIBorder m_Border;
         private Sprite m_SpriteTexture;
@@ -45,15 +48,37 @@ namespace TackEngineLib.GUI
             get { return m_SpriteTexture; }
             set
             {
-                m_SpriteTexture.Destory(false);
                 m_SpriteTexture = value;
             }
         }
 
+        public int FontFamilyId
+        {
+            get { return m_FontFamilyId; }
+            set { m_FontFamilyId = value; }
+        }
+
+        /// <summary>
+        /// The VerticalAlignment of this text
+        /// </summary>
+        public VerticalAlignment VerticalAlignment
+        {
+            get { return m_VerticalAlignment; }
+            set { m_VerticalAlignment = value; }
+        }
+
+        /// <summary>
+        /// The HorizontalAlignment of this text
+        /// </summary>
+        public HorizontalAlignment HorizontalAlignment
+        {
+            get { return m_HorizontalAlignment; }
+            set { m_HorizontalAlignment = value; }
+        }
+
         public InputFieldStyle()
         {
-            m_SpriteTexture = Sprite.LoadFromBitmap(TackEngineLib.Properties.Resources.DefaultSprite);
-            m_SpriteTexture.Create(false);
+            m_SpriteTexture = Sprite.DefaultSprite;
 
             m_FontSize = 6f;
             m_FontColour = new Colour4b(0, 0, 0, 255);
@@ -79,9 +104,11 @@ namespace TackEngineLib.GUI
             {
                 BackgroundColour = m_Colour,
                 FontColour = m_FontColour,
-                FontFamilyId = 0,
+                FontFamilyId = m_FontFamilyId,
                 FontSize = m_FontSize,
-                SpriteTexture = m_SpriteTexture
+                SpriteTexture = m_SpriteTexture,
+                HorizontalAlignment = m_HorizontalAlignment,
+                VerticalAlignment = m_VerticalAlignment
             };
 
             return style;
@@ -89,7 +116,6 @@ namespace TackEngineLib.GUI
 
         public void Destory()
         {
-            m_SpriteTexture.Destory(false);
         }
     }
 }
