@@ -88,6 +88,7 @@ namespace TackEngineLib.GUI
         public InputField()
         {
             m_ReceivingInput = false;
+
             m_Shape = new RectangleShape(10, 10, 160, 35);
 
             m_CaretStyle = new BoxStyle()
@@ -142,7 +143,8 @@ namespace TackEngineLib.GUI
             {
                 if (SubmitInput != null)
                 {
-                    SubmitInput.Invoke(this, EventArgs.Empty);
+                    if (m_ReceivingInput)
+                        SubmitInput.Invoke(this, EventArgs.Empty);
                 }
             }
         }

@@ -50,6 +50,7 @@ namespace TackEngineLib.Main
             m_InputFieldStyle.FontSize = 10f;
             m_InputFieldStyle.VerticalAlignment = VerticalAlignment.Middle;
             m_InputFieldStyle.FontFamilyId = TackGUI.LoadFontFromFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\cour.ttf");
+            m_InputFieldStyle.Scrollable = false;
         }
 
         internal void OnStart()
@@ -127,19 +128,6 @@ namespace TackEngineLib.Main
             if (m_ConsoleGUIActive)
             {
                 int nextPosition = (int)(TackEngine.ScreenHeight * 0.70f) - 14;
-                /*
-                for (int i = m_Messages.Count - (1 + (int)m_ConsoleUIStyle.ScrollPosition); i > 0; i--)
-                {
-                    TackGUI.TextArea(new Main.RectangleShape(0, nextPosition, TackEngine.ScreenWidth, 14), m_Messages[i], m_ConsoleUIStyle);
-
-                    nextPosition -= 14;
-                }
-
-                while (nextPosition > -14)
-                {
-                    TackGUI.Box(new RectangleShape(0, nextPosition, TackEngine.ScreenWidth, 14), new BoxStyle() { Colour = new Colour4b(0, 0, 0, 190) });
-                    nextPosition -= 14;
-                }*/
 
                 string consoleString = "";
 
@@ -259,15 +247,18 @@ namespace TackEngineLib.Main
 
         private void ProcessCommand(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(m_InputString)) {
+                EngineLog(EngineLogType.Message, "Command input string is null or empty");
+                return;
+            }
+
             string commandInput = m_InputString;
             EngineLog(EngineLogType.Message, ">" + commandInput);
 
             string[] splitCommandBySpaces = commandInput.Split(' ');
 
-            foreach (TackCommand command in m_ValidCommands)
-            {
-                if (splitCommandBySpaces[0] == command.CommandCallString)
-                {
+            foreach (TackCommand command in m_ValidCommands) {
+                if (splitCommandBySpaces[0] == command.CommandCallString) {
                     command.CommandDelegate.Invoke(splitCommandBySpaces);
 
                     m_InputField.InputString = "";

@@ -18,6 +18,7 @@ namespace TackEngineLib.GUI
         private Colour4b m_Colour;
         private GUIBorder m_Border;
         private Sprite m_SpriteTexture;
+        private bool m_Scrollable;
 
         public float FontSize
         {
@@ -56,6 +57,12 @@ namespace TackEngineLib.GUI
         {
             get { return m_FontFamilyId; }
             set { m_FontFamilyId = value; }
+        }
+
+        public bool Scrollable
+        {
+            get { return m_Scrollable; }
+            set { m_Scrollable = value; }
         }
 
         /// <summary>
@@ -100,15 +107,15 @@ namespace TackEngineLib.GUI
 
         public TextAreaStyle GetTextStyle()
         {
-            TextAreaStyle style = new TextAreaStyle()
-            {
+            TextAreaStyle style = new TextAreaStyle() {
                 BackgroundColour = m_Colour,
                 FontColour = m_FontColour,
                 FontFamilyId = m_FontFamilyId,
                 FontSize = m_FontSize,
                 SpriteTexture = m_SpriteTexture,
                 HorizontalAlignment = m_HorizontalAlignment,
-                VerticalAlignment = m_VerticalAlignment
+                VerticalAlignment = m_VerticalAlignment,
+                Scrollable = m_Scrollable
             };
 
             return style;

@@ -22,7 +22,7 @@ namespace TackEngineLib.GUI
     /// <summary>
     /// The main class for rendering GUI elements to the screen
     /// </summary>
-    internal static class TackGUI
+    public static class TackGUI
     {
         private static PrivateFontCollection fontCollection;
         private static FontFamily activeFontFamily;
@@ -236,8 +236,7 @@ namespace TackEngineLib.GUI
             if (_style == null)
                 _style = new TextAreaStyle();
 
-            BoxStyle boxStyle = new BoxStyle()
-            {
+            BoxStyle boxStyle = new BoxStyle() {
                 Colour = _style.BackgroundColour,
                 SpriteTexture = _style.SpriteTexture
             };
@@ -245,74 +244,28 @@ namespace TackEngineLib.GUI
             // Render a box at the back of the TextArea
             Box(_rect, boxStyle);
 
-            Graphics graphics = Graphics.FromImage(new Bitmap(1, 1));
-            Font myFont = new Font(fontCollection.Families[_style.FontFamilyId], _style.FontSize, FontStyle.Regular);
-            Bitmap cBmp;
-            SizeF stringSize = graphics.MeasureString(_text, myFont);
-
-            if (_style.Scrollable)
-            {
-
-                if (string.IsNullOrEmpty(_text))
-                    stringSize = new SizeF(1, 1);
-
-                cBmp = new Bitmap((int)_rect.Width, (int)stringSize.Height + 40);
-                //Console.WriteLine("Is Scrollable");
-            }
-            else
-            {
-                //Vector2i size = new Vector2i((int)(_rect.Width), (int)(_rect.Height));
-                cBmp = new Bitmap((int)_rect.Width, (int)_rect.Height + 40);
-            }
+            // Generate Bitmap
+            Vector2i size = new Vector2i((int)(_rect.Width), (int)(_rect.Height));
+            Bitmap cBmp = new Bitmap(size.X, size.Y);
 
             // Generate Graphics Object
-            graphics = Graphics.FromImage(cBmp);
+            Graphics graphics = Graphics.FromImage(cBmp);
+
+            Font myFont = new Font(fontCollection.Families[_style.FontFamilyId], _style.FontSize, FontStyle.Regular);
 
             //Get the perfect Image-Size so that Image-Size = String-Size
-            RectangleF rect = new RectangleF(1, 1, 1, 1);
-
-            if (_style.VerticalAlignment == VerticalAlignment.Top || _style.VerticalAlignment == VerticalAlignment.Middle)
-                rect = new RectangleF(0, 0, cBmp.Width, cBmp.Height + 40);
-
-            if (_style.VerticalAlignment == VerticalAlignment.Bottom)
-            {
-                rect = new RectangleF(0, 0, cBmp.Width, cBmp.Height + 40);
-            }
-
-            //Console.WriteLine("Render text area. RectHeight: " + _rect.Height + ", stringSizeHeight: " + stringSize.Height);
+            RectangleF rect = new RectangleF(0, 0, cBmp.Width, cBmp.Height);
 
             //Use this to become better Text-Quality on Bitmap.
             graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
             graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
             graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
+            // Set the format of the string
             StringFormat format = new StringFormat();
-            //format.Alignment = StringAlignment.Center;
-            //format.LineAlignment = StringAlignment.Near;
-
-            // Set the horizontal alignment of the text
-            switch (_style.HorizontalAlignment)
-                {
-                    case HorizontalAlignment.Left:
-                        format.Alignment = StringAlignment.Near;
-                        break;
-
-                    case HorizontalAlignment.Middle:
-                        format.Alignment = StringAlignment.Center;
-                        break;
-
-                    case HorizontalAlignment.Right:
-                        format.Alignment = StringAlignment.Far;
-                        break;
-
-                    default:
-                        format.Alignment = StringAlignment.Center;
-                        break;
-                }
 
             // Set the vertical alignment of the text
-            switch (_style.VerticalAlignment)
-            {
+            switch (_style.VerticalAlignment) {
                 case VerticalAlignment.Top:
                     format.LineAlignment = StringAlignment.Near;
                     break;
@@ -330,15 +283,18 @@ namespace TackEngineLib.GUI
                     break;
             }
 
+            // Get the height of a single line of text
+            SizeF textSize = graphics.MeasureString("H", myFont);
+            string actualString = GetRenderableString(_text, _style.ScrollPosition, textSize.Height, (int)_rect.Height);
+
             //Here we draw the string on the Bitmap
             Color customColor = Color.FromArgb(_style.FontColour.A, _style.FontColour.R, _style.FontColour.G, _style.FontColour.B);
-            graphics.DrawString(_text, myFont, new SolidBrush(customColor), rect, format);
+            graphics.DrawString(actualString, myFont, new SolidBrush(customColor), rect, format);
 
             Sprite textTexture = Sprite.LoadFromBitmap(cBmp);
             textTexture.Create(false);
 
-            RectangleShape calculatedRect = new RectangleShape()
-            {
+            RectangleShape calculatedRect = new RectangleShape() {
                 X = (_rect.X - (TackEngine.ScreenWidth / 2)) / (TackEngine.ScreenWidth / 2),
                 Y = ((TackEngine.ScreenHeight / 2) - _rect.Y) / (TackEngine.ScreenHeight / 2),
                 Width = (_rect.Width / (TackEngine.ScreenWidth / 2)),
@@ -349,26 +305,16 @@ namespace TackEngineLib.GUI
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            //_style.ScrollPosition = 0.1f;
-            float upBoi;
-
-            if (stringSize.Height > _rect.Height)
-                upBoi = _rect.Height / stringSize.Height;
-            else
-                upBoi = 1;
-
-            //Console.WriteLine("UpBoi: " + upBoi);
-
             // Tell OpenGL to use the compiled and linker shader program at m_ShaderProgramId
             GL.UseProgram(uiShaderProgram);
 
             float[] vertexData = new float[32]
                 {
                     //       Position (XYZ)                                                                                              Colours (RGB)         TexCoords (XY)
-                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        1f, 1f, 1f,            1.0f, (0 + (1 - 1)),                        //1.0f, 0.0f,
-                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                1f, 1f, 1f,            1.0f, (1.5f),                       //1.0f, 1.0f,
-                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       1f, 1f, 1f,            0.0f, (1.5f),                        //0.0f, 1.0f,
-                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               1f, 1f, 1f,            0.0f, (0 + ( 1 - 1))                         //0.0f, 0.0f
+                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        1f, 1f, 1f,            1.0f, 0.0f,
+                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                1f, 1f, 1f,            1.0f, 1.0f,
+                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       1f, 1f, 1f,            0.0f, 1.0f,
+                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               1f, 1f, 1f,            0.0f, 0.0f
                 };
 
             int[] indices = new int[]
@@ -414,8 +360,8 @@ namespace TackEngineLib.GUI
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
             // set the texture wrapping parameters
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
 
 
@@ -439,6 +385,7 @@ namespace TackEngineLib.GUI
             GL.DeleteBuffer(EBO);
             GL.DeleteBuffer(VBO);
             GL.DeleteVertexArray(VAO);
+
 
 
             /*
@@ -523,6 +470,33 @@ namespace TackEngineLib.GUI
             }
 
             return fontCollection.Families[0];
+        }
+
+        private static string GetRenderableString(string aString, float aScrollPos, float aHeightPerLine, int aTextAreaHeight) {
+            if (string.IsNullOrEmpty(aString)) {
+                return "";
+            }
+
+            // Split strings by lines
+            string[] splitString = aString.Split(new char[] { '\n', '\r' });
+
+            int maxLines = (int)(aTextAreaHeight / aHeightPerLine);
+
+            if (splitString.Length <= maxLines) {
+                return aString;
+            }
+
+            string returnString = "";
+
+            for (int i = (int)aScrollPos; i < (aScrollPos + maxLines); i++) {
+                if (i < splitString.Length) {
+                    returnString += splitString[i] + "\n";
+                } else {
+                    continue;
+                }
+            }
+
+            return returnString;
         }
     }
 }
