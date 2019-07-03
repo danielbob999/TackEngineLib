@@ -11,11 +11,14 @@ using TackEngineLib.Objects.Components;
 
 namespace TackEngineLib.Engine
 {
+    /// <summary>
+    /// The main engine class
+    /// </summary>
     public class TackEngine
     {
         private const int VERSION_MAJOR = 0;
         private const int VERSION_MINOR = 9;
-        private const int VERSION_PATCH = 0;
+        private const int VERSION_PATCH = 1;
         private const string VERSION_DESC = "AlphaBuild";
 
         internal static TackGameWindow currentWindow;
@@ -24,7 +27,6 @@ namespace TackEngineLib.Engine
         internal static int mUpdateCyclesPerSecond;
         internal static TackObject mMainCameraTackObject;
 
-        // Properties
         public static int RenderCyclesPerSecond
         {
             get { return mFramesPerSecond; }
@@ -67,6 +69,19 @@ namespace TackEngineLib.Engine
             }
         }
 
+        /// <summary>
+        /// Initialises a new TackEngine instance using the given parameters
+        /// </summary>
+        /// <param name="_windowWidth">The width of the window</param>
+        /// <param name="_windowHeight">The height of the window</param>
+        /// <param name="_updatesPerSec">The targeted amount of update cycles per second</param>
+        /// <param name="_framesPerSec">The targeted amount of frames rendered per second</param>
+        /// <param name="_vsync">Whether v-sync should be enable. If true, will ignore _framesPerSec argument</param>
+        /// <param name="_windowName">The title of the window</param>
+        /// <param name="_st">The method called on engine startup</param>
+        /// <param name="_up">The method called every update cycle</param>
+        /// <param name="_guirend">The method called every time a frame is rendered</param>
+        /// <param name="_clos">The method called on engine shutdown</param>
         public static void Init(int _windowWidth, int _windowHeight, int _updatesPerSec, int _framesPerSec, bool _vsync, string _windowName, EngineDelegates.OnStart _st, EngineDelegates.OnUpdate _up, EngineDelegates.OnGUIRender _guirend, EngineDelegates.OnClose _clos)
         {
             // Create new window
@@ -80,23 +95,15 @@ namespace TackEngineLib.Engine
             currentWindow.Run(_updatesPerSec, _framesPerSec);
         }
 
-        private static void NewGameWindow(int _w, int _h, int _u_s, int _f_s, string _n, EngineDelegates.OnStart _s, EngineDelegates.OnUpdate _u, EngineDelegates.OnGUIRender _r, EngineDelegates.OnClose _c)
-        {
-            if (currentWindow == null)
-            {
+        private static void NewGameWindow(int _w, int _h, int _u_s, int _f_s, string _n, EngineDelegates.OnStart _s, EngineDelegates.OnUpdate _u, EngineDelegates.OnGUIRender _r, EngineDelegates.OnClose _c) {
+            if (currentWindow == null) {
                 currentWindow = new TackGameWindow(_w, _h, _n, _s, _u, _r, _c);
-                
+
                 TackConsole.EngineLog(EngineLogType.Message, "Successfully created new CustomGameWindow instance");
                 return;
             }
 
             TackConsole.EngineLog(EngineLogType.Error, "There is already a CustomGameWindow instance running in this session");
-        }
-
-        [Obsolete]
-        public static string GetEngineVersionStr()
-        {
-            return string.Format("{0}.{1}.{2} {3}", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DESC);
         }
 
         public static TackEngineVersion GetEngineVersion()
