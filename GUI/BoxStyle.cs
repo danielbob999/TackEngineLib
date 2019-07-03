@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* Copyright (c) 2019 Daniel Phillip Robinson */
+using System;
 
 using TackEngineLib.GUI;
 using TackEngineLib.Main;
