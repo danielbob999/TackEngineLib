@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* Copyright (c) 2019 Daniel Phillip Robinson */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -280,6 +281,21 @@ namespace TackEngineLib.GUI
 
                 default:
                     format.LineAlignment = StringAlignment.Near;
+                    break;
+            }
+
+            switch (_style.HorizontalAlignment) {
+                case HorizontalAlignment.Left:
+                    format.Alignment = StringAlignment.Near;
+                    break;
+                case HorizontalAlignment.Middle:
+                    format.Alignment = StringAlignment.Center;
+                    break;
+                case HorizontalAlignment.Right:
+                    format.Alignment = StringAlignment.Far;
+                    break;
+                default:
+                    format.Alignment = StringAlignment.Near;
                     break;
             }
 

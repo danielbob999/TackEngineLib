@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* Copyright (c) 2019 Daniel Phillip Robinson */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -84,6 +85,8 @@ namespace TackEngineLib.GUI
 
         public ButtonStyle() {
             mSpriteTexture = Sprite.DefaultSprite;
+            mHorizontalAlignment = HorizontalAlignment.Middle;
+            mVerticalAlignment = VerticalAlignment.Middle;
 
             mFontSize = 6f;
             mFontColour = new Colour4b(0, 0, 0, 255);

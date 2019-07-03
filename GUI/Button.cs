@@ -32,6 +32,7 @@ namespace TackEngineLib.GUI
         /// </summary>
         public Button() {
             mText = "Button";
+            mButtonStyle = new ButtonStyle();
         }
 
         public void Update() {
