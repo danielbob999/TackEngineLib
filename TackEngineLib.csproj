@@ -50,6 +50,8 @@
     <Compile Include="Audio\AudioManager.cs" />
     <Compile Include="Engine\EngineLogType.cs" />
     <Compile Include="GUI\BoxStyle.cs" />
+    <Compile Include="GUI\Button.cs" />
+    <Compile Include="GUI\ButtonStyle.cs" />
     <Compile Include="GUI\GUIBorder.cs" />
     <Compile Include="GUI\HorizontalAlignment.cs" />
     <Compile Include="GUI\InputField.cs" />
