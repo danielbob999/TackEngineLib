@@ -12,28 +12,28 @@ namespace TackEngineLib.Objects.Components
     public class Light : TackComponent
     {
         public Sprite lightSprite;
-        private Colour4b m_Colour;
-        private float m_Intensity; // Intensity (or transparency) of the light. Ranged from 0 to 1
+        private Colour4b mColour;
+        private float mIntensity; // Intensity (or transparency) of the light. Ranged from 0 to 1
 
         // Properties
-        public Colour4b Colour { get { return m_Colour; } set { m_Colour = value; } }
+        public Colour4b Colour { get { return mColour; } set { mColour = value; } }
         public float Intensity
         {
-            get { return m_Intensity; }
+            get { return mIntensity; }
             set
             {
                 if (value < 0)
                 {
-                    m_Intensity = 0;
+                    mIntensity = 0;
                     TackConsole.EngineLog(EngineLogType.Error, "Cannot set Light intensity to less than 0. Intensity has been reset 0");
                 } else if (value > 1)
                 {
-                    m_Intensity = 1;
+                    mIntensity = 1;
                     TackConsole.EngineLog(EngineLogType.Error, "Cannot set Light intensity to more than 1. Intensity has been reset 1");
                 }
                 else
                 {
-                    m_Intensity = value;
+                    mIntensity = value;
                 }
             }
         }

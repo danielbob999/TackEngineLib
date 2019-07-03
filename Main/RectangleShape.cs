@@ -8,34 +8,34 @@ namespace TackEngineLib.Main
 {
     public class RectangleShape
     {
-        private float m_X;
-        private float m_Y;
-        private float m_Width;
-        private float m_Height;
+        private float mX;
+        private float mY;
+        private float mWidth;
+        private float mHeight;
 
         // Properties
         public float X
         {
-            get { return m_X; }
-            set { m_X = value; }
+            get { return mX; }
+            set { mX = value; }
         }
 
         public float Y
         {
-            get { return m_Y; }
-            set { m_Y = value; }
+            get { return mY; }
+            set { mY = value; }
         }
 
         public float Width
         {
-            get { return m_Width; }
-            set { m_Width = value; }
+            get { return mWidth; }
+            set { mWidth = value; }
         }
 
         public float Height
         {
-            get { return m_Height; }
-            set { m_Height = value; }
+            get { return mHeight; }
+            set { mHeight = value; }
         }
 
         public RectangleShape()
@@ -56,7 +56,7 @@ namespace TackEngineLib.Main
 
         public override string ToString()
         {
-            return (string.Format("({0}, {1}, {2}, {3})", m_X, m_Y, m_Width, m_Height));
+            return (string.Format("({0}, {1}, {2}, {3})", mX, mY, mWidth, mHeight));
         }
     }
 }

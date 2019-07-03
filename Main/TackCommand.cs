@@ -10,16 +10,16 @@ namespace TackEngineLib.Main
 {
     internal class TackCommand
     {
-        private string m_CommandCallString;
-        private EngineDelegates.CommandDelegate m_CommandDelegate;
-        private List<string> m_CommandArgList = new List<string>();
+        private string mCommandCallString;
+        private EngineDelegates.CommandDelegate mCommandDelegate;
+        private List<string> mCommandArgList = new List<string>();
 
         /// <summary>
         /// The string used to call the command
         /// </summary>
         public string CommandCallString
         {
-            get { return m_CommandCallString; }
+            get { return mCommandCallString; }
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace TackEngineLib.Main
         /// </summary>
         public EngineDelegates.CommandDelegate CommandDelegate
         {
-            get { return m_CommandDelegate; }
+            get { return mCommandDelegate; }
         }
 
         /// <summary>
@@ -35,14 +35,14 @@ namespace TackEngineLib.Main
         /// </summary>
         public List<string> CommandArgList
         {
-            get { return m_CommandArgList; }
+            get { return mCommandArgList; }
         }
 
         public TackCommand(string a_callName, EngineDelegates.CommandDelegate a_delegate, List<string> a_argList)
         {
-            m_CommandCallString = a_callName;
-            m_CommandDelegate = a_delegate;
-            m_CommandArgList = a_argList;
+            mCommandCallString = a_callName;
+            mCommandDelegate = a_delegate;
+            mCommandArgList = a_argList;
         }
     }
 }

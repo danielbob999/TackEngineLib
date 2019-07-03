@@ -11,15 +11,15 @@ namespace TackEngineLib.GUI
 {
     public class InputField
     {
-        private bool m_ReceivingInput;
-        private string m_InputString;
-        private RectangleShape m_Shape;
-        private BoxStyle m_CaretStyle;
-        private int m_caretPosition;
-        private Stopwatch m_caretDisplayStopwatch;
-        private int m_caretDisplaySpeed;
-        private bool m_displayCaret;
-        private Graphics m_stringMeasurer;
+        private bool mReceivingInput;
+        private string mInputString;
+        private RectangleShape mShape;
+        private BoxStyle mCaretStyle;
+        private int mcaretPosition;
+        private Stopwatch mcaretDisplayStopwatch;
+        private int mcaretDisplaySpeed;
+        private bool mdisplayCaret;
+        private Graphics mstringMeasurer;
 
         public event EventHandler SubmitInput;
 
@@ -28,20 +28,20 @@ namespace TackEngineLib.GUI
         /// </summary>
         public bool ReceivingInput
         {
-            get { return m_ReceivingInput; }
+            get { return mReceivingInput; }
             set {
-                m_ReceivingInput = value;
+                mReceivingInput = value;
                 TackInput.GUIInputRequired = value;
 
-                if (m_ReceivingInput == true)
+                if (mReceivingInput == true)
                 {
-                    m_displayCaret = true;
-                    m_caretDisplayStopwatch.Restart();
+                    mdisplayCaret = true;
+                    mcaretDisplayStopwatch.Restart();
                 }
                 else
                 {
-                    m_displayCaret = false;
-                    m_caretDisplayStopwatch.Stop();
+                    mdisplayCaret = false;
+                    mcaretDisplayStopwatch.Stop();
                 }
             }
         }
@@ -51,8 +51,8 @@ namespace TackEngineLib.GUI
         /// </summary>
         public string InputString
         {
-            get { return m_InputString; }
-            set { m_InputString = value; }
+            get { return mInputString; }
+            set { mInputString = value; }
         }
 
         /// <summary>
@@ -60,8 +60,8 @@ namespace TackEngineLib.GUI
         /// </summary>
         public RectangleShape Shape
         {
-            get { return m_Shape; }
-            set { m_Shape = value; }
+            get { return mShape; }
+            set { mShape = value; }
         }
 
         /// <summary>
@@ -69,8 +69,8 @@ namespace TackEngineLib.GUI
         /// </summary>
         public BoxStyle CaretStyle
         {
-            get { return m_CaretStyle; }
-            set { m_CaretStyle = value; }
+            get { return mCaretStyle; }
+            set { mCaretStyle = value; }
         }
 
         /// <summary>
@@ -78,8 +78,8 @@ namespace TackEngineLib.GUI
         /// </summary>
         public int CaretPosition
         {
-            get { return m_caretPosition; }
-            set { m_caretPosition = value; }
+            get { return mcaretPosition; }
+            set { mcaretPosition = value; }
         }
 
         /// <summary>
@@ -87,20 +87,20 @@ namespace TackEngineLib.GUI
         /// </summary>
         public InputField()
         {
-            m_ReceivingInput = false;
+            mReceivingInput = false;
 
-            m_Shape = new RectangleShape(10, 10, 160, 35);
+            mShape = new RectangleShape(10, 10, 160, 35);
 
-            m_CaretStyle = new BoxStyle()
+            mCaretStyle = new BoxStyle()
             {
                 Colour = new Colour4b(0, 0, 0, 255)
             };
 
-            m_caretDisplayStopwatch = new Stopwatch();
-            m_caretDisplaySpeed = 750;
-            m_displayCaret = false;
-            m_caretPosition = 0;
-            m_stringMeasurer = Graphics.FromImage(new Bitmap(1, 1));
+            mcaretDisplayStopwatch = new Stopwatch();
+            mcaretDisplaySpeed = 750;
+            mdisplayCaret = false;
+            mcaretPosition = 0;
+            mstringMeasurer = Graphics.FromImage(new Bitmap(1, 1));
 
             TackGUI.inputFields.Add(this);
         }
@@ -116,26 +116,26 @@ namespace TackEngineLib.GUI
             {
                 if (bufferKey == KeyboardKey.BackSpace)
                 {
-                    if (m_InputString.Length > 0)
-                        m_InputString = m_InputString.Remove(m_InputString.Length - 1, 1);
+                    if (mInputString.Length > 0)
+                        mInputString = mInputString.Remove(mInputString.Length - 1, 1);
                 } else if (bufferKey == KeyboardKey.Space)
                 {
-                    m_InputString += " ";
+                    mInputString += " ";
                 } else if (bufferKey == KeyboardKey.Period)
                 {
-                    m_InputString += ".";
+                    mInputString += ".";
                 } else if (bufferKey == KeyboardKey.Quote)
                 {
-                    m_InputString += "\"";
+                    mInputString += "\"";
                 } else if (bufferKey >= KeyboardKey.Number0 && bufferKey <= KeyboardKey.Number9)
                 {
-                    m_InputString += (char)((int)bufferKey - 61);
+                    mInputString += (char)((int)bufferKey - 61);
                 } else if (bufferKey >= KeyboardKey.A && bufferKey <= KeyboardKey.Z)
                 {
                     if (TackInput.InputBufferCapsLock)
-                        m_InputString += (char)((int)bufferKey - 18);
+                        mInputString += (char)((int)bufferKey - 18);
                     else
-                        m_InputString += (char)((int)bufferKey + 14);
+                        mInputString += (char)((int)bufferKey + 14);
                 }
             }
 
@@ -143,7 +143,7 @@ namespace TackEngineLib.GUI
             {
                 if (SubmitInput != null)
                 {
-                    if (m_ReceivingInput)
+                    if (mReceivingInput)
                         SubmitInput.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -155,40 +155,40 @@ namespace TackEngineLib.GUI
         /// <param name="_value">The string to be rendered in this InputField</param>
         public void Render(InputFieldStyle _style = default(InputFieldStyle))
         {
-            if (!string.IsNullOrEmpty(m_InputString))
-                m_caretPosition = (m_InputString.Length - 1);
+            if (!string.IsNullOrEmpty(mInputString))
+                mcaretPosition = (mInputString.Length - 1);
 
             if (_style == null)
                 _style = new InputFieldStyle();
 
-            TackGUI.Box(m_Shape, _style.GetBoxStyle());
-            TackGUI.TextArea(m_Shape, m_InputString, _style.GetTextStyle());
+            TackGUI.Box(mShape, _style.GetBoxStyle());
+            TackGUI.TextArea(mShape, mInputString, _style.GetTextStyle());
 
-            if (m_ReceivingInput)
+            if (mReceivingInput)
             {
-                if (m_caretDisplayStopwatch.ElapsedMilliseconds >= m_caretDisplaySpeed)
+                if (mcaretDisplayStopwatch.ElapsedMilliseconds >= mcaretDisplaySpeed)
                 {
-                    m_displayCaret = !m_displayCaret;
-                    m_caretDisplayStopwatch.Restart();
+                    mdisplayCaret = !mdisplayCaret;
+                    mcaretDisplayStopwatch.Restart();
                 }
 
-                if (m_displayCaret)
+                if (mdisplayCaret)
                 {
-                    if (!string.IsNullOrEmpty(m_InputString))
+                    if (!string.IsNullOrEmpty(mInputString))
                     {
-                        m_caretPosition = m_InputString.Length;
-                        string selectedInputStr = m_InputString.Substring(0, m_caretPosition);
-                        SizeF stringLengthPx = m_stringMeasurer.MeasureString(selectedInputStr, new Font(TackGUI.GetFontFamily(_style.FontFamilyId), _style.FontSize));
+                        mcaretPosition = mInputString.Length;
+                        string selectedInputStr = mInputString.Substring(0, mcaretPosition);
+                        SizeF stringLengthPx = mstringMeasurer.MeasureString(selectedInputStr, new Font(TackGUI.GetFontFamily(_style.FontFamilyId), _style.FontSize));
 
-                        int totalPadding = (int)(m_Shape.Height - stringLengthPx.Height);
-                        TackGUI.Box(new RectangleShape(stringLengthPx.Width - 3.0f, (TackEngine.ScreenHeight * 0.70f) + (totalPadding / 2), 1, (stringLengthPx.Height)), m_CaretStyle);
+                        int totalPadding = (int)(mShape.Height - stringLengthPx.Height);
+                        TackGUI.Box(new RectangleShape(stringLengthPx.Width - 3.0f, (TackEngine.ScreenHeight * 0.70f) + (totalPadding / 2), 1, (stringLengthPx.Height)), mCaretStyle);
                     }
                     else
                     {
-                        SizeF stringLengthPx = m_stringMeasurer.MeasureString("l", new Font(TackGUI.GetFontFamily(_style.FontFamilyId), _style.FontSize));
+                        SizeF stringLengthPx = mstringMeasurer.MeasureString("l", new Font(TackGUI.GetFontFamily(_style.FontFamilyId), _style.FontSize));
 
-                        int totalPadding = (int)(m_Shape.Height - stringLengthPx.Height);
-                        TackGUI.Box(new RectangleShape(3.0f, (TackEngine.ScreenHeight * 0.70f) + (totalPadding / 2), 1, (stringLengthPx.Height)), m_CaretStyle);
+                        int totalPadding = (int)(mShape.Height - stringLengthPx.Height);
+                        TackGUI.Box(new RectangleShape(3.0f, (TackEngine.ScreenHeight * 0.70f) + (totalPadding / 2), 1, (stringLengthPx.Height)), mCaretStyle);
                     }
                 }
 
@@ -221,9 +221,9 @@ namespace TackEngineLib.GUI
         {
             Vector2f mousePos = TackInput.MousePosition();
 
-            if (mousePos.X >= m_Shape.X && mousePos.X <= (m_Shape.X + m_Shape.Width))
+            if (mousePos.X >= mShape.X && mousePos.X <= (mShape.X + mShape.Width))
             {
-                if (mousePos.Y >= m_Shape.Y && mousePos.Y <= (m_Shape.Y + m_Shape.Height))
+                if (mousePos.Y >= mShape.Y && mousePos.Y <= (mShape.Y + mShape.Height))
                 {
                     return true;
                 }

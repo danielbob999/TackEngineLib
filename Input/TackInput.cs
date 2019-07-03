@@ -14,79 +14,79 @@ namespace TackEngineLib.Input
     public static class TackInput
     {
         // Keyboard keys
-        private static bool[] m_KeysHeld;
-        private static bool[] m_KeysDownPerFrame;
-        private static bool[] m_KeysUpPerFrame;
-        private static bool[] m_LastFramesKeys;
+        private static bool[] mKeysHeld;
+        private static bool[] mKeysDownPerFrame;
+        private static bool[] mKeysUpPerFrame;
+        private static bool[] mLastFramesKeys;
 
         // Mouse button keys
-        private static bool[] m_MouseKeysHeld;
-        private static bool[] m_MouseKeysDownPerFrame;
-        private static bool[] m_MouseKeysUpPerFrame;
-        private static bool[] m_LastFrameMouseKeys;
+        private static bool[] mMouseKeysHeld;
+        private static bool[] mMouseKeysDownPerFrame;
+        private static bool[] mMouseKeysUpPerFrame;
+        private static bool[] mLastFrameMouseKeys;
 
-        private static int m_MousePositionX = 0;
-        private static int m_MousePositionY = 0;
+        private static int mMousePositionX = 0;
+        private static int mMousePositionY = 0;
 
         // Key Down/Up Lockers
-        private static bool[] locker_m_KeysDownPerFrame;
+        private static bool[] locker_mKeysDownPerFrame;
 
-        private static bool[] locker_m_MouseKeysDownPerFrame;
+        private static bool[] locker_mMouseKeysDownPerFrame;
 
-        private static List<KeyboardKey> m_InputBuffer = new List<KeyboardKey>();
+        private static List<KeyboardKey> mInputBuffer = new List<KeyboardKey>();
 
-        private static bool m_InputBufferCapsLock = false;
+        private static bool mInputBufferCapsLock = false;
 
         // Tells TackInput that there is a TackGUI.InputField active and needs input
-        private static bool m_GUIInputRequired = false;
+        private static bool mGUIInputRequired = false;
 
         /// <summary>
         /// A bool that tells TackInput that a TackGUI.InputField is active and requires input
         /// </summary>
         internal static bool GUIInputRequired
         {
-            get { return m_GUIInputRequired; }
+            get { return mGUIInputRequired; }
             set
             {
-                m_GUIInputRequired = value;
-                //TackConsole.EngineLog(EngineLogType.Message, string.Format("{0} GUI input", m_GUIInputRequired ? "Enabled" : "Disabled"));
+                mGUIInputRequired = value;
+                //TackConsole.EngineLog(EngineLogType.Message, string.Format("{0} GUI input", mGUIInputRequired ? "Enabled" : "Disabled"));
             }
         }
 
         internal static bool InputBufferCapsLock
         {
-            get { return m_InputBufferCapsLock; }
+            get { return mInputBufferCapsLock; }
         }
 
         internal static void OnStart()
         {
             // Keyboard keys
-            m_KeysHeld = new bool[1024];
-            m_LastFramesKeys = new bool[1024];
-            m_KeysDownPerFrame = new bool[1024];
-            m_KeysUpPerFrame = new bool[1024];
+            mKeysHeld = new bool[1024];
+            mLastFramesKeys = new bool[1024];
+            mKeysDownPerFrame = new bool[1024];
+            mKeysUpPerFrame = new bool[1024];
 
-            locker_m_KeysDownPerFrame = new bool[1024];
+            locker_mKeysDownPerFrame = new bool[1024];
 
             // Mouse keys
-            m_MouseKeysHeld = new bool[1024];
-            m_LastFrameMouseKeys = new bool[1024];
-            m_MouseKeysDownPerFrame = new bool[1024];
-            m_MouseKeysUpPerFrame = new bool[1024];
+            mMouseKeysHeld = new bool[1024];
+            mLastFrameMouseKeys = new bool[1024];
+            mMouseKeysDownPerFrame = new bool[1024];
+            mMouseKeysUpPerFrame = new bool[1024];
 
-            locker_m_MouseKeysDownPerFrame = new bool[1024];
+            locker_mMouseKeysDownPerFrame = new bool[1024];
         }
 
         internal static void OnUpdate()
         {
-            m_LastFramesKeys = m_KeysHeld;
-            m_LastFrameMouseKeys = m_MouseKeysHeld;
+            mLastFramesKeys = mKeysHeld;
+            mLastFrameMouseKeys = mMouseKeysHeld;
 
-            m_KeysDownPerFrame = new bool[1024];
-            m_KeysUpPerFrame = new bool[1024];
+            mKeysDownPerFrame = new bool[1024];
+            mKeysUpPerFrame = new bool[1024];
 
-            m_MouseKeysDownPerFrame = new bool[1024];
-            m_MouseKeysUpPerFrame = new bool[1024];
+            mMouseKeysDownPerFrame = new bool[1024];
+            mMouseKeysUpPerFrame = new bool[1024];
         }
 
         internal static void KeyDownEvent(KeyboardKey _key)
@@ -94,80 +94,80 @@ namespace TackEngineLib.Input
             /*
             // Add character to the input buffer.
             // NOTE: Don't register the key as being pressed
-            if (m_GUIInputRequired)
+            if (mGUIInputRequired)
             {
                 if (FindCharacterFromKeyCode(_key) == 8)
                 {
-                    if (m_InputBuffer.Count > 0)
-                        m_InputBuffer.RemoveAt(m_InputBuffer.Count - 1);
+                    if (mInputBuffer.Count > 0)
+                        mInputBuffer.RemoveAt(mInputBuffer.Count - 1);
                     return;
                 }
 
                 if (FindCharacterFromKeyCode(_key) != 0)
-                    m_InputBuffer.Add((char)FindCharacterFromKeyCode(_key));
+                    mInputBuffer.Add((char)FindCharacterFromKeyCode(_key));
 
                 return;
             }*/
 
-            if (m_GUIInputRequired)
+            if (mGUIInputRequired)
             {
-                m_InputBuffer.Add(_key);
+                mInputBuffer.Add(_key);
 
                 if (_key == KeyboardKey.CapsLock)
-                    m_InputBufferCapsLock = !m_InputBufferCapsLock;
+                    mInputBufferCapsLock = !mInputBufferCapsLock;
 
                 /*
                 if (FindCharacterFromKeyCode(_key) == 8)
                 {
-                    if (m_InputBuffer.Count > 0)
-                        m_InputBuffer.RemoveAt(m_InputBuffer.Count - 1);
+                    if (mInputBuffer.Count > 0)
+                        mInputBuffer.RemoveAt(mInputBuffer.Count - 1);
                 }
                 else if (FindCharacterFromKeyCode(_key) != 0)
                 {
-                    m_InputBuffer.Add((char)FindCharacterFromKeyCode(_key));
+                    mInputBuffer.Add((char)FindCharacterFromKeyCode(_key));
                 }*/
             }
 
-            if (!locker_m_KeysDownPerFrame[(int)_key]) // if the down key isn't locked
+            if (!locker_mKeysDownPerFrame[(int)_key]) // if the down key isn't locked
             {
-                m_KeysDownPerFrame[(int)_key] = true;
-                locker_m_KeysDownPerFrame[(int)_key] = true;
+                mKeysDownPerFrame[(int)_key] = true;
+                locker_mKeysDownPerFrame[(int)_key] = true;
             }
 
-            m_KeysHeld[(int)_key] = true;
+            mKeysHeld[(int)_key] = true;
         }
 
         internal static void KeyUpEvent(KeyboardKey _key)
         {
-            m_KeysUpPerFrame[(int)_key] = true;
-            m_KeysHeld[(int)_key] = false;
+            mKeysUpPerFrame[(int)_key] = true;
+            mKeysHeld[(int)_key] = false;
 
-            locker_m_KeysDownPerFrame[(int)_key] = false; // Unlock the down key
+            locker_mKeysDownPerFrame[(int)_key] = false; // Unlock the down key
         }
 
         internal static void MouseMoveEvent(int _x, int _y)
         {
-            m_MousePositionX = _x;
-            m_MousePositionY = _y;
+            mMousePositionX = _x;
+            mMousePositionY = _y;
         }
 
         internal static void MouseDownEvent(MouseButtonKey _key)
         {
-            if (!locker_m_MouseKeysDownPerFrame[(int)_key]) // if the down key isn't locked
+            if (!locker_mMouseKeysDownPerFrame[(int)_key]) // if the down key isn't locked
             {
-                m_MouseKeysDownPerFrame[(int)_key] = true;
-                locker_m_MouseKeysDownPerFrame[(int)_key] = true;
+                mMouseKeysDownPerFrame[(int)_key] = true;
+                locker_mMouseKeysDownPerFrame[(int)_key] = true;
             }
 
-            m_MouseKeysHeld[(int)_key] = true;
+            mMouseKeysHeld[(int)_key] = true;
         }
 
         internal static void MouseUpEvent(MouseButtonKey _key)
         {
-            m_MouseKeysUpPerFrame[(int)_key] = true;
-            m_MouseKeysHeld[(int)_key] = false;
+            mMouseKeysUpPerFrame[(int)_key] = true;
+            mMouseKeysHeld[(int)_key] = false;
 
-            locker_m_MouseKeysDownPerFrame[(int)_key] = false; // Unlock the down key
+            locker_mMouseKeysDownPerFrame[(int)_key] = false; // Unlock the down key
         }
 
         public static bool KeyDown(KeyboardKey _keyCode)
@@ -175,7 +175,7 @@ namespace TackEngineLib.Input
             if (GUIInputRequired)
                 return false;
 
-            return m_KeysDownPerFrame[(int)_keyCode];
+            return mKeysDownPerFrame[(int)_keyCode];
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace TackEngineLib.Input
         /// <returns></returns>
         internal static bool InputActiveKeyDown(KeyboardKey a_keyCode)
         {
-            return m_KeysDownPerFrame[(int)a_keyCode];
+            return mKeysDownPerFrame[(int)a_keyCode];
         }
 
         public static bool KeyHeld(KeyboardKey _keyCode)
@@ -194,7 +194,7 @@ namespace TackEngineLib.Input
             if (GUIInputRequired)
                 return false;
 
-            return m_KeysHeld[(int)_keyCode];
+            return mKeysHeld[(int)_keyCode];
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace TackEngineLib.Input
         /// <returns></returns>
         internal static bool InputActiveKeyHeld(KeyboardKey a_keyCode)
         { 
-            return m_KeysHeld[(int)a_keyCode];
+            return mKeysHeld[(int)a_keyCode];
         }
 
         public static bool KeyUp(KeyboardKey _keyCode)
@@ -213,7 +213,7 @@ namespace TackEngineLib.Input
             if (GUIInputRequired)
                 return false;
 
-            return m_KeysUpPerFrame[(int)_keyCode];
+            return mKeysUpPerFrame[(int)_keyCode];
         }
 
         /// <summary>
@@ -224,22 +224,22 @@ namespace TackEngineLib.Input
         /// <returns></returns>
         internal static bool InputActiveKeyUp(KeyboardKey a_keyCode)
         {
-            return m_KeysUpPerFrame[(int)a_keyCode];
+            return mKeysUpPerFrame[(int)a_keyCode];
         }
 
         public static bool MouseButtonDown(MouseButtonKey _key)
         {
-            return m_MouseKeysDownPerFrame[(int)_key];
+            return mMouseKeysDownPerFrame[(int)_key];
         }
 
         public static bool MouseButtonHeld(MouseButtonKey _key)
         {
-            return m_MouseKeysHeld[(int)_key];
+            return mMouseKeysHeld[(int)_key];
         }
 
         public static bool MouseButtonUp(MouseButtonKey _key)
         {
-            return m_MouseKeysUpPerFrame[(int)_key];
+            return mMouseKeysUpPerFrame[(int)_key];
         }
 
         public static Vector2f MousePosition()
@@ -250,18 +250,18 @@ namespace TackEngineLib.Input
             float oldRangeX = _oldMaxSizeX - 0;
             float newRangeX = 1 - (-1);
 
-            float finalX = (((m_MousePositionX - 0) * newRangeX) / oldRangeX) + (-1);
+            float finalX = (((mMousePositionX - 0) * newRangeX) / oldRangeX) + (-1);
 
             int _oldMaxSizeY = TackEngine.ScreenHeight;
 
             float oldRangeY = _oldMaxSizeY - 0;
             float newRangeY = 1 - (-1);
 
-            float finalY = (((m_MousePositionY - 0) * newRangeY) / oldRangeY) + (-1);
+            float finalY = (((mMousePositionY - 0) * newRangeY) / oldRangeY) + (-1);
 
             return new Vector2f(finalX, -finalY);*/
 
-            return new Vector2f(m_MousePositionX, m_MousePositionY);
+            return new Vector2f(mMousePositionX, mMousePositionY);
         }
 
         public static Vector2f MouseCoordsScreenToWorld()
@@ -277,7 +277,7 @@ namespace TackEngineLib.Input
         {
             string returnStr = "";
 
-            foreach (char c in m_InputBuffer)
+            foreach (char c in mInputBuffer)
             {
                 returnStr += c;
             }
@@ -297,7 +297,7 @@ namespace TackEngineLib.Input
         {
             if (_key == KeyboardKey.CapsLock)
             {
-                m_InputBufferCapsLock = !m_InputBufferCapsLock;
+                mInputBufferCapsLock = !mInputBufferCapsLock;
                 return 0; 
             }
 
@@ -315,7 +315,7 @@ namespace TackEngineLib.Input
 
             if (_key >= KeyboardKey.A && _key <= KeyboardKey.Z)
             {
-                if (m_InputBufferCapsLock)
+                if (mInputBufferCapsLock)
                     return ((int)_key - 18);
                 else
                     return ((int)_key + 14);
@@ -329,7 +329,7 @@ namespace TackEngineLib.Input
         /// </summary>
         public static void ClearInputBuffer()
         {
-            m_InputBuffer.Clear();
+            mInputBuffer.Clear();
         }
 
         /// <summary>
@@ -339,14 +339,14 @@ namespace TackEngineLib.Input
         /// <returns></returns>
         public static bool GetKeyFromInputBuffer(out KeyboardKey a_outKey)
         {
-            if (m_InputBuffer.Count == 0)
+            if (mInputBuffer.Count == 0)
             {
                 a_outKey = KeyboardKey.A;
                 return false;
             }
 
-            a_outKey = m_InputBuffer[0];
-            m_InputBuffer.RemoveAt(0);
+            a_outKey = mInputBuffer[0];
+            mInputBuffer.RemoveAt(0);
             return true;
         }
     }

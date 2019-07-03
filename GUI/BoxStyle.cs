@@ -7,38 +7,38 @@ namespace TackEngineLib.GUI
 {
     public class BoxStyle
     {
-        private Colour4b m_Colour;
-        private Sprite m_Sprite;
-        private GUIBorder m_Border;
+        private Colour4b mColour;
+        private Sprite mSprite;
+        private GUIBorder mBorder;
 
         public Colour4b Colour
         {
-            get { return m_Colour; }
-            set { m_Colour = value; }
+            get { return mColour; }
+            set { mColour = value; }
         }
 
         public Sprite SpriteTexture
         {
-            get { return m_Sprite; }
+            get { return mSprite; }
             set
             {
 
-                m_Sprite = value;
+                mSprite = value;
             }
         }
 
         public GUIBorder Border
         {
-            get { return m_Border; }
-            set { m_Border = value; }
+            get { return mBorder; }
+            set { mBorder = value; }
         }
 
         public BoxStyle()
         {
-            m_Colour = new Colour4b(255, 255, 255, 255);
-            m_Sprite = Sprite.DefaultSprite;
+            mColour = new Colour4b(255, 255, 255, 255);
+            mSprite = Sprite.DefaultSprite;
 
-            m_Border = null;
+            mBorder = null;
         }
 
         public void Destory()

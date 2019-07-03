@@ -14,25 +14,25 @@ namespace TackEngineLib.Engine
     public class TackEngine
     {
         private const int VERSION_MAJOR = 0;
-        private const int VERSION_MINOR = 8;
-        private const int VERSION_PATCH = 2;
+        private const int VERSION_MINOR = 9;
+        private const int VERSION_PATCH = 0;
         private const string VERSION_DESC = "AlphaBuild";
 
         internal static TackGameWindow currentWindow;
 
-        internal static int m_FramesPerSecond;
-        internal static int m_UpdateCyclesPerSecond;
-        internal static TackObject m_MainCameraTackObject;
+        internal static int mFramesPerSecond;
+        internal static int mUpdateCyclesPerSecond;
+        internal static TackObject mMainCameraTackObject;
 
         // Properties
         public static int RenderCyclesPerSecond
         {
-            get { return m_FramesPerSecond; }
+            get { return mFramesPerSecond; }
         }
 
         public static int UpdateCyclesPerSecond
         {
-            get { return m_UpdateCyclesPerSecond;  }
+            get { return mUpdateCyclesPerSecond;  }
         }
         
         public static int ScreenWidth {
@@ -45,14 +45,14 @@ namespace TackEngineLib.Engine
 
         public static Camera MainCamera {
             get {
-                if (m_MainCameraTackObject == null)
+                if (mMainCameraTackObject == null)
                 {
                     TackConsole.EngineLog(EngineLogType.Error, "The active Camera TackObject is currently equal to null. Creating a new TackObject...");
 
-                    m_MainCameraTackObject = new TackObject("MainCamera", new Vector2f(0, 0));
+                    mMainCameraTackObject = new TackObject("MainCamera", new Vector2f(0, 0));
                 }
 
-                if (m_MainCameraTackObject != null && m_MainCameraTackObject.GetComponent<Camera>() == null)
+                if (mMainCameraTackObject != null && mMainCameraTackObject.GetComponent<Camera>() == null)
                 {
                     TackConsole.EngineLog(EngineLogType.Error, "The active Camera TackObject does not have a component of type TackComponent.Camera. Adding one...");
 
@@ -60,10 +60,10 @@ namespace TackEngineLib.Engine
                     newCamera.CameraScreenHeight = ScreenHeight;
                     newCamera.CameraScreenWidth = ScreenWidth;
 
-                    m_MainCameraTackObject.AddComponent(newCamera);
+                    mMainCameraTackObject.AddComponent(newCamera);
                 }
 
-                return m_MainCameraTackObject.GetComponent<Camera>();
+                return mMainCameraTackObject.GetComponent<Camera>();
             }
         }
 

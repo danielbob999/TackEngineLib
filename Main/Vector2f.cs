@@ -11,47 +11,47 @@ namespace TackEngineLib.Main
     /// </summary>
     public struct Vector2f
     {
-        private float m_X;
-        private float m_Y;
+        private float mX;
+        private float mY;
 
         public float X
         {
-            get { return m_X; }
-            set { m_X = value; }
+            get { return mX; }
+            set { mX = value; }
         }
 
         public float Y
         {
-            get { return m_Y; }
-            set { m_Y = value; }
+            get { return mY; }
+            set { mY = value; }
         }
 
         public Vector2f(float _x, float _y)
         {
-            m_X = _x;
-            m_Y = _y;
+            mX = _x;
+            mY = _y;
         }
 
         public static Vector2f operator+ (Vector2f _a, Vector2f _b)
         {
-            return new Vector2f(_a.m_X + _b.m_X, _a.m_Y + _b.m_Y);
+            return new Vector2f(_a.mX + _b.mX, _a.mY + _b.mY);
         }
 
         public static Vector2f operator-(Vector2f _a, Vector2f _b)
         {
-            return new Vector2f(_b.m_X - _a.m_X, _b.m_Y - _a.m_Y);
+            return new Vector2f(_b.mX - _a.mX, _b.mY - _a.mY);
         }
 
         public static Vector2f operator* (Vector2f _a, Vector2f _b)
         {
-            return new Vector2f(_a.m_X * _b.m_X, _a.m_Y * _b.m_Y);
+            return new Vector2f(_a.mX * _b.mX, _a.mY * _b.mY);
         }
 
         public static bool operator== (Vector2f _a, Vector2f _b)
         {
-            if (_a.m_X == _b.m_X)
+            if (_a.mX == _b.mX)
             {
-                if (_a.m_Y == _b.m_Y)
+                if (_a.mY == _b.mY)
                 {
                     return true;
                 }
@@ -62,9 +62,9 @@ namespace TackEngineLib.Main
 
         public static bool operator!= (Vector2f _a, Vector2f _b)
         {
-            if (_a.m_X == _b.m_X)
+            if (_a.mX == _b.mX)
             {
-                if (_a.m_Y == _b.m_Y)
+                if (_a.mY == _b.mY)
                 {
                     return false;
                 }
@@ -90,7 +90,7 @@ namespace TackEngineLib.Main
 
         public override string ToString()
         {
-            string returnStr = "(" + m_X + ", " + m_Y + ")";
+            string returnStr = "(" + mX + ", " + mY + ")";
             return returnStr;
         }
     }

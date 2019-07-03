@@ -14,16 +14,16 @@ namespace TackEngineLib.Objects.Components
 {
     public class AudioComponent : TackComponent
     {
-        private int m_AudioSourceId;
-        private AudioClip m_AudioClip;
-        private bool m_LoopAudio;
+        private int mAudioSourceId;
+        private AudioClip mAudioClip;
+        private bool mLoopAudio;
 
         /// <summary>
         /// Gets the ID of the audio source attached to this component
         /// </summary>
         public int AudioSourceId
         {
-            get { return m_AudioSourceId; }
+            get { return mAudioSourceId; }
         }
 
         /// <summary>
@@ -31,8 +31,8 @@ namespace TackEngineLib.Objects.Components
         /// </summary>
         public AudioClip AudioClip
         {
-            get { return m_AudioClip; }
-            set { m_AudioClip = value; }
+            get { return mAudioClip; }
+            set { mAudioClip = value; }
         }
 
 
@@ -41,13 +41,13 @@ namespace TackEngineLib.Objects.Components
         /// </summary>
         public bool LoopAudio
         {
-            get { return m_LoopAudio; }
-            set { m_LoopAudio = value; }
+            get { return mLoopAudio; }
+            set { mLoopAudio = value; }
         }
 
         public AudioComponent()
         {
-            m_AudioSourceId = AL.GenSource();
+            mAudioSourceId = AL.GenSource();
         }
 
         public override void OnStart()
@@ -70,10 +70,10 @@ namespace TackEngineLib.Objects.Components
         /// </summary>
         public void Play()
         {
-            AL.Source(m_AudioSourceId, ALSourcei.Buffer, m_AudioClip.AudioId);
-            AL.Source(m_AudioSourceId, ALSourceb.Looping, false);
+            AL.Source(mAudioSourceId, ALSourcei.Buffer, mAudioClip.AudioId);
+            AL.Source(mAudioSourceId, ALSourceb.Looping, false);
 
-            AL.SourcePlay(m_AudioSourceId);
+            AL.SourcePlay(mAudioSourceId);
         }
     }
 }

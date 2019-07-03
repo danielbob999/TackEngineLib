@@ -8,11 +8,11 @@ namespace TackEngineLib.Main
 {
     public class TackEngineVersion
     {
-        private int m_Major;
-        private int m_Minor;
-        private int m_Patch;
-        private string m_Desc;
-        private int m_BuildNumber;
+        private int mMajor;
+        private int mMinor;
+        private int mPatch;
+        private string mDesc;
+        private int mBuildNumber;
 
         // Properties
 
@@ -21,7 +21,7 @@ namespace TackEngineLib.Main
         /// </summary>
         public int Major
         {
-            get { return m_Major; }
+            get { return mMajor; }
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace TackEngineLib.Main
         /// </summary>
         public int Minor
         {
-            get { return m_Minor; }
+            get { return mMinor; }
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace TackEngineLib.Main
         /// </summary>
         public int Patch
         {
-            get { return m_Patch; }
+            get { return mPatch; }
         }
 
         /// <summary>
@@ -45,26 +45,26 @@ namespace TackEngineLib.Main
         /// </summary>
         public string Desc
         {
-            get { return m_Desc; }
+            get { return mDesc; }
         }
 
         public int BuildNumber
         {
-            get { return m_BuildNumber; }
+            get { return mBuildNumber; }
         }
 
         internal TackEngineVersion(int _major, int _minor, int _patch, string _desc, int _buildn)
         {
-            m_Major = _major;
-            m_Minor = _minor;
-            m_Patch = _patch;
-            m_Desc = _desc;
-            m_BuildNumber = _buildn;
+            mMajor = _major;
+            mMinor = _minor;
+            mPatch = _patch;
+            mDesc = _desc;
+            mBuildNumber = _buildn;
         }
 
         public override string ToString()
         {
-            return string.Format("{0}.{1}.{2} (#{3})", m_Major, m_Minor, m_Patch, m_BuildNumber);
+            return string.Format("{0}.{1}.{2} (#{3})", mMajor, mMinor, mPatch, mBuildNumber);
         }
 
     }

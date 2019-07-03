@@ -12,37 +12,37 @@ namespace TackEngineLib.Main
 {
     public class SpriteSheet
     {
-        private Sprite m_SpriteSheetTexture;
-        private Sprite[] m_SingleSpriteTextures;
-        private int m_SpriteRefreshTime = 0;
-        private int m_SingleSpriteWidth = 0;
-        private int m_SingleSpriteHeight = 0;
-        private int m_SpriteCount = 0;
-        private int m_CurrentSpriteId = 0;
-        private Stopwatch m_StopWatch;
-        private bool m_Loop = true;
+        private Sprite mSpriteSheetTexture;
+        private Sprite[] mSingleSpriteTextures;
+        private int mSpriteRefreshTime = 0;
+        private int mSingleSpriteWidth = 0;
+        private int mSingleSpriteHeight = 0;
+        private int mSpriteCount = 0;
+        private int mCurrentSpriteId = 0;
+        private Stopwatch mStopWatch;
+        private bool mLoop = true;
 
         // Properties
         public Sprite SpriteSheetTexture
         {
-            get { return m_SpriteSheetTexture; }
-            set { m_SpriteSheetTexture = value; }
+            get { return mSpriteSheetTexture; }
+            set { mSpriteSheetTexture = value; }
         }
 
         public int SpriteSheetRefreshTime
         {
-            get { return m_SpriteRefreshTime; }
-            set { m_SpriteRefreshTime = value; }
+            get { return mSpriteRefreshTime; }
+            set { mSpriteRefreshTime = value; }
         }
 
         public int SingleSpriteWidth
         {
-            get { return m_SingleSpriteWidth; }
+            get { return mSingleSpriteWidth; }
             set
             {
                 if (value >= 0)
                 {
-                    m_SingleSpriteWidth = value;
+                    mSingleSpriteWidth = value;
                 }
                 else
                 {
@@ -53,12 +53,12 @@ namespace TackEngineLib.Main
 
         public int SingleSpriteHeight
         {
-            get { return m_SingleSpriteHeight; }
+            get { return mSingleSpriteHeight; }
             set
             {
                 if (value >= 0)
                 {
-                    m_SingleSpriteHeight = value;
+                    mSingleSpriteHeight = value;
                 }
                 else
                 {
@@ -69,68 +69,68 @@ namespace TackEngineLib.Main
 
         public int CurrentSpriteId
         {
-            get { return m_CurrentSpriteId; }
-            set { m_CurrentSpriteId = value; } // TODO: Validation, cannot set id to higher than m_SpriteCount
+            get { return mCurrentSpriteId; }
+            set { mCurrentSpriteId = value; } // TODO: Validation, cannot set id to higher than mSpriteCount
         }
 
         public bool Loop
         {
-            get { return m_Loop; }
-            set { m_Loop = value; }
+            get { return mLoop; }
+            set { mLoop = value; }
         }
 
         public SpriteSheet()
         {
-            m_SpriteRefreshTime = 0;
-            m_SingleSpriteWidth = 0;
-            m_SingleSpriteHeight = 0;
+            mSpriteRefreshTime = 0;
+            mSingleSpriteWidth = 0;
+            mSingleSpriteHeight = 0;
 
-            m_CurrentSpriteId = 0;
+            mCurrentSpriteId = 0;
         }
 
         public SpriteSheet(Sprite _tex, int _refreshTime, int _w, int _h, int _count)
         {
-            m_SpriteSheetTexture = _tex;
-            m_SingleSpriteTextures = new Sprite[_count];
-            m_SpriteRefreshTime = _refreshTime;
-            m_SingleSpriteWidth = _w;
-            m_SingleSpriteHeight = _h;
-            m_SpriteCount = _count;
+            mSpriteSheetTexture = _tex;
+            mSingleSpriteTextures = new Sprite[_count];
+            mSpriteRefreshTime = _refreshTime;
+            mSingleSpriteWidth = _w;
+            mSingleSpriteHeight = _h;
+            mSpriteCount = _count;
 
-            m_CurrentSpriteId = 0;
+            mCurrentSpriteId = 0;
         }
 
         public void Create()
         {
-            for (int i = 0; i < m_SpriteCount; i++)
+            for (int i = 0; i < mSpriteCount; i++)
             {
-                m_SingleSpriteTextures[i] = Sprite.LoadFromBitmap(m_SpriteSheetTexture.GetBitmap().Clone(
-                    new System.Drawing.RectangleF(i * m_SingleSpriteWidth, 0, m_SingleSpriteWidth, m_SingleSpriteHeight), m_SpriteSheetTexture.GetBitmap().PixelFormat));
+                mSingleSpriteTextures[i] = Sprite.LoadFromBitmap(mSpriteSheetTexture.GetBitmap().Clone(
+                    new System.Drawing.RectangleF(i * mSingleSpriteWidth, 0, mSingleSpriteWidth, mSingleSpriteHeight), mSpriteSheetTexture.GetBitmap().PixelFormat));
 
-                m_SingleSpriteTextures[i].Width = m_SingleSpriteWidth;
-                m_SingleSpriteTextures[i].Height = m_SingleSpriteHeight;
+                mSingleSpriteTextures[i].Width = mSingleSpriteWidth;
+                mSingleSpriteTextures[i].Height = mSingleSpriteHeight;
 
-                m_SingleSpriteTextures[i].Create();
+                mSingleSpriteTextures[i].Create();
             }
 
-            TackConsole.EngineLog(EngineLogType.Message, string.Format("Created {0} Sprites from a SpriteSheet. SingleWidth: {1}, SingleHeight{2}", m_SpriteCount, m_SingleSpriteWidth, m_SingleSpriteHeight));
+            TackConsole.EngineLog(EngineLogType.Message, string.Format("Created {0} Sprites from a SpriteSheet. SingleWidth: {1}, SingleHeight{2}", mSpriteCount, mSingleSpriteWidth, mSingleSpriteHeight));
         }
 
         public void StartTimer()
         {
-            m_StopWatch = new Stopwatch();
-            m_StopWatch.Start();
+            mStopWatch = new Stopwatch();
+            mStopWatch.Start();
             //EngineLog.WriteMessage("Starting SpriteSheet Stopwatch");
         }
 
         public Sprite SetFirstSprite()
         {
             Sprite newSprite = new Sprite();
-            newSprite = Sprite.LoadFromBitmap(m_SpriteSheetTexture.GetBitmap().Clone(
-                    new System.Drawing.RectangleF(0, 0, m_SingleSpriteWidth, m_SingleSpriteHeight), m_SpriteSheetTexture.GetBitmap().PixelFormat));
+            newSprite = Sprite.LoadFromBitmap(mSpriteSheetTexture.GetBitmap().Clone(
+                    new System.Drawing.RectangleF(0, 0, mSingleSpriteWidth, mSingleSpriteHeight), mSpriteSheetTexture.GetBitmap().PixelFormat));
 
-            newSprite.Width = m_SingleSpriteWidth;
-            newSprite.Height = m_SingleSpriteHeight;
+            newSprite.Width = mSingleSpriteWidth;
+            newSprite.Height = mSingleSpriteHeight;
 
             newSprite.Create();
 
@@ -139,13 +139,13 @@ namespace TackEngineLib.Main
 
         public void SpriteUpdateCheck()
         {
-            if (m_StopWatch.ElapsedMilliseconds >= m_SpriteRefreshTime)
+            if (mStopWatch.ElapsedMilliseconds >= mSpriteRefreshTime)
             {
-                //EngineLog.WriteMessage("{0} >= {1}. Changing current Sprite id. {2} -> {3}", m_StopWatch.ElapsedMilliseconds, m_SpriteRefreshTime, m_CurrentSpriteId, GetNextValidSpriteId());
+                //EngineLog.WriteMessage("{0} >= {1}. Changing current Sprite id. {2} -> {3}", mStopWatch.ElapsedMilliseconds, mSpriteRefreshTime, mCurrentSpriteId, GetNextValidSpriteId());
 
-                m_CurrentSpriteId = GetNextValidSpriteId();
+                mCurrentSpriteId = GetNextValidSpriteId();
 
-                m_StopWatch.Restart();
+                mStopWatch.Restart();
             }
         }
 
@@ -156,23 +156,23 @@ namespace TackEngineLib.Main
         public int GetNextValidSpriteId()
         {
             // Is there another sprite to the right?
-            if (m_CurrentSpriteId < m_SpriteCount - 1)
+            if (mCurrentSpriteId < mSpriteCount - 1)
             {
-                return m_CurrentSpriteId + 1;
+                return mCurrentSpriteId + 1;
             }
 
             // There is no more sprite data to the right, and if loop=true, set back to index 0
-            if (m_Loop)
+            if (mLoop)
             {
                 return 0;
             }
 
-            return m_CurrentSpriteId;
+            return mCurrentSpriteId;
         }
 
         public Sprite GetActiveSprite()
         {
-            return m_SingleSpriteTextures[m_CurrentSpriteId];
+            return mSingleSpriteTextures[mCurrentSpriteId];
         }
     }
 }

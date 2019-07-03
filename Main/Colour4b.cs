@@ -6,69 +6,104 @@ using System.Threading.Tasks;
 
 namespace TackEngineLib.Main
 {
-    public class Colour4b
+    /// <summary>
+    /// An object representing an RGBA colour
+    /// </summary>
+    public struct Colour4b
     {
-        private byte m_R;
-        private byte m_G;
-        private byte m_B;
-        private byte m_A;
+        private byte mR;
+        private byte mG;
+        private byte mB;
+        private byte mA;
 
+        /// <summary>
+        /// The red component of this colour
+        /// </summary>
         public byte R
         {
-            get { return m_R; }
-            set { m_R = value; }
+            get { return mR; }
+            set { mR = value; }
         }
 
+        /// <summary>
+        /// The green component of this colour
+        /// </summary>
         public byte G
         {
-            get { return m_G; }
-            set { m_G = value; }
+            get { return mG; }
+            set { mG = value; }
         }
 
+        /// <summary>
+        /// The blue component of this colour
+        /// </summary>
         public byte B
         {
-            get { return m_B; }
-            set { m_B = value; }
+            get { return mB; }
+            set { mB = value; }
         }
 
+        /// <summary>
+        /// The transparent component of this colour
+        /// </summary>
         public byte A
         {
-            get { return m_A; }
-            set { m_A = value; }
+            get { return mA; }
+            set { mA = value; }
         }
 
-        public Colour4b()
+        public static Colour4b Black
         {
-            m_R = 0;
-            m_G = 0;
-            m_B = 0;
-            m_A = 255;
+            get { return new Colour4b(0, 0, 0, 255); }
         }
 
-        public Colour4b(byte _r, byte _g, byte _b)
+        public static Colour4b White
         {
-            m_R = _r;
-            m_G = _g;
-            m_B = _b;
-            m_A = 255;
+            get { return new Colour4b(255, 255, 255, 255); }
         }
 
-        public Colour4b(byte _r, byte _g, byte _b, byte _a)
+        public static Colour4b Red
         {
-            m_R = _r;
-            m_G = _g;
-            m_B = _b;
-            m_A = _a;
+            get { return new Colour4b(255, 0, 0, 255); }
         }
 
-        public static Colour4b operator* (Colour4b _a, Colour4b _b)
+        public static Colour4b Green
         {
-            int m_R = _a.m_R * (_b.m_R / 255);
-            int m_G = _a.m_G * (_b.m_G / 255);
-            int m_B = _a.m_B * (_b.m_B / 255);
-            int m_A = _a.m_A * (_b.m_A / 255);
+            get { return new Colour4b(0, 255, 0, 255); }
+        }
 
-            return new Colour4b((byte)m_R, (byte)m_G, (byte)m_B, (byte)m_A);
+        public static Colour4b Blue
+        {
+            get { return new Colour4b(0, 0, 255, 255); }
+        }
+
+        /// <summary>
+        /// Initialises a new Colour4b object
+        /// </summary>
+        /// <param name="aR">The red component</param>
+        /// <param name="aG">The green component</param>
+        /// <param name="aB">The blue component</param>
+        public Colour4b(byte aR = 0, byte aG = 0, byte aB = 0)
+        {
+            mR = aR;
+            mG = aG;
+            mB = aB;
+            mA = 255;
+        }
+
+        /// <summary>
+        /// Initialises a new Colour4b object
+        /// </summary>
+        /// <param name="aR">The red component</param>
+        /// <param name="aG">The green component</param>
+        /// <param name="aB">The blue component</param>
+        /// <param name="aA">The transparent component</param>
+        public Colour4b(byte aR, byte aG, byte aB, byte aA)
+        {
+            mR = aR;
+            mG = aG;
+            mB = aB;
+            mA = aA;
         }
     }
 }

@@ -27,12 +27,12 @@ namespace TackEngineLib.Objects.Components
          */
 
         //public RectangleShape rectange;
-        private Sprite m_Sprite;
-        private SpriteSheet m_SpriteSheet;
-        private Colour4b m_Colour;
-        private float[] m_ActualVertexPositions; // [0] = v1, [1] = v2, [2] = v3, [3] = v4
+        private Sprite mSprite;
+        private SpriteSheet mSpriteSheet;
+        private Colour4b mColour;
+        private float[] mActualVertexPositions; // [0] = v1, [1] = v2, [2] = v3, [3] = v4
 
-        private RendererMode m_RenderMode = RendererMode.Colour;
+        private RendererMode mRenderMode = RendererMode.Colour;
 
         // PROPERTIES
 
@@ -41,8 +41,8 @@ namespace TackEngineLib.Objects.Components
         /// </summary>
         public Sprite Sprite
         {
-            get { return m_Sprite; }
-            set { m_Sprite = value; }
+            get { return mSprite; }
+            set { mSprite = value; }
         }
 
         /// <summary>
@@ -50,8 +50,8 @@ namespace TackEngineLib.Objects.Components
         /// </summary>
         public SpriteSheet SpriteSheet
         {
-            get { return m_SpriteSheet; }
-            set { m_SpriteSheet = value; }
+            get { return mSpriteSheet; }
+            set { mSpriteSheet = value; }
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace TackEngineLib.Objects.Components
         /// </summary>
         public Colour4b Colour
         {
-            get { return m_Colour; }
-            set { m_Colour = value; }
+            get { return mColour; }
+            set { mColour = value; }
         }
 
         /// <summary>
@@ -68,8 +68,8 @@ namespace TackEngineLib.Objects.Components
         /// </summary>
         public RendererMode RenderMode
         {
-            get { return m_RenderMode; }
-            set { m_RenderMode = value; }
+            get { return mRenderMode; }
+            set { mRenderMode = value; }
         }
 
         /// <summary>
@@ -77,13 +77,13 @@ namespace TackEngineLib.Objects.Components
         /// </summary>
         public QuadRenderer()
         {
-            m_ActualVertexPositions = new float[4];
+            mActualVertexPositions = new float[4];
         }
 
         public QuadRenderer(RectangleShape _rect, Colour4b _colour)
         {
             //rectange = _rect;
-            m_Colour = _colour;
+            mColour = _colour;
 
             Sprite = Main.Sprite.LoadFromBitmap(Properties.Resources.DefaultSprite);
             Sprite.Create(false);
@@ -93,9 +93,9 @@ namespace TackEngineLib.Objects.Components
         {
             base.OnStart();
 
-            if (m_RenderMode == RendererMode.SpriteSheet && m_SpriteSheet != null)
+            if (mRenderMode == RendererMode.SpriteSheet && mSpriteSheet != null)
             {
-                m_SpriteSheet.StartTimer();
+                mSpriteSheet.StartTimer();
             }
         }
 
@@ -103,9 +103,9 @@ namespace TackEngineLib.Objects.Components
         {
             base.OnUpdate();
 
-            if (m_RenderMode == RendererMode.SpriteSheet)
+            if (mRenderMode == RendererMode.SpriteSheet)
             {
-                m_SpriteSheet.SpriteUpdateCheck();
+                mSpriteSheet.SpriteUpdateCheck();
             }
 
             //FindVertexPoint(1);

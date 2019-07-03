@@ -10,10 +10,10 @@ namespace TackEngineLib.Objects.Components
 {
     public class Camera : TackComponent
     {
-        private int m_CameraScreenWidth;
-        private int m_CameraScreenHeight;
-        private Colour4b m_ColourOverlay;
-        private float m_ZoomFactor = 1.0f;
+        private int mCameraScreenWidth;
+        private int mCameraScreenHeight;
+        private Colour4b mColourOverlay;
+        private float mZoomFactor = 1.0f;
 
 
         // Properties
@@ -21,15 +21,15 @@ namespace TackEngineLib.Objects.Components
         {
             get
             {
-                return m_CameraScreenWidth;
+                return mCameraScreenWidth;
             }
             set
             {
                 if (value > 0)
                 {
-                    int oldValue = m_CameraScreenWidth;
-                    m_CameraScreenWidth = value;
-                    TackConsole.EngineLog(EngineLogType.Message, string.Format("Updated Camera.CameraScreenWidth. Old ({0}) -> New ({1})", oldValue, m_CameraScreenWidth));
+                    int oldValue = mCameraScreenWidth;
+                    mCameraScreenWidth = value;
+                    TackConsole.EngineLog(EngineLogType.Message, string.Format("Updated Camera.CameraScreenWidth. Old ({0}) -> New ({1})", oldValue, mCameraScreenWidth));
                 }
                 else
                     TackConsole.EngineLog(EngineLogType.Error, "Camera Screen Width cannot be set to less than 1");
@@ -40,15 +40,15 @@ namespace TackEngineLib.Objects.Components
         {
             get
             {
-                return m_CameraScreenHeight;
+                return mCameraScreenHeight;
             }
             set
             {
                 if (value > 0)
                 {
-                    int oldValue = m_CameraScreenHeight;
-                    m_CameraScreenHeight = value;
-                    TackConsole.EngineLog(EngineLogType.Message, string.Format("Updated Camera.CameraScreenHeight. Old ({0}) -> New ({1})", oldValue, m_CameraScreenHeight));
+                    int oldValue = mCameraScreenHeight;
+                    mCameraScreenHeight = value;
+                    TackConsole.EngineLog(EngineLogType.Message, string.Format("Updated Camera.CameraScreenHeight. Old ({0}) -> New ({1})", oldValue, mCameraScreenHeight));
                 }
                 else
                     TackConsole.EngineLog(EngineLogType.Error, "Camera Screen Height cannot be set to less than 1");
@@ -57,11 +57,11 @@ namespace TackEngineLib.Objects.Components
 
         public Colour4b ColourOverlay
         {
-            get { return m_ColourOverlay; }
-            set { m_ColourOverlay = value; }
+            get { return mColourOverlay; }
+            set { mColourOverlay = value; }
         }
 
-        public float ZoomFactor { get { return m_ZoomFactor; } set { m_ZoomFactor = value; } }
+        public float ZoomFactor { get { return mZoomFactor; } set { mZoomFactor = value; } }
 
         public Camera()
         {

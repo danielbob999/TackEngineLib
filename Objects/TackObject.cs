@@ -21,12 +21,12 @@ namespace TackEngineLib.Objects
         private static Random rnd = new Random();
 
         private string gameObjectHash;
-        private string m_Name;
-        private Vector2f m_Position;
-        private Vector2f m_Scale;
-        private float m_Rotation;
-        private Vector2f m_Up;
-        private Vector2f m_Right;
+        private string mName;
+        private Vector2f mPosition;
+        private Vector2f mScale;
+        private float mRotation;
+        private Vector2f mUp;
+        private Vector2f mRight;
 
         internal List<object> objectComponents = new List<object>();
         internal List<string> usedHashCodes = new List<string>();
@@ -37,8 +37,8 @@ namespace TackEngineLib.Objects
         /// <datatype>string</datatype>
         public string Name
         {
-            get { return m_Name; }
-            set { m_Name = value; }
+            get { return mName; }
+            set { mName = value; }
         }
 
         /// <summary>
@@ -47,8 +47,8 @@ namespace TackEngineLib.Objects
         /// <datatype>Vector2f</datatype>
         public Vector2f Position
         {
-            get { return m_Position; }
-            set { m_Position = value; }
+            get { return mPosition; }
+            set { mPosition = value; }
         }
 
         /// <summary>
@@ -57,8 +57,8 @@ namespace TackEngineLib.Objects
         /// <datatype>Vector2f</datatype>
         public Vector2f Scale
         {
-            get { return m_Scale; }
-            set { m_Scale = value; }
+            get { return mScale; }
+            set { mScale = value; }
         }
 
         /// <summary>
@@ -67,8 +67,8 @@ namespace TackEngineLib.Objects
         /// <datatype>float</datatype>
         public float Rotation
         {
-            get { return m_Rotation; }
-            set { m_Rotation = value; }
+            get { return mRotation; }
+            set { mRotation = value; }
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace TackEngineLib.Objects
         {
             get
             {
-                return new Vector2f(1.0f * (float)System.Math.Sin(TackMath.DegToRad(m_Rotation)), 1.0f * (float)System.Math.Cos(TackMath.DegToRad(m_Rotation)));
+                return new Vector2f(1.0f * (float)System.Math.Sin(TackMath.DegToRad(mRotation)), 1.0f * (float)System.Math.Cos(TackMath.DegToRad(mRotation)));
             }
         }
 
@@ -89,7 +89,7 @@ namespace TackEngineLib.Objects
         {
             get
             {
-                return new Vector2f(1.0f * (float)System.Math.Sin(TackMath.DegToRad(m_Rotation + 90)), 1.0f * (float)System.Math.Cos(TackMath.DegToRad(m_Rotation + 90)));
+                return new Vector2f(1.0f * (float)System.Math.Sin(TackMath.DegToRad(mRotation + 90)), 1.0f * (float)System.Math.Cos(TackMath.DegToRad(mRotation + 90)));
             }
         }
 
@@ -98,47 +98,47 @@ namespace TackEngineLib.Objects
         public TackObject()
         {
             gameObjectHash = CreateTackObjectHash();
-            m_Name = "New GameObject";
-            m_Position = new Vector2f();
-            m_Scale = new Vector2f();
-            m_Rotation = 0;
+            mName = "New GameObject";
+            mPosition = new Vector2f();
+            mScale = new Vector2f();
+            mRotation = 0;
 
             TackObjectManager.AddTackObject(this);
 
-            TackConsole.EngineLog(EngineLogType.Message, string.Format("Create new TackObject at position ({0}, {1}) with name '{2}' and hash '{3}'", m_Position.X, m_Position.Y, m_Name, gameObjectHash));
+            TackConsole.EngineLog(EngineLogType.Message, string.Format("Create new TackObject at position ({0}, {1}) with name '{2}' and hash '{3}'", mPosition.X, mPosition.Y, mName, gameObjectHash));
         }
 
         public TackObject(string _n)
         {
             gameObjectHash = CreateTackObjectHash();
-            m_Name = _n;
-            m_Position = new Vector2f();
-            m_Scale = new Vector2f();
-            m_Rotation = 0;
+            mName = _n;
+            mPosition = new Vector2f();
+            mScale = new Vector2f();
+            mRotation = 0;
 
             TackObjectManager.AddTackObject(this);
 
-            TackConsole.EngineLog(EngineLogType.Message, string.Format("Create new TackObject at position ({0}, {1}) with name '{2}' and hash '{3}'", m_Position.X, m_Position.Y, m_Name, gameObjectHash));
+            TackConsole.EngineLog(EngineLogType.Message, string.Format("Create new TackObject at position ({0}, {1}) with name '{2}' and hash '{3}'", mPosition.X, mPosition.Y, mName, gameObjectHash));
         }
         
         public TackObject(string _n, Vector2f _p)
         {
             gameObjectHash = CreateTackObjectHash();
-            m_Name = _n;
-            m_Position = _p;
-            m_Scale = new Vector2f();
-            m_Rotation = 0;
+            mName = _n;
+            mPosition = _p;
+            mScale = new Vector2f();
+            mRotation = 0;
 
             TackObjectManager.AddTackObject(this);
 
-            TackConsole.EngineLog(EngineLogType.Message, string.Format("Create new TackObject at position ({0}, {1}) with name '{2}' and hash '{3}'", m_Position.X, m_Position.Y, m_Name, gameObjectHash));
+            TackConsole.EngineLog(EngineLogType.Message, string.Format("Create new TackObject at position ({0}, {1}) with name '{2}' and hash '{3}'", mPosition.X, mPosition.Y, mName, gameObjectHash));
         }
 
         public void AddComponent(object _component)
         {
             if (!_component.GetType().IsSubclassOf(typeof(TackComponent)))
             {
-                TackConsole.EngineLog(EngineLogType.Error, string.Format("'{0}' cannot be added to TackObject with name '{1}' because it does not inherit from '{2}'", _component.GetType(), m_Name, typeof(TackComponent)));
+                TackConsole.EngineLog(EngineLogType.Error, string.Format("'{0}' cannot be added to TackObject with name '{1}' because it does not inherit from '{2}'", _component.GetType(), mName, typeof(TackComponent)));
                 return;
             }
 
@@ -147,11 +147,11 @@ namespace TackEngineLib.Objects
                 ((TackComponent)_component).parentObject = this;
                 objectComponents.Add(_component);
 
-                TackConsole.EngineLog(EngineLogType.Message, string.Format("Added a '{0}' component to TackObject with name '{1}'", _component.GetType(), m_Name));
+                TackConsole.EngineLog(EngineLogType.Message, string.Format("Added a '{0}' component to TackObject with name '{1}'", _component.GetType(), mName));
                 
-                if (_component.GetType() == typeof(Camera) && TackEngine.m_MainCameraTackObject == null)
+                if (_component.GetType() == typeof(Camera) && TackEngine.mMainCameraTackObject == null)
                 {
-                    TackEngine.m_MainCameraTackObject = this;
+                    TackEngine.mMainCameraTackObject = this;
                 }
             }
         }
@@ -167,14 +167,14 @@ namespace TackEngineLib.Objects
             object newComp = (T)Activator.CreateInstance(typeof(T));
             ((TackComponent)newComp).IsNullComponent(true);
 
-            //EngineLog.WriteError(EngineErrorMode.TackObject, "TackObject with name '{0}' and hash '{1}' does not have a component of type '{2}'", m_Name, gameObjectHash, typeof(T));
+            //EngineLog.WriteError(EngineErrorMode.TackObject, "TackObject with name '{0}' and hash '{1}' does not have a component of type '{2}'", mName, gameObjectHash, typeof(T));
             return (T)newComp;
         }
 
         public bool IsPointInArea(Vector2f _point)
         {
-            Vector2f xConstraints = new Vector2f(m_Position.X - (m_Scale.X / 2), m_Position.X + (m_Scale.X / 2));
-            Vector2f yConstraints = new Vector2f(m_Position.Y - (m_Scale.Y / 2), m_Position.Y + (m_Scale.Y / 2));
+            Vector2f xConstraints = new Vector2f(mPosition.X - (mScale.X / 2), mPosition.X + (mScale.X / 2));
+            Vector2f yConstraints = new Vector2f(mPosition.Y - (mScale.Y / 2), mPosition.Y + (mScale.Y / 2));
 
             if ((_point.X > xConstraints.X) && (_point.X < xConstraints.Y))
             {
@@ -190,7 +190,7 @@ namespace TackEngineLib.Objects
 
         internal void Move(Vector2f _vec)
         {
-            m_Position += _vec;
+            mPosition += _vec;
         }
 
         internal string CreateTackObjectHash()

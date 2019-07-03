@@ -11,16 +11,16 @@ namespace TackEngineLib.Math
     /// </summary>
     public struct LinearEquation
     {
-        private float m_Gradient;
-        private float m_YIntercept;
+        private float mGradient;
+        private float mYIntercept;
 
         /// <summary>
         /// The gradient of this line
         /// </summary>
         public float Gradient
         {
-            get { return m_Gradient; }
-            set { m_Gradient = value; }
+            get { return mGradient; }
+            set { mGradient = value; }
         }
 
         /// <summary>
@@ -28,8 +28,8 @@ namespace TackEngineLib.Math
         /// </summary>
         public float YIntercept
         {
-            get { return m_YIntercept; }
-            set { m_YIntercept = value; }
+            get { return mYIntercept; }
+            set { mYIntercept = value; }
         }
 
         /// <summary>
@@ -39,13 +39,13 @@ namespace TackEngineLib.Math
         /// <param name="_yIntercept">The y-intercept of the line</param>
         public LinearEquation(float _gradient = 0, float _yIntercept = 0)
         {
-            m_Gradient = _gradient;
-            m_YIntercept = _yIntercept;
+            mGradient = _gradient;
+            mYIntercept = _yIntercept;
         }
 
         public override string ToString()
         {
-            return string.Format("y={0}x+{1}", m_Gradient, m_YIntercept);
+            return string.Format("y={0}x+{1}", mGradient, mYIntercept);
         }
     }
 }

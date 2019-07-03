@@ -141,7 +141,7 @@ namespace TackEngineLib.GUI
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            // Tell OpenGL to use the compiled and linker shader program at m_ShaderProgramId
+            // Tell OpenGL to use the compiled and linker shader program at mShaderProgramId
             GL.UseProgram(uiShaderProgram);
 
             float[] vertexData = new float[32]
@@ -305,7 +305,7 @@ namespace TackEngineLib.GUI
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            // Tell OpenGL to use the compiled and linker shader program at m_ShaderProgramId
+            // Tell OpenGL to use the compiled and linker shader program at mShaderProgramId
             GL.UseProgram(uiShaderProgram);
 
             float[] vertexData = new float[32]

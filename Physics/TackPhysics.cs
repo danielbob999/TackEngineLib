@@ -24,12 +24,12 @@ namespace TackEngineLib.Physics
         private static int updateRate = 0;
         private static int timeTakenLastUpdate;
 
-        private static float m_CycleTimeDelta;
+        private static float mCycleTimeDelta;
 
         public static float CycleTimeDelta
         {
-            get { return m_CycleTimeDelta; }
-            set { m_CycleTimeDelta = value; }
+            get { return mCycleTimeDelta; }
+            set { mCycleTimeDelta = value; }
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace TackEngineLib.Physics
                 updateCounter++;
                 timeTakenLastUpdate = (int)timer.ElapsedMilliseconds;
 
-                m_CycleTimeDelta = timeTakenLastUpdate / (1000 / targetUpdateRate);
+                mCycleTimeDelta = timeTakenLastUpdate / (1000 / targetUpdateRate);
             }
 
         }
@@ -139,7 +139,7 @@ namespace TackEngineLib.Physics
                     // Update components affected by gravity
                     if (physicsComponent.SimulateGravity)
                     {
-                        Vector2f movementVector = new Vector2f(gravityForce.X * m_CycleTimeDelta, gravityForce.Y * m_CycleTimeDelta);
+                        Vector2f movementVector = new Vector2f(gravityForce.X * mCycleTimeDelta, gravityForce.Y * mCycleTimeDelta);
 
                         physicsComponent.Move(CheckObjectMovementAmount(obj, movementVector));
                     }

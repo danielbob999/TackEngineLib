@@ -11,23 +11,23 @@ namespace TackEngineLib.GUI
 {
     public class TextAreaStyle
     {
-        private float m_FontSize;
-        private int m_FontFamily;
-        private VerticalAlignment m_VerticalAlignment;
-        private HorizontalAlignment m_HorizontalAlignment;
-        private Colour4b m_FontColour;
-        private Colour4b m_BackgroundColour;
-        private Sprite m_SpriteTexture;
-        private float m_ScrollPosition = 0.0f;
-        private bool m_Scrollable;
+        private float mFontSize;
+        private int mFontFamily;
+        private VerticalAlignment mVerticalAlignment;
+        private HorizontalAlignment mHorizontalAlignment;
+        private Colour4b mFontColour;
+        private Colour4b mBackgroundColour;
+        private Sprite mSpriteTexture;
+        private float mScrollPosition = 0.0f;
+        private bool mScrollable;
 
         public float FontSize
         {
-            get { return m_FontSize; }
+            get { return mFontSize; }
             set
             {
                 if (value >= 0)
-                    m_FontSize = value;
+                    mFontSize = value;
                 else
                     TackConsole.EngineLog(Engine.EngineLogType.Message, "Cannot set TextAreaStyle.FontSize to less than or equal to 0.0f");
             }
@@ -35,28 +35,28 @@ namespace TackEngineLib.GUI
 
         public int FontFamilyId
         {
-            get { return m_FontFamily; }
-            set { m_FontFamily = value; }
+            get { return mFontFamily; }
+            set { mFontFamily = value; }
         }
 
         public Colour4b FontColour
         {
-            get { return m_FontColour; }
-            set { m_FontColour = value; }
+            get { return mFontColour; }
+            set { mFontColour = value; }
         }
 
         public Colour4b BackgroundColour
         {
-            get { return m_BackgroundColour; }
-            set { m_BackgroundColour = value; }
+            get { return mBackgroundColour; }
+            set { mBackgroundColour = value; }
         }
 
         public Sprite SpriteTexture
         {
-            get { return m_SpriteTexture; }
+            get { return mSpriteTexture; }
             set
             {
-                m_SpriteTexture = value;
+                mSpriteTexture = value;
             }
         }
 
@@ -65,8 +65,8 @@ namespace TackEngineLib.GUI
         /// </summary>
         public VerticalAlignment VerticalAlignment
         {
-            get { return m_VerticalAlignment; }
-            set { m_VerticalAlignment = value; }
+            get { return mVerticalAlignment; }
+            set { mVerticalAlignment = value; }
         }
 
         /// <summary>
@@ -74,8 +74,8 @@ namespace TackEngineLib.GUI
         /// </summary>
         public HorizontalAlignment HorizontalAlignment
         {
-            get { return m_HorizontalAlignment; }
-            set { m_HorizontalAlignment = value; }
+            get { return mHorizontalAlignment; }
+            set { mHorizontalAlignment = value; }
         }
 
         /// <summary>
@@ -83,8 +83,8 @@ namespace TackEngineLib.GUI
         /// </summary>
         public float ScrollPosition
         {
-            get { return m_ScrollPosition; }
-            set { m_ScrollPosition = value; }
+            get { return mScrollPosition; }
+            set { mScrollPosition = value; }
         }
 
         /// <summary>
@@ -92,27 +92,27 @@ namespace TackEngineLib.GUI
         /// </summary>
         public bool Scrollable
         {
-            get { return m_Scrollable; }
-            set { m_Scrollable = value; }
+            get { return mScrollable; }
+            set { mScrollable = value; }
         }
 
         public TextAreaStyle()
         {
             FontSize = 8f;
-            m_FontFamily = 0;
-            m_FontColour = new Colour4b(0, 0, 0, 255);
-            m_SpriteTexture = Sprite.DefaultSprite;
-            m_HorizontalAlignment = HorizontalAlignment.Left;
-            m_VerticalAlignment = VerticalAlignment.Top;
+            mFontFamily = 0;
+            mFontColour = new Colour4b(0, 0, 0, 255);
+            mSpriteTexture = Sprite.DefaultSprite;
+            mHorizontalAlignment = HorizontalAlignment.Left;
+            mVerticalAlignment = VerticalAlignment.Top;
         }
 
         public TextAreaStyle(float _size, int _family, Colour4b _textColour, Colour4b _backColour, Sprite _sprite)
         {
             FontSize = _size;
-            m_FontFamily = _family;
-            m_FontColour = _textColour;
-            m_BackgroundColour = _backColour;
-            m_SpriteTexture = _sprite;
+            mFontFamily = _family;
+            mFontColour = _textColour;
+            mBackgroundColour = _backColour;
+            mSpriteTexture = _sprite;
         }
 
         public void Destory()

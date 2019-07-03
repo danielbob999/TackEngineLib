@@ -19,9 +19,9 @@ namespace TackEngineLib.Renderer
     {
         public static int ShaderProgramId;
 
-        private int m_ShaderProgramId;
+        private int mShaderProgramId;
 
-        private float[] m_VertexData; 
+        private float[] mVertexData; 
 
         internal TackRenderer()
         {
@@ -33,10 +33,10 @@ namespace TackEngineLib.Renderer
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
-            m_ShaderProgramId = ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.DefaultFragmentShader);
-            ShaderProgramId = m_ShaderProgramId;
+            mShaderProgramId = ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.DefaultFragmentShader);
+            ShaderProgramId = mShaderProgramId;
 
-            m_VertexData = new float[4];
+            mVertexData = new float[4];
 
             timer.Stop();
             TackConsole.EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
@@ -87,8 +87,8 @@ namespace TackEngineLib.Renderer
             GL.EnableClientState(ArrayCap.IndexArray);
             GL.EnableClientState(ArrayCap.TextureCoordArray);
 
-            // Tell OpenGL to use the compiled and linker shader program at m_ShaderProgramId
-            GL.UseProgram(m_ShaderProgramId);
+            // Tell OpenGL to use the compiled and linker shader program at mShaderProgramId
+            GL.UseProgram(mShaderProgramId);
 
             TackObject[] allObjects = TackObject.Get();
 
@@ -123,7 +123,7 @@ namespace TackEngineLib.Renderer
                  */
                 
                 
-                //m_VertexData = new float[32]
+                //mVertexData = new float[32]
                 //{
                     //       Position (XYZ)                                                                                                      Colours (RGB)                                                                                  TexCoords (XY)
                     /* v1 */ //(tackObjectBounds.X + tackObjectBounds.Width), (tackObjectBounds.Y), 1.0f,                                          (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   1.0f, 0.0f,
@@ -132,7 +132,7 @@ namespace TackEngineLib.Renderer
                     /* v4 */ //(tackObjectBounds.X), (tackObjectBounds.Y), 1.0f,                                                                   (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   0.0f, 0.0f
                 //};
 
-                m_VertexData = new float[32]
+                mVertexData = new float[32]
                 {
                     //       Position (XYZ)                                                                                                      Colours (RGB)                                                                                  TexCoords (XY)
                     /* v1 */ FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(1)).X, FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(1)).Y, 1.0f,                                          (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   1.0f, 0.0f,
@@ -157,7 +157,7 @@ namespace TackEngineLib.Renderer
                 GL.BindVertexArray(VAO);
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-                GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * 32, m_VertexData, BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * 32, mVertexData, BufferUsageHint.StaticDraw);
 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
                 GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(int) * 6, indices, BufferUsageHint.StaticDraw);
@@ -197,7 +197,7 @@ namespace TackEngineLib.Renderer
                 //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
                 // Set the shader uniform value
-                GL.Uniform1(GL.GetUniformLocation(m_ShaderProgramId, "ourTexture"), 0);
+                GL.Uniform1(GL.GetUniformLocation(mShaderProgramId, "ourTexture"), 0);
 
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, quadRenderer.Sprite.TextureId);

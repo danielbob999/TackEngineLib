@@ -9,11 +9,11 @@ namespace TackEngineLib.Input
 {
     public class MouseDownEvent
     {
-        private Vector2f m_MousePosition;
-        private int m_MouseButtonId = -1;
+        private Vector2f mMousePosition;
+        private int mMouseButtonId = -1;
 
         // Properties
-        public Vector2f MousePosition { get { return m_MousePosition; } set { m_MousePosition = value; } }
-        public int MouseButtonId { get { return m_MouseButtonId; } set { m_MouseButtonId = value; } }
+        public Vector2f MousePosition { get { return mMousePosition; } set { mMousePosition = value; } }
+        public int MouseButtonId { get { return mMouseButtonId; } set { mMouseButtonId = value; } }
     }
 }

@@ -16,7 +16,7 @@ namespace TackEngineLib.Objects
     {
         public static TackObjectManager ActiveInstance;
 
-        private List<TackObject> m_TackObjects = new List<TackObject>();
+        private List<TackObject> mTackObjects = new List<TackObject>();
 
         public TackObjectManager()
         {
@@ -38,7 +38,7 @@ namespace TackEngineLib.Objects
 
         public void RunTackObjectStartMethods()
         {
-            foreach (TackObject tackObject in m_TackObjects)
+            foreach (TackObject tackObject in mTackObjects)
             {
                 foreach (object tackComponent in tackObject.objectComponents)
                 {
@@ -50,7 +50,7 @@ namespace TackEngineLib.Objects
 
         public void RunTackObjectUpdateMethods()
         {
-            foreach (TackObject tackObject in m_TackObjects)
+            foreach (TackObject tackObject in mTackObjects)
             {
                 foreach (object tackComponent in tackObject.objectComponents)
                 {
@@ -62,30 +62,30 @@ namespace TackEngineLib.Objects
 
         internal static bool AddTackObject(TackObject _obj)
         {
-            if (ActiveInstance.m_TackObjects.Contains(_obj))
+            if (ActiveInstance.mTackObjects.Contains(_obj))
             {
                 TackConsole.EngineLog(EngineLogType.Error, "Could not add TackObject with name '{0}' and hash '{1}' because TackObjectManager already contains this TackObject");
                 return false;
             }
             else
             {
-                ActiveInstance.m_TackObjects.Add(_obj);
+                ActiveInstance.mTackObjects.Add(_obj);
                 return true;
             }
         }
 
         internal static void RemoveTackObject(TackObject _obj)
         {
-            if (ActiveInstance.m_TackObjects.Contains(_obj))
+            if (ActiveInstance.mTackObjects.Contains(_obj))
             {
-                ActiveInstance.m_TackObjects.Remove(_obj);
+                ActiveInstance.mTackObjects.Remove(_obj);
                 TackConsole.EngineLog(EngineLogType.Message, string.Format("Removed TackObject with name '{0}' from TackObjectManager", _obj.Name));
             }
         }
 
         public static TackObject[] GetAllTackObjects()
         {
-            return ActiveInstance.m_TackObjects.ToArray();
+            return ActiveInstance.mTackObjects.ToArray();
         }
     }
 }

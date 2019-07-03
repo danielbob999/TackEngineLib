@@ -10,59 +10,59 @@ namespace TackEngineLib.GUI
 {
     public class InputFieldStyle
     {
-        private float m_FontSize;
-        private Colour4b m_FontColour;
-        private int m_FontFamilyId;
-        private VerticalAlignment m_VerticalAlignment;
-        private HorizontalAlignment m_HorizontalAlignment;
-        private Colour4b m_Colour;
-        private GUIBorder m_Border;
-        private Sprite m_SpriteTexture;
-        private bool m_Scrollable;
+        private float mFontSize;
+        private Colour4b mFontColour;
+        private int mFontFamilyId;
+        private VerticalAlignment mVerticalAlignment;
+        private HorizontalAlignment mHorizontalAlignment;
+        private Colour4b mColour;
+        private GUIBorder mBorder;
+        private Sprite mSpriteTexture;
+        private bool mScrollable;
 
         public float FontSize
         {
-            get { return m_FontSize; }
-            set { m_FontSize = value; }
+            get { return mFontSize; }
+            set { mFontSize = value; }
         }
 
         public Colour4b FontColour
         {
-            get { return m_FontColour; }
-            set { m_FontColour = value; }
+            get { return mFontColour; }
+            set { mFontColour = value; }
         }
 
         public Colour4b BackgroundColour
         {
-            get { return m_Colour; }
-            set { m_Colour = value; }
+            get { return mColour; }
+            set { mColour = value; }
         }
 
         public GUIBorder Border
         {
-            get { return m_Border; }
-            set { m_Border = value; }
+            get { return mBorder; }
+            set { mBorder = value; }
         }
 
         public Sprite SpriteTexture
         {
-            get { return m_SpriteTexture; }
+            get { return mSpriteTexture; }
             set
             {
-                m_SpriteTexture = value;
+                mSpriteTexture = value;
             }
         }
 
         public int FontFamilyId
         {
-            get { return m_FontFamilyId; }
-            set { m_FontFamilyId = value; }
+            get { return mFontFamilyId; }
+            set { mFontFamilyId = value; }
         }
 
         public bool Scrollable
         {
-            get { return m_Scrollable; }
-            set { m_Scrollable = value; }
+            get { return mScrollable; }
+            set { mScrollable = value; }
         }
 
         /// <summary>
@@ -70,8 +70,8 @@ namespace TackEngineLib.GUI
         /// </summary>
         public VerticalAlignment VerticalAlignment
         {
-            get { return m_VerticalAlignment; }
-            set { m_VerticalAlignment = value; }
+            get { return mVerticalAlignment; }
+            set { mVerticalAlignment = value; }
         }
 
         /// <summary>
@@ -79,27 +79,27 @@ namespace TackEngineLib.GUI
         /// </summary>
         public HorizontalAlignment HorizontalAlignment
         {
-            get { return m_HorizontalAlignment; }
-            set { m_HorizontalAlignment = value; }
+            get { return mHorizontalAlignment; }
+            set { mHorizontalAlignment = value; }
         }
 
         public InputFieldStyle()
         {
-            m_SpriteTexture = Sprite.DefaultSprite;
+            mSpriteTexture = Sprite.DefaultSprite;
 
-            m_FontSize = 6f;
-            m_FontColour = new Colour4b(0, 0, 0, 255);
-            m_Colour = new Colour4b(255, 255, 255, 255);
-            m_Border = new GUIBorder(0, 0, 0, 0, new Colour4b(0, 0, 0, 255));
+            mFontSize = 6f;
+            mFontColour = new Colour4b(0, 0, 0, 255);
+            mColour = new Colour4b(255, 255, 255, 255);
+            mBorder = new GUIBorder(0, 0, 0, 0, new Colour4b(0, 0, 0, 255));
         }
 
         public BoxStyle GetBoxStyle()
         {
             BoxStyle style = new BoxStyle()
             {
-                Border = m_Border,
-                Colour = m_Colour,
-                SpriteTexture = m_SpriteTexture,
+                Border = mBorder,
+                Colour = mColour,
+                SpriteTexture = mSpriteTexture,
             };
 
             return style;
@@ -108,14 +108,14 @@ namespace TackEngineLib.GUI
         public TextAreaStyle GetTextStyle()
         {
             TextAreaStyle style = new TextAreaStyle() {
-                BackgroundColour = m_Colour,
-                FontColour = m_FontColour,
-                FontFamilyId = m_FontFamilyId,
-                FontSize = m_FontSize,
-                SpriteTexture = m_SpriteTexture,
-                HorizontalAlignment = m_HorizontalAlignment,
-                VerticalAlignment = m_VerticalAlignment,
-                Scrollable = m_Scrollable
+                BackgroundColour = mColour,
+                FontColour = mFontColour,
+                FontFamilyId = mFontFamilyId,
+                FontSize = mFontSize,
+                SpriteTexture = mSpriteTexture,
+                HorizontalAlignment = mHorizontalAlignment,
+                VerticalAlignment = mVerticalAlignment,
+                Scrollable = mScrollable
             };
 
             return style;

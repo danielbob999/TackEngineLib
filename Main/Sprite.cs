@@ -16,13 +16,13 @@ namespace TackEngineLib.Main
     /// </summary>
     public class Sprite
     {
-        private static Sprite m_DefaultSprite;
-        internal static bool m_LogMessageOverride = false;
+        private static Sprite mDefaultSprite;
+        internal static bool mLogMessageOverride = false;
 
         internal static bool LogMessageOverride
         {
-            get { return m_LogMessageOverride; }
-            set { m_LogMessageOverride = value; }
+            get { return mLogMessageOverride; }
+            set { mLogMessageOverride = value; }
         }
 
         /// <summary>
@@ -30,50 +30,71 @@ namespace TackEngineLib.Main
         /// </summary>
         public static Sprite DefaultSprite
         {
-            get { return m_DefaultSprite; }
+            get { return mDefaultSprite; }
         }
 
-        private int m_TextureId;
-        private Bitmap m_SpriteBmp;
-        private BitmapData m_SpriteData;
-        private int m_Width = 0, m_Height = 0;
+        private int mTextureId;
+        private Bitmap mSpriteBmp;
+        private BitmapData mSpriteData;
+        private int mWidth = 0, mHeight = 0;
 
-        // Properties
+        /// <summary>
+        /// The width of the Sprite
+        /// </summary>
         public int Width
         {
-            get { return m_Width; }
+            get { return mWidth; }
             set
             {
                 if (value < 0 || value > 16384)
                 {
-                    m_Width = 0;
+                    mWidth = 0;
                     TackConsole.EngineLog(EngineLogType.Error, "Sprite.Width cannot be set to less than 0 or more than 16384");
-                } else { m_Width = value; }
+                } else { mWidth = value; }
             }
         }
 
+        /// <summary>
+        /// The height of the Sprite
+        /// </summary>
         public int Height
         {
-            get { return m_Height; }
+            get { return mHeight; }
             set
             {
                 if (value < 0 || value > 16384)
                 {
-                    m_Height = 0;
+                    mHeight = 0;
                     TackConsole.EngineLog(EngineLogType.Error, "Sprite.Height cannot be set to less than 0 or more than 16384");
-                } else { m_Height = value; }
+                } else { mHeight = value; }
             }
         }
 
-        public int TextureId { get { return m_TextureId; } }
+        /// <summary>
+        /// The auto-generated texture ID for this Sprite
+        /// </summary>
+        public int TextureId { get { return mTextureId; } }
 
+        /// <summary>
+        /// The BitmapData of this Sprite
+        /// </summary>
         public BitmapData SpriteData
         {
-            get { return m_SpriteData; }
+            get { return mSpriteData; }
         }
 
-        public Sprite() { }
+        /// <summary>
+        /// Initialises a new Sprite
+        /// </summary>
+        internal Sprite() {
 
+        }
+
+        /// <summary>
+        /// Initialises a new Sprite
+        /// </summary>
+        /// <param name="_w">The width of the Sprite</param>
+        /// <param name="_h">The height of the Sprite</param>
         public Sprite(int _w, int _h)
         {
             Width = _w;
@@ -86,34 +107,34 @@ namespace TackEngineLib.Main
         /// <param name="_logMsgs">True if messages should be logged to console, false otherwise</param>
         public void Create(bool _logMsgs = true)
         {
-            GL.GenTextures(1, out m_TextureId);
+            GL.GenTextures(1, out mTextureId);
 
-            if (m_TextureId <= 0) {
-                if (_logMsgs || (m_LogMessageOverride))
-                    TackConsole.EngineLog(EngineLogType.Error, string.Format("Error with generating sprite texture. Sprite. TextureId cannot be set to 0 or below. (Current Id = {0})", m_TextureId));
+            if (mTextureId <= 0) {
+                if (_logMsgs || (mLogMessageOverride))
+                    TackConsole.EngineLog(EngineLogType.Error, string.Format("Error with generating sprite texture. Sprite. TextureId cannot be set to 0 or below. (Current Id = {0})", mTextureId));
                 return;
             }
 
             GL.Enable(EnableCap.Texture2D);
             GL.ActiveTexture(TextureUnit.Texture0);
 
-            m_SpriteData = m_SpriteBmp.LockBits(new System.Drawing.Rectangle(0, 0, m_SpriteBmp.Width, m_SpriteBmp.Height),
+            mSpriteData = mSpriteBmp.LockBits(new System.Drawing.Rectangle(0, 0, mSpriteBmp.Width, mSpriteBmp.Height),
                 ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
             SpriteManager.AddSprite(this, _logMsgs);
-            if (_logMsgs || (m_LogMessageOverride))
-                TackConsole.EngineLog(EngineLogType.Message, string.Format("Generated Sprite texture with TextureId '{0}'", m_TextureId));
+            if (_logMsgs || (mLogMessageOverride))
+                TackConsole.EngineLog(EngineLogType.Message, string.Format("Generated Sprite texture with TextureId '{0}'", mTextureId));
         }
 
         public void Destory(bool _logMsgs = true)
         {
-            m_SpriteBmp.UnlockBits(m_SpriteData);
+            mSpriteBmp.UnlockBits(mSpriteData);
             SpriteManager.RemoveSprite(this, _logMsgs);
         }
 
         public Bitmap GetBitmap()
         {
-            return m_SpriteBmp;
+            return mSpriteBmp;
         }
 
         public static Sprite LoadFromFile(string _path)
@@ -136,7 +157,7 @@ namespace TackEngineLib.Main
                 return newSprite;
             }
 
-            newSprite.m_SpriteBmp = newBp;
+            newSprite.mSpriteBmp = newBp;
             newSprite.Width = newBp.Width;
             newSprite.Height = newBp.Height;
 
@@ -146,7 +167,7 @@ namespace TackEngineLib.Main
         public static Sprite LoadFromBitmap(Bitmap _bitmap)
         {
             Sprite newSprite = new Sprite();
-            newSprite.m_SpriteBmp = _bitmap;
+            newSprite.mSpriteBmp = _bitmap;
             newSprite.Width = _bitmap.Width;
             newSprite.Height = _bitmap.Height;
 
@@ -155,8 +176,8 @@ namespace TackEngineLib.Main
 
         internal static void LoadDefaultSprite()
         {
-            m_DefaultSprite = Sprite.LoadFromBitmap(TackEngineLib.Properties.Resources.DefaultSprite);
-            m_DefaultSprite.Create();
+            mDefaultSprite = Sprite.LoadFromBitmap(TackEngineLib.Properties.Resources.DefaultSprite);
+            mDefaultSprite.Create();
 
             TackConsole.EngineLog(EngineLogType.Message, "Loaded the default sprite into Sprite.DefaultSprite");
         }

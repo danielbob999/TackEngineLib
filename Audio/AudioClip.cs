@@ -15,20 +15,20 @@ namespace TackEngineLib.Audio
 {
     public class AudioClip
     {
-        private int m_AudioId;
+        private int mAudioId;
 
         // Audio clip data
-        private int m_ChannelNum;
-        private int m_BitsPerSample;
-        private int m_SampleNum;
-        private byte[] m_AudioData;
+        private int mChannelNum;
+        private int mBitsPerSample;
+        private int mSampleNum;
+        private byte[] mAudioData;
 
         /// <summary>
         /// The ID generated from AL.GenBuffers
         /// </summary>
         public int AudioId
         {
-            get { return m_AudioId; }
+            get { return mAudioId; }
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace TackEngineLib.Audio
         /// </summary>
         public int Channels
         {
-            get { return m_ChannelNum; }
+            get { return mChannelNum; }
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace TackEngineLib.Audio
         /// </summary>
         public int BitsPerSample
         {
-            get { return m_BitsPerSample; }
+            get { return mBitsPerSample; }
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace TackEngineLib.Audio
         /// </summary>
         public int SampleNum
         {
-            get { return m_SampleNum; }
+            get { return mSampleNum; }
         }
 
         /// <summary>
@@ -60,15 +60,15 @@ namespace TackEngineLib.Audio
         /// </summary>
         public byte[] AudioData
         {
-            get { return m_AudioData; }
+            get { return mAudioData; }
         }
 
         internal AudioClip(int _chNum, int _bitsPerSam, int _samNum, byte[] _data)
         {
-            m_ChannelNum = _chNum;
-            m_BitsPerSample = _bitsPerSam;
-            m_SampleNum = _samNum;
-            m_AudioData = _data;
+            mChannelNum = _chNum;
+            mBitsPerSample = _bitsPerSam;
+            mSampleNum = _samNum;
+            mAudioData = _data;
         }
 
         /// <summary>
@@ -76,10 +76,10 @@ namespace TackEngineLib.Audio
         /// </summary>
         public void Create()
         {
-            m_AudioId = AL.GenBuffer();
-            AL.BufferData(m_AudioId, AudioManager.GetSoundFormat(m_ChannelNum, m_BitsPerSample), m_AudioData, m_AudioData.Length, m_SampleNum);
+            mAudioId = AL.GenBuffer();
+            AL.BufferData(mAudioId, AudioManager.GetSoundFormat(mChannelNum, mBitsPerSample), mAudioData, mAudioData.Length, mSampleNum);
 
-            TackConsole.EngineLog(EngineLogType.Message, string.Format("Loaded and new AudioClip into memory. AudioId={0}", m_AudioId));
+            TackConsole.EngineLog(EngineLogType.Message, string.Format("Loaded and new AudioClip into memory. AudioId={0}", mAudioId));
 
             AudioManager.AddAudioClip(this);
         }
@@ -128,7 +128,7 @@ namespace TackEngineLib.Audio
 
                 int format_chunk_size = reader.ReadInt32();
                 int audio_format = reader.ReadInt16();
-                int num_channels = reader.ReadInt16();
+                int numchannels = reader.ReadInt16();
                 int sample_rate = reader.ReadInt32();
                 int byte_rate = reader.ReadInt32();
                 int block_align = reader.ReadInt16();
@@ -140,7 +140,7 @@ namespace TackEngineLib.Audio
 
                 int data_chunk_size = reader.ReadInt32();
 
-                tmp_channels= num_channels;
+                tmp_channels= numchannels;
                 tmp_bps = bits_per_sample;
                 tmp_sampleNum = sample_rate;
 

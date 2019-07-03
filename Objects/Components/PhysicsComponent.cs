@@ -11,51 +11,51 @@ namespace TackEngineLib.Objects.Components
 {
     public class PhysicsComponent : TackComponent
     {
-        private bool m_CollisionsEnabled = true; // Does the object use a collider
-        private bool m_AllowedToMove = true; // Is the object allowed to be moved at runtime
-        private Vector2f m_ColliderSizeMultiplier; // Size multiplier of the collider compared to the object's scale. 1.0f = collider size is the same as parentObject.Scale
-        private Vector2f m_ColliderOffset;
-        private bool m_SimulateGravity;
-        private float m_Weight;
+        private bool mCollisionsEnabled = true; // Does the object use a collider
+        private bool mAllowedToMove = true; // Is the object allowed to be moved at runtime
+        private Vector2f mColliderSizeMultiplier; // Size multiplier of the collider compared to the object's scale. 1.0f = collider size is the same as parentObject.Scale
+        private Vector2f mColliderOffset;
+        private bool mSimulateGravity;
+        private float mWeight;
 
         // Properties
         public bool CollisionsEnabled
         {
-            get { return m_CollisionsEnabled; }
-            set { m_CollisionsEnabled = value; }
+            get { return mCollisionsEnabled; }
+            set { mCollisionsEnabled = value; }
         }
 
         public bool AllowedToMove
         {
-            get { return m_AllowedToMove; }
-            set { m_AllowedToMove = value; }
+            get { return mAllowedToMove; }
+            set { mAllowedToMove = value; }
         }
 
         public Vector2f ColliderSizeMultiplier
         {
-            get { return m_ColliderSizeMultiplier; }
-            set { m_ColliderSizeMultiplier = value; }
+            get { return mColliderSizeMultiplier; }
+            set { mColliderSizeMultiplier = value; }
         }
 
         public Vector2f ColliderOffset
         {
-            get { return m_ColliderOffset; }
-            set { m_ColliderOffset = value; }
+            get { return mColliderOffset; }
+            set { mColliderOffset = value; }
         }
 
         public bool SimulateGravity
         {
-            get { return m_SimulateGravity; }
-            set { m_SimulateGravity = value; }
+            get { return mSimulateGravity; }
+            set { mSimulateGravity = value; }
         }
 
         public float Weight
         {
-            get { return m_Weight; }
+            get { return mWeight; }
             set
             {
                 if (value > 0)
-                    m_Weight = value;
+                    mWeight = value;
                 else
                     TackConsole.EngineLog(Engine.EngineLogType.Error, string.Format("Cannot set PhysicsComponent.Weight to a value less than 0. Default weight (1) has been set."));
             }
@@ -63,12 +63,12 @@ namespace TackEngineLib.Objects.Components
 
         public PhysicsComponent()
         {
-            m_SimulateGravity = true;
-            m_CollisionsEnabled = true;
-            m_ColliderSizeMultiplier = new Vector2f(1, 1);
-            m_ColliderOffset = new Vector2f(0, 0);
-            m_AllowedToMove = true;
-            m_Weight = 1;
+            mSimulateGravity = true;
+            mCollisionsEnabled = true;
+            mColliderSizeMultiplier = new Vector2f(1, 1);
+            mColliderOffset = new Vector2f(0, 0);
+            mAllowedToMove = true;
+            mWeight = 1;
         }
 
         public void Move(float _x, float _y)
@@ -78,7 +78,7 @@ namespace TackEngineLib.Objects.Components
 
         public void Move(Vector2f _vec)
         {
-            if (m_AllowedToMove)
+            if (mAllowedToMove)
             {
                 //parentObject.Move(_vec);
                 parentObject.Move(TackPhysics.CheckObjectMovementAmount(parentObject, _vec));

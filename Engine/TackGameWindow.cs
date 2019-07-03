@@ -32,11 +32,11 @@ namespace TackEngineLib.Engine
         private EngineDelegates.OnClose onCloseFunction;
 
         // Modules
-        private AudioManager m_AudioManager;
-        private TackConsole m_TackConsole;
-        //private TackPhysics m_TackPhysics;
-        private TackObjectManager m_TackObjectManager;
-        private TackRenderer m_TackRender;
+        private AudioManager mAudioManager;
+        private TackConsole mTackConsole;
+        //private TackPhysics mTackPhysics;
+        private TackObjectManager mTackObjectManager;
+        private TackRenderer mTackRender;
 
         private Stopwatch updateTimer;
         private Stopwatch frameTimer;
@@ -69,20 +69,20 @@ namespace TackEngineLib.Engine
 
             TackGUI.OnStart();
 
-            m_TackConsole = new TackConsole();
-            m_TackConsole.OnStart();
+            mTackConsole = new TackConsole();
+            mTackConsole.OnStart();
 
             TackConsole.EngineLog(EngineLogType.Message, "Starting TackEngine.");
             TackConsole.EngineLog(EngineLogType.Message, string.Format("EngineVersion: {0}", TackEngine.GetEngineVersion().ToString()));
 
-            m_AudioManager = new AudioManager();
-            m_AudioManager.OnStart();
+            mAudioManager = new AudioManager();
+            mAudioManager.OnStart();
 
-            m_TackObjectManager = new TackObjectManager();
-            m_TackObjectManager.OnStart();
+            mTackObjectManager = new TackObjectManager();
+            mTackObjectManager.OnStart();
 
-            m_TackRender = new TackRenderer();
-            m_TackRender.OnStart();
+            mTackRender = new TackRenderer();
+            mTackRender.OnStart();
 
             // OpenGL stuffs
             //GL.Viewport(0, 0, Width, Height);
@@ -106,7 +106,7 @@ namespace TackEngineLib.Engine
             updateTimer = new Stopwatch();
             updateTimer.Start();
 
-            m_TackObjectManager.RunTackObjectStartMethods();
+            mTackObjectManager.RunTackObjectStartMethods();
 
             // Start the TackPhysics thread
             Thread physicsThread = new Thread(TackPhysics.Init);
@@ -120,13 +120,13 @@ namespace TackEngineLib.Engine
             onUpdateFunction();
 
             // All OnUpdate here
-            m_TackObjectManager.OnUpdate();
-            m_TackObjectManager.RunTackObjectUpdateMethods();
+            mTackObjectManager.OnUpdate();
+            mTackObjectManager.RunTackObjectUpdateMethods();
 
-            m_TackConsole.OnUpdate();
+            mTackConsole.OnUpdate();
             TackInput.OnUpdate();
 
-            TackEngine.m_UpdateCyclesPerSecond = (int)UpdateFrequency;
+            TackEngine.mUpdateCyclesPerSecond = (int)UpdateFrequency;
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -137,12 +137,12 @@ namespace TackEngineLib.Engine
             GL.ClearColor(new OpenTK.Graphics.Color4(127, 146, 150, 255));
 
             // All OnRender here
-            m_TackRender.OnRender();
+            mTackRender.OnRender();
 
             onGUIRenderFunction(); // This function should be called after all rendering. This means text will render above other objects
-            m_TackConsole.OnGUIRender(); // TackConsole should be rendered above everything else, including the onGUIRenderFunction
+            mTackConsole.OnGUIRender(); // TackConsole should be rendered above everything else, including the onGUIRenderFunction
 
-           TackEngine.m_FramesPerSecond = (int)RenderFrequency;
+           TackEngine.mFramesPerSecond = (int)RenderFrequency;
 
             this.SwapBuffers();
         }
@@ -155,9 +155,9 @@ namespace TackEngineLib.Engine
 
             TackPhysics.Stop();
 
-            m_AudioManager.OnClose();
+            mAudioManager.OnClose();
             SpriteManager.OnClose();
-            m_TackConsole.OnClose();
+            mTackConsole.OnClose();
         }
 
         protected override void OnResize(EventArgs e)
