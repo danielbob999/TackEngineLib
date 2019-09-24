@@ -11,6 +11,7 @@ namespace TackEngineLib.GUI
         private ButtonStyle mButtonStyle;
         private string mText;
         public event EventHandler Click;
+        public event EventHandler OnHover;
 
         public ButtonStyle Style
         {
@@ -36,13 +37,21 @@ namespace TackEngineLib.GUI
         }
 
         public void Update() {
-            if (TackEngineLib.Input.TackInput.MouseButtonDown(Input.MouseButtonKey.Left)) {
-                TackEngineLib.Main.Vector2f mouseVec = TackEngineLib.Input.TackInput.MousePosition();
-                
-                if (mouseVec.X > mButtonStyle.Shape.X && mouseVec.X < (mButtonStyle.Shape.X + mButtonStyle.Shape.Width)) {
-                    if (mouseVec.Y > mButtonStyle.Shape.Y && mouseVec.Y < (mButtonStyle.Shape.Y + mButtonStyle.Shape.Height)) {
-                        if (Click.GetInvocationList().Length > 0) {
-                            Click.Invoke(this, EventArgs.Empty);
+            TackEngineLib.Main.Vector2f mouseVec = TackEngineLib.Input.TackInput.MousePosition();
+
+            if (mouseVec.X > mButtonStyle.Shape.X && mouseVec.X < (mButtonStyle.Shape.X + mButtonStyle.Shape.Width)) {
+                if (mouseVec.Y > mButtonStyle.Shape.Y && mouseVec.Y < (mButtonStyle.Shape.Y + mButtonStyle.Shape.Height)) {
+                    if (OnHover != null) {
+                        if (OnHover.GetInvocationList().Length > 0) {
+                            OnHover.Invoke(this, EventArgs.Empty);
+                        }
+                    }
+
+                    if (TackEngineLib.Input.TackInput.MouseButtonDown(Input.MouseButtonKey.Left)) {
+                        if (Click != null) {
+                            if (Click.GetInvocationList().Length > 0) {
+                                Click.Invoke(this, EventArgs.Empty);
+                            }
                         }
                     }
                 }
