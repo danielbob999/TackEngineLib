@@ -106,5 +106,13 @@ namespace TackEngineLib.Main
             mB = aB;
             mA = aA;
         }
+
+        /// <summary>
+        /// Returns a Colour4b object as a string. Format: (R, G, B, A)
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() {
+            return "(" + mR + ", " + mG + ", " + mB + ", " + mA + ")";
+        }
     }
 }

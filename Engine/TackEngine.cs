@@ -17,9 +17,9 @@ namespace TackEngineLib.Engine
     /// </summary>
     public class TackEngine
     {
-        private const int VERSION_MAJOR = 0;
-        private const int VERSION_MINOR = 9;
-        private const int VERSION_PATCH = 2;
+        private const int VERSION_MAJOR = 1;
+        private const int VERSION_MINOR = 0;
+        private const int VERSION_PATCH = 0;
         private const string VERSION_DESC = "AlphaBuild";
 
         internal static TackGameWindow currentWindow;

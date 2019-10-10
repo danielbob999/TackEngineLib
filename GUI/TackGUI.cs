@@ -37,9 +37,6 @@ namespace TackEngineLib.GUI
             activeFontFamily = new FontFamily("Arial");
             fontCollection.AddFontFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\Arial.ttf");
             TackConsole.EngineLog(EngineLogType.Message, string.Format("Added default font file from: {0}\\Arial.ttf", Environment.GetFolderPath(Environment.SpecialFolder.Fonts)));
-
-            TackConsole.EngineLog(EngineLogType.Message, "Starting GUI shader compilation and linking");
-            uiShaderProgram = ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.DefaultFragmentShader_GUI);
         }
 
         /// <summary>
@@ -105,6 +102,7 @@ namespace TackEngineLib.GUI
             if (_style == null)
                 _style = new BoxStyle();
 
+            // If there is a border, render a box behind this box
             if (_style.Border != null)
             {
                 RectangleShape borderShape = new RectangleShape()
@@ -142,8 +140,8 @@ namespace TackEngineLib.GUI
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            // Tell OpenGL to use the compiled and linker shader program at mShaderProgramId
-            GL.UseProgram(uiShaderProgram);
+            // Tell OpenGL to use the default gui shader
+            GL.UseProgram(TackRenderer.GetShader("shaders.default_gui_shader"));
 
             float[] vertexData = new float[32]
                 {
@@ -207,8 +205,8 @@ namespace TackEngineLib.GUI
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             // Set the shader uniform value
-            GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourTexture"), 0);
-            GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourOpacity"), (float)(_style.Colour.A / 255.0f));
+            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader"), "ourTexture"), 0);
+            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader"), "ourOpacity"), (float)(_style.Colour.A / 255.0f));
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, _style.SpriteTexture.TextureId);
@@ -321,8 +319,8 @@ namespace TackEngineLib.GUI
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            // Tell OpenGL to use the compiled and linker shader program at mShaderProgramId
-            GL.UseProgram(uiShaderProgram);
+            // Tell OpenGL to use the default gui shader
+            GL.UseProgram(TackRenderer.GetShader("shaders.default_gui_shader"));
 
             float[] vertexData = new float[32]
                 {
@@ -386,8 +384,8 @@ namespace TackEngineLib.GUI
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             // Set the shader uniform value
-            GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourTexture"), 0);
-            GL.Uniform1(GL.GetUniformLocation(uiShaderProgram, "ourOpacity"), (float)(_style.FontColour.A / 255.0f));
+            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader"), "ourTexture"), 0);
+            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader"), "ourOpacity"), (float)(_style.FontColour.A / 255.0f));
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, textTexture.TextureId);

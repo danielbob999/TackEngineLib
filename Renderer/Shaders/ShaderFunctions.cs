@@ -27,10 +27,12 @@ namespace TackEngineLib.Renderer.Shaders
 
                 GL.GetShaderInfoLog(vertShader, out string vertLogStr);
 
-                if (vertLogStr != "")
+                if (vertLogStr != "") {
                     TackConsole.EngineLog(EngineLogType.Error, vertLogStr);
-                else
-                    TackConsole.EngineLog(EngineLogType.Message, "Successfully complied vertex shader");
+                }
+                else{
+                    TackConsole.EngineLog(EngineLogType.Message, "Successfully complied vertex shader. " + _vertSource.Count(x => x == '\n') + " lines.");
+                }
                 
 
 
@@ -45,10 +47,11 @@ namespace TackEngineLib.Renderer.Shaders
 
                 GL.GetShaderInfoLog(fragShader, out string fragLogStr);
 
-                if (fragLogStr != "")
+                if (fragLogStr != "") {
                     TackConsole.EngineLog(EngineLogType.Error, fragLogStr);
-                else
-                    TackConsole.EngineLog(EngineLogType.Message, "Successfully compiled fragment shader");
+                } else {
+                    TackConsole.EngineLog(EngineLogType.Message, "Successfully compiled fragment shader. " + _fragSource.Count(x => x == '\n') + " lines.");
+                }
 
 
 

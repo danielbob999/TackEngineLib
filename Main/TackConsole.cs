@@ -268,79 +268,12 @@ namespace TackEngineLib.Main
             }
 
             EngineLog(EngineLogType.Message, "No valid TackCommand with call string '" + splitCommandBySpaces[0] + "'");
+            EngineLog(EngineLogType.Message, "Use 'help' to get a list of valid commands");
             mInputField.InputString = "";
         }
 
-        [CommandMethod("help", "", "<string:commandName>")]
-        public static void Help(string[] a_args)
-        {
-            /* Default TackCommand delegate method checking starts */
-            MethodBase methodBase = MethodBase.GetCurrentMethod();
-            CommandMethod commandMethodObject = methodBase.GetCustomAttribute<CommandMethod>();
-
-            // If this method doesn't have a CommandMethod attribute attached
-            if (commandMethodObject == null)
-            {
-                EngineLog(EngineLogType.Error, "No CommandMethod attribute connected to this delegate method. Exiting...");
-                return;
-            }
-            /* Checking ends */
-
-            if (a_args.Length == 1)
-            {
-                EngineLog(EngineLogType.Message, "Commands:");
-
-                foreach (TackCommand command in ActiveInstance.mValidCommands)
-                {
-                    Console.WriteLine(command.CommandCallString);
-                    EngineLog(EngineLogType.Message, "     " + command.CommandCallString);
-                }
-
-                return;
-            }
-
-            if (a_args.Length == 2)
-            {
-                TackCommand com = null;
-
-                foreach (TackCommand command in ActiveInstance.mValidCommands)
-                {
-                    if (a_args[1] == command.CommandCallString)
-                    {
-                        com = command;
-                    }
-                }
-
-                if (com != null)
-                {
-                    EngineLog(EngineLogType.Message, com.CommandCallString + ":");
-
-                    foreach (string overloadArgs in com.CommandArgList)
-                    {
-                        EngineLog(EngineLogType.Message, "     " + overloadArgs);
-                    }
-                }
-
-                return;
-            }
-
-            EngineLog(EngineLogType.Message, "The TackCommand with call string '" + commandMethodObject.GetCallString() +  "' has no definition that takes " + a_args.Length + " arguments");
-        }
-
-        [CommandMethod("testmeth", "<int>", "<float> <int>")]
-        public static void TestMeth(string[] a_args)
-        {
-            /* Default TackCommand delegate method checking starts */
-            MethodBase methodBase = MethodBase.GetCurrentMethod();
-            CommandMethod commandMethodObject = methodBase.GetCustomAttribute<CommandMethod>();
-
-            // If this method doesn't have a CommandMethod attribute attached
-            if (commandMethodObject == null)
-            {
-                EngineLog(EngineLogType.Error, "No CommandMethod attribute connected to this delegate method. Exiting...");
-                return;
-            }
-            /* Checking ends */
+        internal static List<TackCommand> GetLoadedTackCommands() {
+            return ActiveInstance.mValidCommands;
         }
     }
 }

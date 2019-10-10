@@ -81,27 +81,6 @@ namespace TackEngineLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///out vec4 FragColor;
-        ///  
-        ///in vec3 ourColor;
-        ///in vec2 TexCoord;
-        ///
-        ///uniform sampler2D ourTexture;
-        ///uniform float ourOpacity;
-        ///
-        ///void main()
-        ///{
-        ///    FragColor = texture(ourTexture, TexCoord) * vec4(ourColor, ourOpacity);
-        ///}.
-        /// </summary>
-        public static string DefaultFragmentShader_GUI {
-            get {
-                return ResourceManager.GetString("DefaultFragmentShader_GUI", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap DefaultSprite {
@@ -130,6 +109,27 @@ namespace TackEngineLib.Properties {
         public static string DefaultVertexShader {
             get {
                 return ResourceManager.GetString("DefaultVertexShader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 330 core
+        ///out vec4 FragColor;
+        ///  
+        ///in vec3 ourColor;
+        ///in vec2 TexCoord;
+        ///
+        ///uniform sampler2D ourTexture;
+        ///uniform float ourOpacity;
+        ///
+        ///void main()
+        ///{
+        ///    FragColor = texture(ourTexture, TexCoord) * vec4(ourColor, ourOpacity);
+        ///}.
+        /// </summary>
+        public static string GUIFragmentShader {
+            get {
+                return ResourceManager.GetString("GUIFragmentShader", resourceCulture);
             }
         }
     }

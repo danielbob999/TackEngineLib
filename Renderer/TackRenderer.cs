@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Drawing;
 
 using OpenTK.Graphics.OpenGL;
 
@@ -13,29 +14,29 @@ using TackEngineLib.Engine;
 using TackEngineLib.Objects;
 using TackEngineLib.Objects.Components;
 using TackEngineLib.Renderer.Shaders;
+using TackEngineLib.GUI;
 
 namespace TackEngineLib.Renderer
 {
     internal class TackRenderer
     {
-        public static int ShaderProgramId;
+        private static TackRenderer ActiveInstance;
 
-        private int mShaderProgramId;
+        private Dictionary<string, int> mShaderProgramIds = new Dictionary<string, int>();
+        private float[] mVertexData;
 
-        private float[] mVertexData; 
-
-        internal TackRenderer()
-        {
-
+        internal TackRenderer() {
+            ActiveInstance = this;
         }
 
-        public void OnStart()
-        {
+        public void OnStart() {
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
-            mShaderProgramId = ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.DefaultFragmentShader);
-            ShaderProgramId = mShaderProgramId;
+            mShaderProgramIds.Add("shaders.default_object_shader", ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.DefaultFragmentShader));
+            TackConsole.EngineLog(EngineLogType.Message, "Successfully registered shader with name: shaders.default_object_shader");
+            mShaderProgramIds.Add("shaders.default_gui_shader", ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.GUIFragmentShader));
+            TackConsole.EngineLog(EngineLogType.Message, "Successfully registered shader with name: shaders.default_gui_shader");
 
             mVertexData = new float[4];
 
@@ -43,8 +44,7 @@ namespace TackEngineLib.Renderer
             TackConsole.EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
         }
 
-        public void OnRender()
-        {
+        public void OnRender() {
             TackObjectSpriteRendering();
             /*
             try
@@ -55,11 +55,21 @@ namespace TackEngineLib.Renderer
             {
                 TackConsole.EngineLog(EngineLogType.Error, e.Message.ToString());
             }*/
+
+            //SetAmbientOverlayColour();
+            //TackGUI.Box(new RectangleShape(0, 0, TackEngine.ScreenWidth, TackEngine.ScreenHeight), mAmbientOverlwayBoxStyle);
         }
 
-        public void OnClose()
-        {
+        public void OnClose() {
 
+        }
+
+        public static int GetShader(string shaderName) {
+            if (!ActiveInstance.mShaderProgramIds.ContainsKey(shaderName)) {
+                return ActiveInstance.mShaderProgramIds["shaders.default_object_shader"];
+            }
+
+            return ActiveInstance.mShaderProgramIds[shaderName];
         }
 
          /// <summary>
@@ -88,8 +98,8 @@ namespace TackEngineLib.Renderer
             GL.EnableClientState(ArrayCap.IndexArray);
             GL.EnableClientState(ArrayCap.TextureCoordArray);
 
-            // Tell OpenGL to use the compiled and linker shader program at mShaderProgramId
-            GL.UseProgram(mShaderProgramId);
+            // Tell OpenGL to use teh default object shader
+            GL.UseProgram(mShaderProgramIds["shaders.default_object_shader"]);
 
             TackObject[] allObjects = TackObject.Get();
 
@@ -198,7 +208,7 @@ namespace TackEngineLib.Renderer
                 //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
                 // Set the shader uniform value
-                GL.Uniform1(GL.GetUniformLocation(mShaderProgramId, "ourTexture"), 0);
+                GL.Uniform1(GL.GetUniformLocation(mShaderProgramIds["shaders.default_object_shader"], "ourTexture"), 0);
 
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, quadRenderer.Sprite.TextureId);

@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Audio\AudioClip.cs" />
     <Compile Include="Audio\AudioManager.cs" />
+    <Compile Include="Engine\EngineConsoleCommands.cs" />
     <Compile Include="Engine\EngineLogType.cs" />
     <Compile Include="GUI\BoxStyle.cs" />
     <Compile Include="GUI\Button.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="GUI\VerticalAlignment.cs" />
     <Compile Include="Main\CommandMethod.cs" />
     <Compile Include="Main\TackCommand.cs" />
+    <Compile Include="Main\World.cs" />
     <Compile Include="Math\LinearEquation.cs" />
     <Compile Include="Objects\Components\AudioComponent.cs" />
     <Compile Include="Physics\MovementDirection.cs" />
@@ -128,7 +130,7 @@
     <None Include="Resources\DefaultSprite.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\DefaultFragmentShader_GUI.txt" />
+    <None Include="Resources\GUIFragmentShader.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
