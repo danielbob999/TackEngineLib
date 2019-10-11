@@ -107,6 +107,10 @@ namespace TackEngineLib.Main
             mA = aA;
         }
 
+        public OpenTK.Vector3 ConvertToOpenGLVec3() {
+            return new OpenTK.Vector3(mR / 255.0f, mG / 255.0f, mB / 255.0f);
+        }
+
         /// <summary>
         /// Returns a Colour4b object as a string. Format: (R, G, B, A)
         /// </summary>
