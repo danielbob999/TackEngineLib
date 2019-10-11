@@ -133,7 +133,7 @@ namespace TackEngineLib.GUI
                     mInputString += (char)((int)bufferKey - 61);
                 } else if (bufferKey >= KeyboardKey.A && bufferKey <= KeyboardKey.Z)
                 {
-                    if (TackInput.InputBufferCapsLock)
+                    if (TackInput.InputBufferCapsLock || TackInput.InputBufferShift)
                         mInputString += (char)((int)bufferKey - 18);
                     else
                         mInputString += (char)((int)bufferKey + 14);

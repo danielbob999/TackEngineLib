@@ -37,6 +37,7 @@ namespace TackEngineLib.Input
         private static List<KeyboardKey> mInputBuffer = new List<KeyboardKey>();
 
         private static bool mInputBufferCapsLock = false;
+        private static bool mInputBufferShift = false;
 
         // Tells TackInput that there is a TackGUI.InputField active and needs input
         private static bool mGUIInputRequired = false;
@@ -59,8 +60,17 @@ namespace TackEngineLib.Input
             get { return mInputBufferCapsLock; }
         }
 
+        internal static bool InputBufferShift
+        {
+            get { return mInputBufferShift; }
+        }
+
         internal static void OnStart()
         {
+            if (Console.CapsLock) {
+                mInputBufferCapsLock = true;
+            }
+
             // Keyboard keys
             mKeysHeld = new bool[1024];
             mLastFramesKeys = new bool[1024];
@@ -117,6 +127,10 @@ namespace TackEngineLib.Input
                 if (_key == KeyboardKey.CapsLock)
                     mInputBufferCapsLock = !mInputBufferCapsLock;
 
+                if (_key == KeyboardKey.ShiftLeft || _key == KeyboardKey.ShiftRight) {
+                    mInputBufferShift = true;
+                }
+
                 /*
                 if (FindCharacterFromKeyCode(_key) == 8)
                 {
@@ -140,6 +154,12 @@ namespace TackEngineLib.Input
 
         internal static void KeyUpEvent(KeyboardKey _key)
         {
+            if (mGUIInputRequired) {
+                if (_key == KeyboardKey.ShiftLeft || _key == KeyboardKey.ShiftRight) {
+                    mInputBufferShift = false;
+                }
+            }
+
             mKeysUpPerFrame[(int)_key] = true;
             mKeysHeld[(int)_key] = false;
 

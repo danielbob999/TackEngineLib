@@ -187,8 +187,6 @@ namespace TackEngineLib.Engine
         {
             base.OnMouseDown(e);
 
-            //Console.WriteLine(e.Button);
-
             TackInput.MouseDownEvent((MouseButtonKey)e.Button);
         }
 
