@@ -9,6 +9,9 @@ using TackEngineLib.Main;
 
 namespace TackEngineLib.Objects.Components
 {
+    /// <summary>
+    /// The component that draws the world view to the screen
+    /// </summary>
     public class Camera : TackComponent
     {
         private int mCameraScreenWidth;
@@ -16,21 +19,19 @@ namespace TackEngineLib.Objects.Components
         private Colour4b mColourOverlay;
         private float mZoomFactor = 1.0f;
 
-
         // Properties
         public int CameraScreenWidth
         {
-            get
-            {
-                return mCameraScreenWidth;
-            }
+            get { return mCameraScreenWidth; }
             set
             {
                 if (value > 0)
                 {
                     int oldValue = mCameraScreenWidth;
                     mCameraScreenWidth = value;
-                    TackConsole.EngineLog(EngineLogType.Message, string.Format("Updated Camera.CameraScreenWidth. Old ({0}) -> New ({1})", oldValue, mCameraScreenWidth));
+
+                    if (mCameraScreenWidth != oldValue)
+                        TackConsole.EngineLog(EngineLogType.Message, string.Format("Updated Camera.CameraScreenWidth. Old ({0}) -> New ({1})", oldValue, mCameraScreenWidth));
                 }
                 else
                     TackConsole.EngineLog(EngineLogType.Error, "Camera Screen Width cannot be set to less than 1");
@@ -49,7 +50,9 @@ namespace TackEngineLib.Objects.Components
                 {
                     int oldValue = mCameraScreenHeight;
                     mCameraScreenHeight = value;
-                    TackConsole.EngineLog(EngineLogType.Message, string.Format("Updated Camera.CameraScreenHeight. Old ({0}) -> New ({1})", oldValue, mCameraScreenHeight));
+
+                    if (mCameraScreenHeight != oldValue)
+                        TackConsole.EngineLog(EngineLogType.Message, string.Format("Updated Camera.CameraScreenHeight. Old ({0}) -> New ({1})", oldValue, mCameraScreenHeight));
                 }
                 else
                     TackConsole.EngineLog(EngineLogType.Error, "Camera Screen Height cannot be set to less than 1");

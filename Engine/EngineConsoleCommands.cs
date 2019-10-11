@@ -44,5 +44,15 @@ namespace TackEngineLib.Engine
 
             //TackConsole.EngineLog(EngineLogType.Message, "The TackCommand with call string '" + thisCommandData.GetCallString() + "' has no definition that takes " + args.Length + " arguments");
         }
+
+        [CommandMethod("renderer.printWidth", "")]
+        public static void RendererPrintWidthCommand(string[] args) {
+            TackConsole.EngineLog(EngineLogType.Message, "Current Window Width: {0}", TackEngine.MainCamera.CameraScreenWidth);
+        }
+
+        [CommandMethod("renderer.printHeight", "")]
+        public static void RendererPrintHeightCommand(string[] args) {
+            TackConsole.EngineLog(EngineLogType.Message, "Current Window Height: {0}", TackEngine.MainCamera.CameraScreenHeight);
+        }
     }
 }

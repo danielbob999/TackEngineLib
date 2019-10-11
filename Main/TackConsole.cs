@@ -163,6 +163,8 @@ namespace TackEngineLib.Main
 
         public static void EngineLog(EngineLogType _type, string _msg, params object[] _params)
         {
+            string formattedString = string.Format(_msg, _params);
+
             if (ActiveInstance == null)
             {
                 MessageBacklog.Add(string.Format("{0}:{1:00}:{2:00}.{3:000} [{4}] {5}",
@@ -171,7 +173,7 @@ namespace TackEngineLib.Main
                 DateTime.Now.Second,
                 DateTime.Now.Millisecond,
                 _type.ToString(),
-                _msg));
+                formattedString));
                 return;
             }
 
@@ -198,7 +200,7 @@ namespace TackEngineLib.Main
                 DateTime.Now.Second,
                 DateTime.Now.Millisecond,
                 _type.ToString(),
-                _msg));
+                formattedString));
 
             Console.WriteLine(string.Format("{0}:{1:00}:{2:00}.{3:000} [{4}] {5}",
                 DateTime.Now.Hour,
@@ -206,7 +208,7 @@ namespace TackEngineLib.Main
                 DateTime.Now.Second,
                 DateTime.Now.Millisecond,
                 _type.ToString(),
-                _msg));
+                formattedString));
         }
 
         private void GetCommandsFromAssembly(string a_assemblyName)
