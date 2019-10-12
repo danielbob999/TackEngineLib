@@ -34,9 +34,9 @@ namespace TackEngineLib.Renderer
             timer.Start();
 
             mShaderProgramIds.Add("shaders.default_object_shader", ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.DefaultFragmentShader));
-            TackConsole.EngineLog(EngineLogType.Message, "Successfully registered shader with name: shaders.default_object_shader");
+            TackConsole.EngineLog(EngineLogType.Message, "Successfully registered shader with name 'shaders.default_object_shader'");
             mShaderProgramIds.Add("shaders.default_gui_shader", ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.GUIFragmentShader));
-            TackConsole.EngineLog(EngineLogType.Message, "Successfully registered shader with name: shaders.default_gui_shader");
+            TackConsole.EngineLog(EngineLogType.Message, "Successfully registered shader with name 'shaders.default_gui_shader'");
 
             mVertexData = new float[4];
 
@@ -45,23 +45,14 @@ namespace TackEngineLib.Renderer
         }
 
         public void OnRender() {
-            TackObjectSpriteRendering();
-            /*
-            try
-            {
-                TackObjectSpriteRendering();
-            }
-            catch (Exception e)
-            {
-                TackConsole.EngineLog(EngineLogType.Error, e.Message.ToString());
-            }*/
-
-            //SetAmbientOverlayColour();
-            //TackGUI.Box(new RectangleShape(0, 0, TackEngine.ScreenWidth, TackEngine.ScreenHeight), mAmbientOverlwayBoxStyle);
+            RenderQuadRendererComponents();
         }
 
         public void OnClose() {
-
+            foreach (KeyValuePair<string, int> pair in mShaderProgramIds) {
+                GL.DeleteProgram(pair.Value);
+                TackConsole.EngineLog(EngineLogType.Message, "Deleted shader program with name '{0}' and id: {1}", pair.Key, pair.Value);
+            }
         }
 
         public static int GetShader(string shaderName) {
@@ -87,7 +78,7 @@ namespace TackEngineLib.Renderer
         /// <summary>
         /// Loops through all active TackObjects and renders all QuadRenderer components
         /// </summary>
-        private void TackObjectSpriteRendering()
+        private void RenderQuadRendererComponents()
         {
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
