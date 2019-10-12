@@ -26,6 +26,7 @@ namespace TackEngineLib.Engine
     {
         // Reference to the current GameWindow instance. CANNOT BE CHANGED
         private GameWindow gameWindowRef;
+        private static TackGameWindow ActiveInstance;
 
         private EngineDelegates.OnStart onStartFunction;
         private EngineDelegates.OnUpdate onUpdateFunction;
@@ -60,6 +61,8 @@ namespace TackEngineLib.Engine
             onUpdateFunction = _updtFunc;
             onGUIRenderFunction = _guiRendFunc;
             onCloseFunction = _onCloseFunc;
+
+            ActiveInstance = this;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -207,6 +210,15 @@ namespace TackEngineLib.Engine
         public void SetGameWindowRef(ref GameWindow _win)
         {
             gameWindowRef = _win;
+        }
+
+        public static void RestartModule(string moduleName, bool keepState) {
+            if (moduleName == "TackRenderer") {
+                ActiveInstance.mTackRender.OnClose();
+                ActiveInstance.mTackRender = new TackRenderer();
+                ActiveInstance.mTackRender.OnStart();
+                return;
+            }
         }
     }
 }
