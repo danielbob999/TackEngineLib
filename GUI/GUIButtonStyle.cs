@@ -9,8 +9,65 @@ using TackEngineLib.Main;
 
 namespace TackEngineLib.GUI
 {
-    public class ButtonStyle
+    public class GUIButtonStyle
     {
+        /// <summary>
+        /// The default style of a GUIButton
+        /// </summary>
+        public static GUIButtonStyle DefaultStyle
+        {
+            get {
+                return new GUIButtonStyle() {
+                    BackgroundColour = new Colour4b(200, 200, 200, 255),
+                    FontColour = Colour4b.Black,
+                    FontFamilyId = 0,
+                    FontSize = 7.0f,
+                    Border = new GUIBorder(0, 0, 0, 0, new Colour4b(0, 0, 0, 255)),
+                    HorizontalTextAlignment = HorizontalAlignment.Middle,
+                    VerticalTextAlignment = VerticalAlignment.Middle,
+                    SpriteTexture = Sprite.DefaultSprite
+                };
+            }
+        }
+
+        /// <summary>
+        /// The default style of a GUIButton when hovered
+        /// </summary>
+        public static GUIButtonStyle DefaultHoverStyle
+        {
+            get {
+                return new GUIButtonStyle() {
+                    BackgroundColour = new Colour4b(190, 190, 190, 255),
+                    FontColour = Colour4b.Black,
+                    FontFamilyId = 0,
+                    FontSize = 7.0f,
+                    Border = new GUIBorder(0, 0, 0, 0, new Colour4b(0, 0, 0, 255)),
+                    HorizontalTextAlignment = HorizontalAlignment.Middle,
+                    VerticalTextAlignment = VerticalAlignment.Middle,
+                    SpriteTexture = Sprite.DefaultSprite
+                };
+            }
+        }
+
+        /// <summary>
+        /// The default style of a GUIButton when being pressed
+        /// </summary>
+        public static GUIButtonStyle DefaultPressStyle
+        {
+            get {
+                return new GUIButtonStyle() {
+                    BackgroundColour = new Colour4b(170, 170, 170, 255),
+                    FontColour = Colour4b.Black,
+                    FontFamilyId = 0,
+                    FontSize = 7.0f,
+                    Border = new GUIBorder(0, 0, 0, 0, new Colour4b(0, 0, 0, 255)),
+                    HorizontalTextAlignment = HorizontalAlignment.Middle,
+                    VerticalTextAlignment = VerticalAlignment.Middle,
+                    SpriteTexture = Sprite.DefaultSprite
+                };
+            }
+        }
+
         private float mFontSize;
         private Colour4b mFontColour;
         private int mFontFamilyId;
@@ -19,13 +76,6 @@ namespace TackEngineLib.GUI
         private Colour4b mColour;
         private GUIBorder mBorder;
         private Sprite mSpriteTexture;
-        private RectangleShape mShape;
-
-        public RectangleShape Shape
-        {
-            get { return mShape; }
-            set { mShape = value; }
-        }
 
         public float FontSize
         {
@@ -68,7 +118,7 @@ namespace TackEngineLib.GUI
         /// <summary>
         /// The VerticalAlignment of this text
         /// </summary>
-        public VerticalAlignment VerticalAlignment
+        public VerticalAlignment VerticalTextAlignment
         {
             get { return mVerticalAlignment; }
             set { mVerticalAlignment = value; }
@@ -77,13 +127,13 @@ namespace TackEngineLib.GUI
         /// <summary>
         /// The HorizontalAlignment of this text
         /// </summary>
-        public HorizontalAlignment HorizontalAlignment
+        public HorizontalAlignment HorizontalTextAlignment
         {
             get { return mHorizontalAlignment; }
             set { mHorizontalAlignment = value; }
         }
 
-        public ButtonStyle() {
+        public GUIButtonStyle() {
             mSpriteTexture = Sprite.DefaultSprite;
             mHorizontalAlignment = HorizontalAlignment.Middle;
             mVerticalAlignment = VerticalAlignment.Middle;

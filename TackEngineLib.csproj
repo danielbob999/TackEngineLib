@@ -20,7 +20,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\TackEngineLib.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -51,8 +52,8 @@
     <Compile Include="Engine\EngineConsoleCommands.cs" />
     <Compile Include="Engine\EngineLogType.cs" />
     <Compile Include="GUI\BoxStyle.cs" />
-    <Compile Include="GUI\Button.cs" />
-    <Compile Include="GUI\ButtonStyle.cs" />
+    <Compile Include="GUI\GUIButton.cs" />
+    <Compile Include="GUI\GUIButtonStyle.cs" />
     <Compile Include="GUI\GUIBorder.cs" />
     <Compile Include="GUI\HorizontalAlignment.cs" />
     <Compile Include="GUI\InputField.cs" />
