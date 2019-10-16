@@ -38,7 +38,7 @@ namespace TackEngineLib.Resources
         /// <param name="aOutVar">The variable the resource will be loaded into</param>
         /// <returns></returns>
         public static bool GetResource<T>(string aFileName, out T aOutVar) {
-            aOutVar = (T)new object();
+            aOutVar = default;
             return false;
         }
     }
