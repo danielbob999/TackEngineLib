@@ -25,16 +25,12 @@ namespace TackEngineLib.Objects.Components
             get { return mCameraScreenWidth; }
             set
             {
-                if (value > 0)
-                {
+                if (value > 0) {
                     int oldValue = mCameraScreenWidth;
                     mCameraScreenWidth = value;
-
-                    if (mCameraScreenWidth != oldValue)
-                        TackConsole.EngineLog(EngineLogType.Message, string.Format("Updated Camera.CameraScreenWidth. Old ({0}) -> New ({1})", oldValue, mCameraScreenWidth));
-                }
-                else
+                } else {
                     TackConsole.EngineLog(EngineLogType.Error, "Camera Screen Width cannot be set to less than 1");
+                }
             }
         }
 
@@ -46,16 +42,12 @@ namespace TackEngineLib.Objects.Components
             }
             set
             {
-                if (value > 0)
-                {
+                if (value > 0) {
                     int oldValue = mCameraScreenHeight;
                     mCameraScreenHeight = value;
-
-                    if (mCameraScreenHeight != oldValue)
-                        TackConsole.EngineLog(EngineLogType.Message, string.Format("Updated Camera.CameraScreenHeight. Old ({0}) -> New ({1})", oldValue, mCameraScreenHeight));
-                }
-                else
+                } else {
                     TackConsole.EngineLog(EngineLogType.Error, "Camera Screen Height cannot be set to less than 1");
+                }
             }
         }
 
