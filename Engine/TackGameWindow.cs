@@ -145,6 +145,7 @@ namespace TackEngineLib.Engine
 
             onGUIRenderFunction(); // This function should be called after all rendering. This means text will render above other objects
             mTackConsole.OnGUIRender(); // TackConsole should be rendered above everything else, including the onGUIRenderFunction
+            mTackRender.RenderFpsCounter();
 
            TackEngine.mFramesPerSecond = (int)RenderFrequency;
 

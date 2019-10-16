@@ -24,6 +24,8 @@ namespace TackEngineLib.Renderer
 
         private Dictionary<string, int> mShaderProgramIds = new Dictionary<string, int>();
         private float[] mVertexData;
+        private bool mRenderFpsCounter;
+        private TextAreaStyle mFpsCounterStyle;
 
         internal TackRenderer() {
             ActiveInstance = this;
@@ -39,6 +41,18 @@ namespace TackEngineLib.Renderer
             TackConsole.EngineLog(EngineLogType.Message, "Successfully registered shader with name 'shaders.default_gui_shader'");
 
             mVertexData = new float[4];
+            mRenderFpsCounter = false;
+
+            mFpsCounterStyle = new TextAreaStyle() {
+                BackgroundColour = new Colour4b(0, 0, 0, 0),
+                FontColour = Colour4b.Black,
+                FontSize = 7f,
+                FontFamilyId = 0,
+                Scrollable = false,
+                ScrollPosition = 0,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Top,
+            };
 
             timer.Stop();
             TackConsole.EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
@@ -48,11 +62,23 @@ namespace TackEngineLib.Renderer
             RenderQuadRendererComponents();
         }
 
+        public void RenderFpsCounter() {
+            int width = 100;
+            int height = 100;
+            if (mRenderFpsCounter) {
+                TackGUI.TextArea(new RectangleShape(TackEngine.MainCamera.CameraScreenWidth - (width + 5), 5, width, height), TackEngine.RenderCyclesPerSecond.ToString(), mFpsCounterStyle);
+            }
+        }
+
         public void OnClose() {
             foreach (KeyValuePair<string, int> pair in mShaderProgramIds) {
                 GL.DeleteProgram(pair.Value);
                 TackConsole.EngineLog(EngineLogType.Message, "Deleted shader program with name '{0}' and id: {1}", pair.Key, pair.Value);
             }
+        }
+
+        public static void SetFpsCounterState(bool state) {
+            ActiveInstance.mRenderFpsCounter = state;
         }
 
         public static int GetShader(string shaderName) {

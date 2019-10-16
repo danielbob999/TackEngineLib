@@ -59,6 +59,16 @@ namespace TackEngineLib.Engine
             TackConsole.EngineLog(EngineLogType.Message, "Current Window Height: {0}", TackEngine.MainCamera.CameraScreenHeight);
         }
 
+        [CommandMethod("renderer.enableFpsCounter", "")]
+        public static void RendererEnableFpsCounter(string[] args) {
+            Renderer.TackRenderer.SetFpsCounterState(true);
+        }
+
+        [CommandMethod("renderer.disableFpsCounter", "")]
+        public static void RendererDisableFpsCounter(string[] args) {
+            Renderer.TackRenderer.SetFpsCounterState(false);
+        }
+
         [CommandMethod("console.printOperationsOfCommandclass", "commandClassName:string")]
         public static void ConsolePrintOperationsOfCommandclass(string[] args) {
             if (args.Length == 2) {
