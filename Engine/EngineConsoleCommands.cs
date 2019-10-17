@@ -96,6 +96,19 @@ namespace TackEngineLib.Engine
             }
         }
 
+        [CommandMethod("renderer.setVSync", "state:bool")]
+        public static void RendererSetVSync(string[] args) {
+            if (args.Length == 2) {
+                if (bool.TryParse(args[1], out bool result)) {
+                    if (result) {
+                        TackEngine.currentWindow.VSync = OpenTK.VSyncMode.On;
+                    } else {
+                        TackEngine.currentWindow.VSync = OpenTK.VSyncMode.Off;
+                    }
+                }
+            }
+        }
+
         [CommandMethod("tackobject.listAll", "")]
         public static void TackObjectListAllObjects(string[] args) {
             TackConsole.EngineLog(EngineLogType.Message, "Loaded TackObjects:\n");
