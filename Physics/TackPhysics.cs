@@ -14,141 +14,80 @@ using TackEngineLib.Objects.Components;
 
 namespace TackEngineLib.Physics
 {
-    public static class TackPhysics
+    public class TackPhysics : EngineModule
     {
-        private static Vector2f gravityForce;
-        private static PhysicsStatus status;
-        private static bool shouldLoop = false;
-        private static Stopwatch updateRateTimer;
-        private static int targetUpdateRate;
-        private static int updateCounter = 0;
-        private static int updateRate = 0;
-        private static int timeTakenLastUpdate;
+        private static TackPhysics ActiveInstance;
 
-        private static float mCycleTimeDelta;
+        private Vector2f mGravityForce;
+        private PhysicsStatus mCurrentStatus;
+        private List<PhysicsObject> mCurrentPhysicsObjects = new List<PhysicsObject>();
 
-        public static float CycleTimeDelta
+        public PhysicsStatus CurrentStatus
         {
-            get { return mCycleTimeDelta; }
-            set { mCycleTimeDelta = value; }
+            get { return mCurrentStatus; }
+        }
+
+        public Vector2f Gravity
+        {
+            get { return mGravityForce; }
+            set { mGravityForce = value; }
+        }
+
+        public TackPhysics() {
+            if (ActiveInstance != null) {
+                ActiveInstance.Close();
+            }
+
+            ActiveInstance = this;
         }
 
         /// <summary>
-        /// Method that initializes the physics loop
+        /// Starts this TackPhysics instance
         /// </summary>
-        /// <param name="_targetUpdateRatePerSec">The target update rate (updates per second)</param>
-        internal static void Init(object _targetUpdateRatePerSec)
+        internal override void Start()
         {
-            gravityForce = new Vector2f(0, -9.8f);
-
-            status = PhysicsStatus.Starting;
-            updateRateTimer = new Stopwatch();
-
-            shouldLoop = true;
-            int targetUR = (int)((double)_targetUpdateRatePerSec);
-            targetUpdateRate = targetUR;
-            StartPhysicsLoop(targetUR);
+            mCurrentStatus = PhysicsStatus.Starting;
+            mGravityForce = new Vector2f(0, -9.8f);
         }
 
-        private static void StartPhysicsLoop(int _ur)
-        {
-            TackConsole.EngineLog(EngineLogType.Message, string.Format("Starting TackPhysics on a new thread ({0}) with priority: {1}", Thread.CurrentThread.ManagedThreadId, Thread.CurrentThread.Priority)) ;
-
-            if (Thread.CurrentThread.ThreadState == System.Threading.ThreadState.Running)
-            {
-                TackConsole.EngineLog(EngineLogType.Message, "Successfully started TackPhysics");
+        internal override void Update() {
+            if (mCurrentStatus == PhysicsStatus.Starting) {
+                mCurrentStatus = PhysicsStatus.Running;
             }
-
-            Stopwatch timer = new Stopwatch(); // A stopwatch that is used to measure how long it took to complete a cycle/frame
-            updateRateTimer.Start();
-
-            // Get the target sleep time. 1000(ms) / targetUpdateRate
-            // E.g 1000(ms) / 60 = 16.667ms sleep time per loop run
-            float targetSleepTimeMs = 1000 / _ur;
-
-            while (shouldLoop)
-            {
-                // Calculate actual update rate
-                if (updateRateTimer.ElapsedMilliseconds >= 1000)
-                {
-                    updateRate = updateCounter;
-                    updateCounter = 0;
-                    updateRateTimer.Restart();
-                }
-
-                timer.Restart();
-                status = PhysicsStatus.Running;
-
-                // Do physics calculations here
-                try
-                {
-                    GravityMovement();
-                }
-                catch (Exception e)
-                {
-                    TackConsole.EngineLog(EngineLogType.Error, string.Format("TackPhysics has encountered a serious problem and has crashed."));
-                    TackConsole.EngineLog(EngineLogType.Error, string.Format("ErrorCode: {0}, ProblematicMethod: {1}, StackTrace: {2}", e.HResult, e.TargetSite, e.StackTrace));
-                    Stop();
-                    continue;
-                }
-
-
-                long timeTakenThisRun = timer.ElapsedMilliseconds;
-                int timeToSleep = (int)((int)targetSleepTimeMs - timeTakenThisRun);
-
-                if (timeToSleep <= 0)
-                {
-                    timeTakenLastUpdate = (int)timer.ElapsedMilliseconds;
-                    updateCounter++;
-                    continue;
-                }
-                else
-                {
-                    Thread.Sleep(timeToSleep);
-                }
-
-                updateCounter++;
-                timeTakenLastUpdate = (int)timer.ElapsedMilliseconds;
-
-                mCycleTimeDelta = timeTakenLastUpdate / (1000 / targetUpdateRate);
-            }
-
         }
 
-        internal static void Stop()
-        {
-            TackConsole.EngineLog(EngineLogType.Message, "Shutting TackPhysics down...");
-            status = PhysicsStatus.Stopping;
-            shouldLoop = false;
+        internal override void Render() {
+
         }
 
         /// <summary>
-        /// To be run every Physics update cycle. Adds a gravity effect
-        ///     to all PhysicsComponents where SimulateGravity=true.
-        ///     
+        /// Closes this TackPhysics instance
         /// </summary>
-        internal static void GravityMovement()
+        internal override void Close()
         {
-            TackObject[] tackObjects = TackObject.Get();
+            TackConsole.EngineLog(EngineLogType.Message, "Closing TackPhysics");
+            mCurrentStatus = PhysicsStatus.Stopping;
+        }
 
-            foreach (TackObject obj in tackObjects)
-            {
-                if (!obj.GetComponent<PhysicsComponent>().IsNullComponent())
-                {
-                    PhysicsComponent physicsComponent = obj.GetComponent<PhysicsComponent>();
+        internal PhysicsObject? GetPhysicsObjectByTackObjectHash(string hash) {
+            for (int i = 0; i < mCurrentPhysicsObjects.Count; i++) {
+                if (mCurrentPhysicsObjects[i].mTackObjectHash == hash) {
+                    return mCurrentPhysicsObjects[i];
+                }
+            }
 
-                    // Update components affected by gravity
-                    if (physicsComponent.SimulateGravity)
-                    {
-                        Vector2f movementVector = new Vector2f(gravityForce.X * mCycleTimeDelta, gravityForce.Y * mCycleTimeDelta);
+            return null;
+        }
 
-                        physicsComponent.Move(CheckObjectMovementAmount(obj, movementVector));
-                    }
+        internal void RemovePhysicsObject(PhysicsComponent comp) {
+            for (int i = 0; i < mCurrentPhysicsObjects.Count; i++) {
+                if (mCurrentPhysicsObjects[i].mPhysicsComponent == comp) {
+                    mCurrentPhysicsObjects.RemoveAt(i);
                 }
             }
         }
 
-        internal static Vector2f CheckObjectMovementAmount(TackObject _tackObject, Vector2f _movementAmount)
+        internal Vector2f CheckObjectMovementAmount(TackObject _tackObject, Vector2f _movementAmount)
         {
             MovementDirection dirX;
             MovementDirection dirY;
@@ -476,41 +415,18 @@ namespace TackEngineLib.Physics
             return finalMovementAmount;
         }
 
-        /// <summary>
-        /// Returns the current gravity force value used by the physics thread
-        /// </summary>
-        /// <returns></returns>
-        public static Vector2f GetGravityForce()
-        {
-            return gravityForce;
+        internal static void RegisterPhysicsComponent(PhysicsComponent component) {
+            if (ActiveInstance.GetPhysicsObjectByTackObjectHash(component.parentObject.GetHash()) == null) {
+                PhysicsObject obj = new PhysicsObject();
+                obj.mLeftOverForce = new Vector2f();
+                obj.mPhysicsComponent = component;
+                obj.mTackObjectHash = component.parentObject.GetHash();
+                ActiveInstance.mCurrentPhysicsObjects.Add(obj);
+            }
         }
 
-        /// <summary>
-        /// Returns the current status of the physics thread
-        /// </summary>
-        /// <returns></returns>
-        public static PhysicsStatus GetPhysicsStatus()
-        {
-            return status;
-        }
-
-        /// <summary>
-        /// Returns the actual update rate of the physics thread
-        /// </summary>
-        /// <returns>The current update rate of the Physics thread</returns>
-        /// <returntype>int</returntype>
-        public static int GetUpdateRate()
-        {
-            return updateRate;
-        }
-
-        /// <summary>
-        /// Set the gravity force value used by the physics thread
-        /// </summary>
-        /// <param name="_force">The gravity force value to be set</param>
-        public static void SetGravityForce(Vector2f _force)
-        {
-            gravityForce = _force;
+        internal static void DeregisterPhysicsComponent(PhysicsComponent component) {
+            ActiveInstance.RemovePhysicsObject(component);
         }
     }
 }

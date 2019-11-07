@@ -70,6 +70,8 @@ namespace TackEngineLib.Objects.Components
             mColliderOffset = new Vector2f(0, 0);
             mAllowedToMove = true;
             mWeight = 1;
+
+            TackPhysics.RegisterPhysicsComponent(this);
         }
 
         public void Move(float _x, float _y)
@@ -82,8 +84,12 @@ namespace TackEngineLib.Objects.Components
             if (mAllowedToMove)
             {
                 //parentObject.Move(_vec);
-                parentObject.Move(TackPhysics.CheckObjectMovementAmount(parentObject, _vec));
+                //parentObject.Move(TackPhysics.CheckObjectMovementAmount(parentObject, _vec));
             }
+        }
+
+        public void Destroy() {
+            TackPhysics.DeregisterPhysicsComponent(this);
         }
     }
 }

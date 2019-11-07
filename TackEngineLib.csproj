@@ -53,6 +53,7 @@
     <Compile Include="Audio\AudioManager.cs" />
     <Compile Include="Engine\EngineConsoleCommands.cs" />
     <Compile Include="Engine\EngineLogType.cs" />
+    <Compile Include="Engine\EngineModule.cs" />
     <Compile Include="GUI\BoxStyle.cs" />
     <Compile Include="GUI\GUIButton.cs" />
     <Compile Include="GUI\GUIButtonStyle.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Math\TackMath.cs" />
     <Compile Include="Main\Vector2f.cs" />
     <Compile Include="Physics\PhysicsMovement.cs" />
+    <Compile Include="Physics\PhysicsObject.cs" />
     <Compile Include="Physics\PhysicsStatus.cs" />
     <Compile Include="Physics\TackPhysics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -36,7 +36,7 @@ namespace TackEngineLib.Engine
         // Modules
         private AudioManager mAudioManager;
         private TackConsole mTackConsole;
-        //private TackPhysics mTackPhysics;
+        private TackPhysics mTackPhysics;
         private TackObjectManager mTackObjectManager;
         private TackRenderer mTackRender;
 
@@ -88,22 +88,10 @@ namespace TackEngineLib.Engine
             mTackRender = new TackRenderer();
             mTackRender.OnStart();
 
-            // OpenGL stuffs
-            //GL.Viewport(0, 0, Width, Height);
+            mTackPhysics = new TackPhysics();
+            mTackPhysics.Start();
 
-            //GL.MatrixMode(MatrixMode.Projection);
-            //GL.LoadIdentity();
-            //GL.Ortho(0, Width, Height, 0, 0, 1);
-
-
-            //colourShaderProgramId = ShaderFunctions.CompileAndLinkShaders(TackShaderType.ColourShader);
-            //imageShaderProgramId = ShaderFunctions.CompileAndLinkShaders(TackShaderType.ImageShader);
-
-            // All OnStart here
             TackInput.OnStart();
-
-            //testTex = Sprite.LoadFromFile("Resources/DabEmoji.bmp");
-            //testTex.Create();
 
             onStartFunction();
 
@@ -111,10 +99,6 @@ namespace TackEngineLib.Engine
             updateTimer.Start();
 
             mTackObjectManager.RunTackObjectStartMethods();
-
-            // Start the TackPhysics thread
-            Thread physicsThread = new Thread(TackPhysics.Init);
-            physicsThread.Start(TargetUpdateFrequency);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -124,6 +108,7 @@ namespace TackEngineLib.Engine
             onUpdateFunction();
 
             // All OnUpdate here
+            mTackPhysics.Update();      // If issues arise, try running this below RunTackObjectUpdateMethods()
             mTackObjectManager.OnUpdate();
             mTackObjectManager.RunTackObjectUpdateMethods();
 
@@ -158,7 +143,7 @@ namespace TackEngineLib.Engine
 
             onCloseFunction();
 
-            TackPhysics.Stop();
+            mTackPhysics.Close();
 
             mAudioManager.OnClose();
             SpriteManager.OnClose();
