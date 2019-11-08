@@ -94,27 +94,36 @@ namespace TackEngineLib.Physics
             for (int i = 0; i < m_currentPhysicsObjects.Count; i++) {
                 if (m_currentPhysicsObjects[i].mPhysicsComponent.ModelInertia) {
                     float totalDecrease = m_currentPhysicsObjects[i].mPhysicsComponent.Weight / 100.0f;
-
-                    Console.WriteLine("Total Decrease: " + totalDecrease.ToString());
-
                     PhysicsObject obj = m_currentPhysicsObjects[i];
-                    Console.WriteLine("Starting: " + obj.mLeftOverUserForce);
-                    obj.mLeftOverUserForce -= totalDecrease;
-                    obj.mLeftOverGravityForce -= totalDecrease;
+                    
+                    // Decrease X values and clamp
+                    if (obj.mLeftOverUserForce.X < 0) {
+                        obj.mLeftOverUserForce.X += totalDecrease;
+                        if (obj.mLeftOverUserForce.X > 0) {
+                            obj.mLeftOverUserForce.X = 0;
+                        }
+                    } else {
+                        //Console.WriteLine("Obj.X = " + obj.mLeftOverUserForce.X);
+                        obj.mLeftOverUserForce.X -= totalDecrease;
+                        //Console.WriteLine("After decrease: " + obj.mLeftOverUserForce.X);
+                        if (obj.mLeftOverUserForce.X < 0) {
+                            obj.mLeftOverUserForce.X = 0;
+                        }
+                    }
 
-                    if (obj.mLeftOverGravityForce.X < 0)
-                        obj.mLeftOverGravityForce.X = 0;
+                    // Decrease y values and clamp
+                    if (obj.mLeftOverUserForce.Y < 0) {
+                        obj.mLeftOverUserForce.Y += totalDecrease;
+                        if (obj.mLeftOverUserForce.Y > 0) {
+                            obj.mLeftOverUserForce.Y = 0;
+                        }
+                    } else {
+                        obj.mLeftOverUserForce.Y -= totalDecrease;
+                        if (obj.mLeftOverUserForce.Y < 0) {
+                            obj.mLeftOverUserForce.Y = 0;
+                        }
+                    }
 
-                    if (obj.mLeftOverGravityForce.Y < 0)
-                        obj.mLeftOverGravityForce.Y = 0;
-
-                    if (obj.mLeftOverUserForce.X < 0)
-                        obj.mLeftOverUserForce.X = 0;
-
-                    if (obj.mLeftOverUserForce.Y < 0)
-                        obj.mLeftOverUserForce.Y = 0;
-
-                    Console.WriteLine("Final: " + obj.mLeftOverUserForce.ToString());
                     OverwritePhysicsObject(obj);
                 } else {
                     PhysicsObject obj = m_currentPhysicsObjects[i];
@@ -167,6 +176,36 @@ namespace TackEngineLib.Physics
                     m_currentPhysicsObjects[i] = obj;
                 }
             }
+        }
+
+        internal Vector2f AddForce(Vector2f startingForce, Vector2f forceToAdd, float clampValue) {
+            startingForce.X += forceToAdd.X;
+            startingForce.Y += forceToAdd.Y;
+
+            if (startingForce.X > clampValue) {
+                startingForce.X = 0;
+            }
+
+            if (startingForce.Y > clampValue) {
+                startingForce.Y = 0;
+            }
+
+            return startingForce;
+        }
+
+        internal Vector2f SubtractForce(Vector2f startingForce, Vector2f forceToAdd, float clampValue) {
+            startingForce.X -= forceToAdd.X;
+            startingForce.Y -= forceToAdd.Y;
+
+            if (startingForce.X < clampValue) {
+                startingForce.X = 0;
+            }
+
+            if (startingForce.Y < clampValue) {
+                startingForce.Y = 0;
+            }
+
+            return startingForce;
         }
 
         internal Vector2f CheckObjectMovementAmount(TackObject _tackObject, Vector2f _movementAmount)
