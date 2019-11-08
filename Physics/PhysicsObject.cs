@@ -10,14 +10,13 @@ namespace TackEngineLib.Physics
     {
         public string mTackObjectHash;
         public TackEngineLib.Objects.Components.PhysicsComponent mPhysicsComponent;
-        public TackEngineLib.Main.Vector2f mLeftOverForce;
+        public TackEngineLib.Main.Vector2f mLeftOverGravityForce;
+        public TackEngineLib.Main.Vector2f mLeftOverUserForce;
 
         public bool IsEqual(PhysicsObject obj) {
             if (mTackObjectHash == obj.mTackObjectHash) {
                 if (mPhysicsComponent == obj.mPhysicsComponent) {
-                    if (mLeftOverForce == obj.mLeftOverForce) {
-                        return true;
-                    }
+                    return true;
                 }
             }
 

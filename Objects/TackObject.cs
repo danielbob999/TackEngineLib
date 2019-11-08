@@ -146,6 +146,7 @@ namespace TackEngineLib.Objects
             if (_component != null)
             {
                 ((TackComponent)_component).parentObject = this;
+                ((TackComponent)_component).OnAddedToTackObject();
                 objectComponents.Add(_component);
 
                 TackConsole.EngineLog(EngineLogType.Message, string.Format("Added a '{0}' component to TackObject with name '{1}'", _component.GetType(), mName));
@@ -253,6 +254,18 @@ namespace TackEngineLib.Objects
         public static TackObject[] Get()
         {
             return TackObjectManager.GetAllTackObjects();
+        }
+
+        public static TackObject GetUsingHash(string hash) {
+            TackObject[] allObjects = Get();
+
+            for (int i = 0; i < allObjects.Length; i++) {
+                if (allObjects[i].GetHash() == hash) {
+                    return allObjects[i];
+                }
+            }
+
+            return null;
         }
     }
 }

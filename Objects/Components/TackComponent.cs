@@ -38,6 +38,10 @@ namespace TackEngineLib.Objects.Components
 
         }
 
+        public virtual void OnAddedToTackObject() {
+
+        }
+
         public virtual bool IsNullComponent()
         {
             return mIsNullComponent;

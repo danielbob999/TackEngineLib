@@ -33,19 +33,32 @@ namespace TackEngineLib.Main
             mY = _y;
         }
 
-        public static Vector2f operator+ (Vector2f _a, Vector2f _b)
-        {
+        public static Vector2f operator+ (Vector2f _a, Vector2f _b) {
             return new Vector2f(_a.mX + _b.mX, _a.mY + _b.mY);
         }
 
-        public static Vector2f operator-(Vector2f _a, Vector2f _b)
-        {
+        public static Vector2f operator+ (Vector2f _a, float _b) {
+            return new Vector2f(_a.X + _b, _a.Y + _b);
+        }
+
+        public static Vector2f operator- (Vector2f _a, Vector2f _b) {
             return new Vector2f(_b.mX - _a.mX, _b.mY - _a.mY);
         }
 
-        public static Vector2f operator* (Vector2f _a, Vector2f _b)
-        {
+        public static Vector2f operator- (Vector2f _a, float _b) {
+            return new Vector2f(_a.X - _b, _a.Y - _b);
+        }
+
+        public static Vector2f operator* (Vector2f _a, Vector2f _b) {
             return new Vector2f(_a.mX * _b.mX, _a.mY * _b.mY);
+        }
+
+        public static Vector2f operator* (Vector2f _a, float _b) {
+            return new Vector2f(_a.X * _b, _a.Y * _b);
+        }
+
+        public static Vector2f operator/ (Vector2f _a, float _b) {
+            return new Vector2f(_a.X / _b, _a.Y / _b);
         }
 
         public static bool operator== (Vector2f _a, Vector2f _b)

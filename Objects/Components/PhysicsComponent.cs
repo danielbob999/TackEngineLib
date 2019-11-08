@@ -18,6 +18,7 @@ namespace TackEngineLib.Objects.Components
         private Vector2f mColliderOffset;
         private bool mSimulateGravity;
         private float mWeight;
+        private bool mModelInertia;
 
         // Properties
         public bool CollisionsEnabled
@@ -62,6 +63,12 @@ namespace TackEngineLib.Objects.Components
             }
         }
 
+        public bool ModelInertia
+        {
+            get { return mModelInertia; }
+            set { mModelInertia = value; }
+        }
+
         public PhysicsComponent()
         {
             mSimulateGravity = true;
@@ -70,8 +77,19 @@ namespace TackEngineLib.Objects.Components
             mColliderOffset = new Vector2f(0, 0);
             mAllowedToMove = true;
             mWeight = 1;
+            mModelInertia = true;
+        }
 
+        public override void OnAddedToTackObject() {
             TackPhysics.RegisterPhysicsComponent(this);
+        }
+
+        public void AddForce(float forceX, float forceY, TackPhysics.ForceType forceType) {
+            AddForce(new Vector2f(forceX, forceY), forceType);
+        }
+
+        public void AddForce(Vector2f force, TackPhysics.ForceType forceType) {
+            TackPhysics.AddForceToComponent(this, force, forceType);
         }
 
         public void Move(float _x, float _y)
@@ -85,6 +103,8 @@ namespace TackEngineLib.Objects.Components
             {
                 //parentObject.Move(_vec);
                 //parentObject.Move(TackPhysics.CheckObjectMovementAmount(parentObject, _vec));
+                Console.WriteLine("Should be setting force");
+                //TackPhysics.AddForceToComponent(this, _vec, TackPhysics.ForceType.Set);
             }
         }
 

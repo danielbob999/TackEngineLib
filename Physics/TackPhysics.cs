@@ -16,44 +16,49 @@ namespace TackEngineLib.Physics
 {
     public class TackPhysics : EngineModule
     {
+        public enum ForceType {
+            Additive,       // Adds to the left-over force attached the the PhysicsComponent
+            Set             // Resets the attached force to the new value
+        }
+
         private static TackPhysics ActiveInstance;
 
-        private Vector2f mGravityForce;
-        private PhysicsStatus mCurrentStatus;
-        private List<PhysicsObject> mCurrentPhysicsObjects = new List<PhysicsObject>();
-
-        public PhysicsStatus CurrentStatus
-        {
-            get { return mCurrentStatus; }
-        }
+        private Vector2f m_gravityForce;
+        private List<PhysicsObject> m_currentPhysicsObjects = new List<PhysicsObject>();
 
         public Vector2f Gravity
         {
-            get { return mGravityForce; }
-            set { mGravityForce = value; }
+            get { return m_gravityForce; }
+            set { m_gravityForce = value; }
         }
 
-        public TackPhysics() {
+        internal TackPhysics() {
             if (ActiveInstance != null) {
                 ActiveInstance.Close();
             }
 
             ActiveInstance = this;
+            m_gravityForce = new Vector2f(0, -9.8f);
         }
 
         /// <summary>
         /// Starts this TackPhysics instance
         /// </summary>
-        internal override void Start()
-        {
-            mCurrentStatus = PhysicsStatus.Starting;
-            mGravityForce = new Vector2f(0, -9.8f);
+        internal override void Start() {
+
         }
 
         internal override void Update() {
-            if (mCurrentStatus == PhysicsStatus.Starting) {
-                mCurrentStatus = PhysicsStatus.Running;
-            }
+            base.Update();
+
+            // Add all gravity forces before calculating collisions
+            AddGravityForceToComponents();
+
+            // Move all components using the left-over forces
+            MoveObjectsBasedOnForces();
+
+            // Calculate the interia force decrease
+            CalculateInertiaForceDecrease();
         }
 
         internal override void Render() {
@@ -63,26 +68,103 @@ namespace TackEngineLib.Physics
         /// <summary>
         /// Closes this TackPhysics instance
         /// </summary>
-        internal override void Close()
-        {
-            TackConsole.EngineLog(EngineLogType.Message, "Closing TackPhysics");
-            mCurrentStatus = PhysicsStatus.Stopping;
+        internal override void Close() {
         }
 
+        private void AddGravityForceToComponents() {
+            for (int i = 0; i < m_currentPhysicsObjects.Count; i++) {
+                if (m_currentPhysicsObjects[i].mPhysicsComponent.SimulateGravity) {
+                    PhysicsObject obj = m_currentPhysicsObjects[i];
+                    obj.mLeftOverGravityForce = m_gravityForce;
+                    OverwritePhysicsObject(obj);
+                }
+            }
+        }
+
+        private void MoveObjectsBasedOnForces() {
+            for (int i = 0; i < m_currentPhysicsObjects.Count; i++) {
+                //Console.WriteLine("TackObject with hash: " + m_currentPhysicsObjects[i].mTackObjectHash + ", " + m_currentPhysicsObjects[i].mLeftOverForce.ToString());
+                if (m_currentPhysicsObjects[i].mPhysicsComponent.AllowedToMove) {
+                    TackObject.GetUsingHash(m_currentPhysicsObjects[i].mTackObjectHash).Position += (m_currentPhysicsObjects[i].mLeftOverGravityForce + m_currentPhysicsObjects[i].mLeftOverUserForce);
+                }
+            }
+        }
+
+        private void CalculateInertiaForceDecrease() {
+            for (int i = 0; i < m_currentPhysicsObjects.Count; i++) {
+                if (m_currentPhysicsObjects[i].mPhysicsComponent.ModelInertia) {
+                    float totalDecrease = m_currentPhysicsObjects[i].mPhysicsComponent.Weight / 100.0f;
+
+                    Console.WriteLine("Total Decrease: " + totalDecrease.ToString());
+
+                    PhysicsObject obj = m_currentPhysicsObjects[i];
+                    Console.WriteLine("Starting: " + obj.mLeftOverUserForce);
+                    obj.mLeftOverUserForce -= totalDecrease;
+                    obj.mLeftOverGravityForce -= totalDecrease;
+
+                    if (obj.mLeftOverGravityForce.X < 0)
+                        obj.mLeftOverGravityForce.X = 0;
+
+                    if (obj.mLeftOverGravityForce.Y < 0)
+                        obj.mLeftOverGravityForce.Y = 0;
+
+                    if (obj.mLeftOverUserForce.X < 0)
+                        obj.mLeftOverUserForce.X = 0;
+
+                    if (obj.mLeftOverUserForce.Y < 0)
+                        obj.mLeftOverUserForce.Y = 0;
+
+                    Console.WriteLine("Final: " + obj.mLeftOverUserForce.ToString());
+                    OverwritePhysicsObject(obj);
+                } else {
+                    PhysicsObject obj = m_currentPhysicsObjects[i];
+                    obj.mLeftOverUserForce = new Vector2f();
+                    OverwritePhysicsObject(obj);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Return a PhysicsObject based on it's TackObject's hash value
+        /// </summary>
+        /// <param name="hash">The hash value of the TackObject</param>
+        /// <returns></returns>
         internal PhysicsObject? GetPhysicsObjectByTackObjectHash(string hash) {
-            for (int i = 0; i < mCurrentPhysicsObjects.Count; i++) {
-                if (mCurrentPhysicsObjects[i].mTackObjectHash == hash) {
-                    return mCurrentPhysicsObjects[i];
+            for (int i = 0; i < m_currentPhysicsObjects.Count; i++) {
+                if (m_currentPhysicsObjects[i].mTackObjectHash == hash) {
+                    return m_currentPhysicsObjects[i];
                 }
             }
 
             return null;
         }
 
+        internal PhysicsObject? GetPhysicsObjectByPhysComp(PhysicsComponent comp) {
+            for (int i = 0; i < m_currentPhysicsObjects.Count; i++) {
+                if (m_currentPhysicsObjects[i].mPhysicsComponent == comp) {
+                    return m_currentPhysicsObjects[i];
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Removed PhysicsObject that is based on the specified PhysicsComponent
+        /// </summary>
+        /// <param name="comp"></param>
         internal void RemovePhysicsObject(PhysicsComponent comp) {
-            for (int i = 0; i < mCurrentPhysicsObjects.Count; i++) {
-                if (mCurrentPhysicsObjects[i].mPhysicsComponent == comp) {
-                    mCurrentPhysicsObjects.RemoveAt(i);
+            for (int i = 0; i < m_currentPhysicsObjects.Count; i++) {
+                if (m_currentPhysicsObjects[i].mPhysicsComponent == comp) {
+                    m_currentPhysicsObjects.RemoveAt(i);
+                }
+            }
+        }
+
+        internal void OverwritePhysicsObject(PhysicsObject obj) {
+            for (int i = 0; i < m_currentPhysicsObjects.Count; i++) {
+                if (m_currentPhysicsObjects[i].IsEqual(obj)) {
+                    m_currentPhysicsObjects[i] = obj;
                 }
             }
         }
@@ -417,16 +499,38 @@ namespace TackEngineLib.Physics
 
         internal static void RegisterPhysicsComponent(PhysicsComponent component) {
             if (ActiveInstance.GetPhysicsObjectByTackObjectHash(component.parentObject.GetHash()) == null) {
-                PhysicsObject obj = new PhysicsObject();
-                obj.mLeftOverForce = new Vector2f();
-                obj.mPhysicsComponent = component;
-                obj.mTackObjectHash = component.parentObject.GetHash();
-                ActiveInstance.mCurrentPhysicsObjects.Add(obj);
+                PhysicsObject obj = new PhysicsObject {
+                    mLeftOverGravityForce = new Vector2f(),
+                    mLeftOverUserForce = new Vector2f(),
+                    mPhysicsComponent = component,
+                    mTackObjectHash = component.parentObject.GetHash()
+                };
+                ActiveInstance.m_currentPhysicsObjects.Add(obj);
+                return;
+            }
+        }
+
+        internal static void AddForceToComponent(PhysicsComponent component, Vector2f force, ForceType forceType) {
+            PhysicsObject? physObjNullable = ActiveInstance.GetPhysicsObjectByTackObjectHash(component.parentObject.GetHash());
+            if (physObjNullable != null) {
+                PhysicsObject obj = physObjNullable.Value;
+                if (forceType == ForceType.Additive) {
+                    obj.mLeftOverUserForce += force;
+                } else {
+                    obj.mLeftOverUserForce = force;
+                }
+
+                // Because of pass-by-value, we need to overwrite the PhysicsObject that
+                ActiveInstance.OverwritePhysicsObject(obj);
             }
         }
 
         internal static void DeregisterPhysicsComponent(PhysicsComponent component) {
             ActiveInstance.RemovePhysicsObject(component);
+        }
+
+        public static void Shutdown() {
+            ActiveInstance.Close();
         }
     }
 }
