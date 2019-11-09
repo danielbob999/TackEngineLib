@@ -120,7 +120,10 @@ namespace TackEngineLib.Renderer
 
             TackObject[] allObjects = TackObject.Get();
 
-            foreach (TackObject currentTackObject in allObjects)
+            List<TackObject> allObjectsWithQRComp = new List<TackObject>(allObjects.Where(x => !x.GetComponent<QuadRenderer>().IsNullComponent()));
+            List<TackObject> orderedComponents = new List<TackObject>(allObjectsWithQRComp.OrderBy(x => x.GetComponent<QuadRenderer>().RenderLayer));
+
+            foreach (TackObject currentTackObject in orderedComponents)
             {
                 // Continue with the loop if currentTackObject does not contain a QuadRenderer component
                 if (currentTackObject.GetComponent<QuadRenderer>().IsNullComponent())

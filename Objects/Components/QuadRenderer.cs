@@ -32,6 +32,7 @@ namespace TackEngineLib.Objects.Components
         private SpriteSheet mSpriteSheet;
         private Colour4b mColour;
         private float[] mActualVertexPositions; // [0] = v1, [1] = v2, [2] = v3, [3] = v4
+        private int mRenderLayer;
 
         private RendererMode mRenderMode = RendererMode.Colour;
 
@@ -71,6 +72,12 @@ namespace TackEngineLib.Objects.Components
         {
             get { return mRenderMode; }
             set { mRenderMode = value; }
+        }
+
+        public int RenderLayer
+        {
+            get { return mRenderLayer; }
+            set { mRenderLayer = value; }
         }
 
         /// <summary>
