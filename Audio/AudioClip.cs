@@ -148,7 +148,10 @@ namespace TackEngineLib.Audio
                 tmp_data = reader.ReadBytes((int)reader.BaseStream.Length);
             }
 
-            return new AudioClip(tmp_channels, tmp_bps, tmp_sampleNum, tmp_data);
+            AudioClip audioClip = new AudioClip(tmp_channels, tmp_bps, tmp_sampleNum, tmp_data);
+            audioClip.Create();
+
+            return audioClip;
         }
     }
 }
