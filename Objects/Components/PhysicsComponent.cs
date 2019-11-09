@@ -77,7 +77,7 @@ namespace TackEngineLib.Objects.Components
             mColliderOffset = new Vector2f(0, 0);
             mAllowedToMove = true;
             mWeight = 1;
-            mModelInertia = true;
+            mModelInertia = false;
         }
 
         public override void OnAddedToTackObject() {

@@ -107,5 +107,12 @@ namespace TackEngineLib.Main
             string returnStr = "(" + mX + ", " + mY + ")";
             return returnStr;
         }
+
+        public static float Distance(Vector2f a, Vector2f b) {
+            float xDiff = (float)System.Math.Pow((b.X - a.X), 2);
+            float yDiff = (float)System.Math.Pow((b.Y - a.Y), 2);
+
+            return (float)System.Math.Sqrt(xDiff + yDiff);
+        }
     }
 }
