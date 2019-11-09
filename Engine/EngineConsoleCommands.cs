@@ -126,7 +126,7 @@ namespace TackEngineLib.Engine
             TackConsole.EngineLog(EngineLogType.Message, "--------------------------------------------------------------");
         }
 
-        [CommandMethod("physicscomponent.setvariable", "tackobjecthash:string variablename:string newvalue:object")]
+        [CommandMethod("physicscomponent.setVariable", "tackobjecthash:string variablename:string newvalue:object")]
         public static void PhysicsComponentSetVariable(string[] args) {
             if (args.Length != 4) {
                 TackConsole.EngineLog(EngineLogType.Error, "Incorrect number of arguments for command: " + args[0]);
@@ -184,7 +184,7 @@ namespace TackEngineLib.Engine
             }
         }
 
-        [CommandMethod("physicscomponent.getvariable", "tackobjecthash:string variablename:string")]
+        [CommandMethod("physicscomponent.getVariable", "tackobjecthash:string variablename:string")]
         public static void PhysicsComponentGetVariable(string[] args) {
             if (args.Length != 3) {
                 TackConsole.EngineLog(EngineLogType.Error, "Incorrect number of arguments for command: " + args[0]);
@@ -222,6 +222,27 @@ namespace TackEngineLib.Engine
                     TackConsole.EngineLog(EngineLogType.Error, "There is no variable attached to PhysicsComponent with name: " + args[2]);
                     break;
             }
+        }
+
+        [CommandMethod("audiomanager.masterVolume", "", "newValue:float")]
+        public static void ChangeAudioMasterVolume(string[] args) {
+            if (args.Length == 1) {
+                TackConsole.EngineLog(EngineLogType.Message, "Value: " + Audio.AudioManager.MasterVolume.ToString("0.000"));
+                return;
+            }
+
+            if (args.Length == 2) {
+                if (float.TryParse(args[1], out float res)) {
+                    Audio.AudioManager.MasterVolume = res;
+                    TackConsole.EngineLog(EngineLogType.Message, "Changed audiomanager.mastervolume to value: " + Audio.AudioManager.MasterVolume);
+                    return;
+                } else {
+                    TackConsole.EngineLog(EngineLogType.Error, "Couldn't convert '{0}' to float", args[1]);
+                    return;
+                }
+            }
+
+            TackConsole.EngineLog(EngineLogType.Error, "Incorrect number of args for command: " + args[1]);
         }
     }
 }

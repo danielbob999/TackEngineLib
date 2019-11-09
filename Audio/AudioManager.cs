@@ -21,11 +21,19 @@ namespace TackEngineLib.Audio
 
         private List<AudioClip> mAudioClips = new List<AudioClip>();
         private AudioContext mAudioContext;
+        private float mMasterVolume;
+
+        public static float MasterVolume
+        {
+            get { return ActiveInstance.mMasterVolume; }
+            set { ActiveInstance.mMasterVolume = value; }
+        }
 
         public AudioManager()
         {
             ActiveInstance = this;
             WorkerThreadTargetRefreshRate = 60;
+            mMasterVolume = 1.0f;
         }
 
         public void OnStart()

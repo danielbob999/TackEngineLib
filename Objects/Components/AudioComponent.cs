@@ -18,6 +18,7 @@ namespace TackEngineLib.Objects.Components
         private int mAudioSourceId;
         private AudioClip mAudioClip;
         private bool mLoopAudio;
+        private float mVolume;
 
         /// <summary>
         /// Gets the ID of the audio source attached to this component
@@ -46,9 +47,19 @@ namespace TackEngineLib.Objects.Components
             set { mLoopAudio = value; }
         }
 
+        /// <summary>
+        /// Gets/Sets the volume of this AudioComponent
+        /// </summary>
+        public float Volume
+        {
+            get { return mVolume; }
+            set { mVolume = value; }
+        }
+
         public AudioComponent()
         {
             mAudioSourceId = AL.GenSource();
+            mVolume = 1.0f;
         }
 
         public override void OnStart()
@@ -73,6 +84,7 @@ namespace TackEngineLib.Objects.Components
         {
             AL.Source(mAudioSourceId, ALSourcei.Buffer, mAudioClip.AudioId);
             AL.Source(mAudioSourceId, ALSourceb.Looping, false);
+            AL.Source(mAudioSourceId, ALSourcef.Gain, (mVolume * AudioManager.MasterVolume));
 
             AL.SourcePlay(mAudioSourceId);
         }
