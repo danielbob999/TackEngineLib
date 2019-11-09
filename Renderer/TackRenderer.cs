@@ -207,7 +207,11 @@ namespace TackEngineLib.Renderer
 
                 // Set texture attributes
                 GL.ActiveTexture(TextureUnit.Texture0);
-                GL.BindTexture(TextureTarget.Texture2D, quadRenderer.Sprite.TextureId);
+                if (quadRenderer.RenderMode == RendererMode.SpriteSheet) {
+                    GL.BindTexture(TextureTarget.Texture2D, quadRenderer.SpriteSheet.GetActiveSprite().TextureId);
+                } else {
+                    GL.BindTexture(TextureTarget.Texture2D, quadRenderer.Sprite.TextureId);
+                }
 
 
                 //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quadRenderer.Sprite.Width, quadRenderer.Sprite.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, quadRenderer.Sprite.SpriteData.Scan0);
@@ -224,14 +228,23 @@ namespace TackEngineLib.Renderer
                 
 
                 GL.ActiveTexture(TextureUnit.Texture0);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quadRenderer.Sprite.Width, quadRenderer.Sprite.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, quadRenderer.Sprite.SpriteData.Scan0);
+
+                if (quadRenderer.RenderMode == RendererMode.SpriteSheet) {
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quadRenderer.SpriteSheet.SingleSpriteWidth, quadRenderer.SpriteSheet.SingleSpriteHeight, 0, PixelFormat.Bgra, PixelType.UnsignedByte, quadRenderer.SpriteSheet.GetActiveSprite().SpriteData.Scan0);
+                } else {
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quadRenderer.Sprite.Width, quadRenderer.Sprite.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, quadRenderer.Sprite.SpriteData.Scan0);
+                }
                 //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
                 // Set the shader uniform value
                 GL.Uniform1(GL.GetUniformLocation(mShaderProgramIds["shaders.default_object_shader"], "ourTexture"), 0);
 
                 GL.ActiveTexture(TextureUnit.Texture0);
-                GL.BindTexture(TextureTarget.Texture2D, quadRenderer.Sprite.TextureId);
+                if (quadRenderer.RenderMode == RendererMode.SpriteSheet) {
+                    GL.BindTexture(TextureTarget.Texture2D, quadRenderer.SpriteSheet.GetActiveSprite().TextureId);
+                } else {
+                    GL.BindTexture(TextureTarget.Texture2D, quadRenderer.Sprite.TextureId);
+                }
 
                 GL.BindVertexArray(VAO);
 
