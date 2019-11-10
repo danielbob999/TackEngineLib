@@ -173,6 +173,16 @@ namespace TackEngineLib.Objects
             return (T)newComp;
         }
 
+        public TackComponent[] GetComponents() {
+            TackComponent[] components = new TackComponent[objectComponents.Count];
+
+            for (int i = 0; i < components.Length; i++) {
+                components[i] = (TackComponent)objectComponents[i];
+            }
+
+            return components;
+        }
+
         public bool IsPointInArea(Vector2f _point)
         {
             Vector2f xConstraints = new Vector2f(mPosition.X - (mScale.X / 2), mPosition.X + (mScale.X / 2));

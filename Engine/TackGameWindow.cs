@@ -123,7 +123,7 @@ namespace TackEngineLib.Engine
             base.OnRenderFrame(e);
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.ClearColor(new OpenTK.Graphics.Color4(127, 146, 150, 255));
+            GL.ClearColor(TackRenderer.BackgroundColour.ConvertToOpenGLColor4());
 
             // All OnRender here
             mTackRender.OnRender();

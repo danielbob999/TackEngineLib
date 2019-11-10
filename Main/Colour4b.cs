@@ -107,8 +107,12 @@ namespace TackEngineLib.Main
             mA = aA;
         }
 
-        public OpenTK.Vector3 ConvertToOpenGLVec3() {
+        internal OpenTK.Vector3 ConvertToOpenGLVec3() {
             return new OpenTK.Vector3(mR / 255.0f, mG / 255.0f, mB / 255.0f);
+        }
+
+        internal OpenTK.Graphics.Color4 ConvertToOpenGLColor4() {
+            return new OpenTK.Graphics.Color4(mR, mG, mB, mA);
         }
 
         /// <summary>

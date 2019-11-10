@@ -299,11 +299,25 @@ namespace TackEngineLib.GUI
 
             // Get the height of a single line of text
             SizeF textSize = graphics.MeasureString("H", myFont);
-            string actualString = GetRenderableString(_text, _style.ScrollPosition, textSize.Height, (int)_rect.Height);
+            //string actualString = GetRenderableString(_text, _style.ScrollPosition, textSize.Height, _rect.Height);
 
             //Here we draw the string on the Bitmap
             Color customColor = Color.FromArgb(_style.FontColour.A, _style.FontColour.R, _style.FontColour.G, _style.FontColour.B);
-            graphics.DrawString(actualString, myFont, new SolidBrush(customColor), rect, format);
+            //graphics.DrawString(actualString, myFont, new SolidBrush(customColor), rect, format);
+
+            string str = "";
+            string[] splitStr = null;
+
+            if (!string.IsNullOrEmpty(_text))
+                splitStr = _text.Split(new char[] { '\n', '\r' });
+
+            if (splitStr != null) {
+                for (int i = (int)_style.ScrollPosition; i < splitStr.Length; i++) {
+                    str += splitStr[i] + "\n";
+                }
+            }
+
+            graphics.DrawString(str, myFont, new SolidBrush(customColor), rect, format);
 
             Sprite textTexture = Sprite.LoadFromBitmap(cBmp);
             textTexture.Create(false);
@@ -486,7 +500,7 @@ namespace TackEngineLib.GUI
             return fontCollection.Families[0];
         }
 
-        private static string GetRenderableString(string aString, float aScrollPos, float aHeightPerLine, int aTextAreaHeight) {
+        private static string GetRenderableString(string aString, float aScrollPos, float aHeightPerLine, float aTextAreaHeight) {
             if (string.IsNullOrEmpty(aString)) {
                 return "";
             }
@@ -495,6 +509,8 @@ namespace TackEngineLib.GUI
             string[] splitString = aString.Split(new char[] { '\n', '\r' });
 
             int maxLines = (int)(aTextAreaHeight / aHeightPerLine);
+
+            Console.WriteLine("Height: {0}, HeightPerLine: {1}, Lines: {2}", aTextAreaHeight, aHeightPerLine, maxLines);
 
             if (splitString.Length <= maxLines) {
                 return aString;

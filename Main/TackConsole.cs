@@ -28,6 +28,9 @@ namespace TackEngineLib.Main
 
         private List<string> mMessages = new List<string>();
         private List<TackCommand> mValidCommands = new List<TackCommand>();
+        private List<string> mPreviousCommands = new List<string>();
+        private int mPreviousCommandsIndex = -1;
+        private bool mPreviousCommandInputLocker = false;
 
         private TextAreaStyle mConsoleUIStyle;
         private InputField mInputField;
@@ -45,7 +48,7 @@ namespace TackEngineLib.Main
 
             mInputField.SubmitInput += ProcessCommand;
 
-            mInputFieldStyle.BackgroundColour = new Colour4b(200, 200, 200, 255);
+            mInputFieldStyle.BackgroundColour = new Colour4b(100, 100, 100, 190);
             mInputFieldStyle.FontColour = new Colour4b(0, 0, 0, 255);
             mInputFieldStyle.SpriteTexture = Sprite.DefaultSprite;
             mInputFieldStyle.FontSize = 10f;
@@ -108,16 +111,48 @@ namespace TackEngineLib.Main
                 }
             }
 
-            if (TackInput.KeyDown(KeyboardKey.PageUp))
+            if (TackInput.KeyDown(KeyboardKey.PageDown))
             {
                 if (mConsoleUIStyle.ScrollPosition < mMessages.Count - 1)
                     mConsoleUIStyle.ScrollPosition += 1.0f;
             }
 
-            if (TackInput.KeyDown(KeyboardKey.PageDown))
+            if (TackInput.KeyDown(KeyboardKey.PageUp))
             {
                 if (mConsoleUIStyle.ScrollPosition > 0)
                     mConsoleUIStyle.ScrollPosition -= 1.0f;
+            }
+
+            if (TackInput.KeyDown(KeyboardKey.Up)) {
+                if (mPreviousCommands.Count > 0) {
+                    if (mPreviousCommandsIndex == -1) {
+                        mPreviousCommandsIndex = mPreviousCommands.Count - 1;
+                        mInputField.InputString = mPreviousCommands[mPreviousCommandsIndex];
+                    } else {
+                        mPreviousCommandsIndex -= 1;
+
+                        if (mPreviousCommandsIndex < 0)
+                            mPreviousCommandsIndex = 0;
+
+                        mInputField.InputString = mPreviousCommands[mPreviousCommandsIndex];
+                    }
+                }
+            }
+
+            if (TackInput.KeyDown(KeyboardKey.Down)) {
+                if (mPreviousCommands.Count > 0) {
+                    if (mPreviousCommandsIndex == -1) {
+                        mPreviousCommandsIndex = 0;
+                        mInputField.InputString = mPreviousCommands[mPreviousCommandsIndex];
+                    } else {
+                        mPreviousCommandsIndex += 1;
+
+                        if (mPreviousCommandsIndex > (mPreviousCommands.Count - 1))
+                            mPreviousCommandsIndex = (mPreviousCommands.Count - 1);
+
+                        mInputField.InputString = mPreviousCommands[mPreviousCommandsIndex];
+                    }
+                }
             }
 
             mInputString = mInputField.InputString;
@@ -256,7 +291,9 @@ namespace TackEngineLib.Main
             }
 
             string commandInput = mInputString;
-            EngineLog(EngineLogType.Message, ">" + commandInput);
+            EngineLog(EngineLogType.Message, "> " + commandInput);
+            mPreviousCommands.Add(commandInput);
+            mPreviousCommandsIndex = -1;
 
             string[] splitCommandBySpaces = commandInput.Split(' ');
 

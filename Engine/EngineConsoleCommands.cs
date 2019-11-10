@@ -10,6 +10,9 @@ using TackEngineLib.Objects.Components;
 
 namespace TackEngineLib.Engine
 {
+    /// <summary>
+    /// The holder class for all TackConsole commands
+    /// </summary>
     internal static class EngineConsoleCommands
     {
         [CommandMethod("help", "", "commandName:string")]
@@ -98,17 +101,61 @@ namespace TackEngineLib.Engine
             }
         }
 
-        [CommandMethod("renderer.setVSync", "state:bool")]
+        [CommandMethod("renderer.v-sync", "", "state:bool")]
         public static void RendererSetVSync(string[] args) {
+            if (args.Length == 1) {
+                TackConsole.EngineLog(EngineLogType.Message, "Value: " + (TackEngine.currentWindow.VSync == OpenTK.VSyncMode.Off ? "Off" : "On"));
+                return;
+            }
+
             if (args.Length == 2) {
                 if (bool.TryParse(args[1], out bool result)) {
                     if (result) {
                         TackEngine.currentWindow.VSync = OpenTK.VSyncMode.On;
+                        TackConsole.EngineLog(EngineLogType.Message, "Set renderer.v-sync to value: On");
                     } else {
                         TackEngine.currentWindow.VSync = OpenTK.VSyncMode.Off;
+                        TackConsole.EngineLog(EngineLogType.Message, "Set renderer-v-sync to value: Off");
                     }
+                } else {
+                    TackConsole.EngineLog(EngineLogType.Error, "Couldn't convert '{0}' to type: bool", args[1]);
                 }
+
+                return;
             }
+
+            TackConsole.EngineLog(EngineLogType.Error, "Incorrect number of args for command: " + args[0]);
+        }
+
+        [CommandMethod("renderer.backgroundColour", "", "red:byte green:byte blue:byte")]
+        public static void ChangeBackgroundColour(string[] args) {
+            if (args.Length == 1) {
+                TackConsole.EngineLog(EngineLogType.Message, "Value: " + TackEngineLib.Renderer.TackRenderer.BackgroundColour.ToString());
+                return;
+            }
+
+            if (args.Length == 4) {
+                if (byte.TryParse(args[1], out byte r)) {
+                    if (byte.TryParse(args[2], out byte g)) {
+                        if (byte.TryParse(args[3], out byte b)) {
+                            TackEngineLib.Renderer.TackRenderer.BackgroundColour = new Colour4b(r, g, b);
+                            TackConsole.EngineLog(EngineLogType.Message, "Set tackrenderer.backgroundColour to value: " + Renderer.TackRenderer.BackgroundColour.ToString());
+                        } else {
+                            TackConsole.EngineLog(EngineLogType.Error, "Failed to convert '{0}' to type: byte", args[3]);
+                            return;
+                        }
+                    } else {
+                        TackConsole.EngineLog(EngineLogType.Error, "Failed to convert '{0}' to type: byte", args[2]);
+                        return;
+                    }
+                } else {
+                    TackConsole.EngineLog(EngineLogType.Error, "Failed to convert '{0}' to type: byte", args[1]);
+                    return;
+                }
+                return;
+            }
+
+            TackConsole.EngineLog(EngineLogType.Error, "Incorrect number of arguments for command: " + args[0]);
         }
 
         [CommandMethod("tackobject.listAll", "")]
@@ -124,6 +171,45 @@ namespace TackEngineLib.Engine
             }
 
             TackConsole.EngineLog(EngineLogType.Message, "--------------------------------------------------------------");
+        }
+
+        [CommandMethod("tackobject.info", "name:string", "hash:string")]
+        public static void TackObjectGetInfo(string[] args) {
+            if (args.Length == 2) {
+                // Try and get the TackObject by treating args[1] has a name
+                TackObject calledObject = TackObject.Get(args[1]);
+
+                // If there is no TackObject with name that is equal to args[1]
+                //  - Treat args[1] as a hash and look for TackObject based on hash
+                if (calledObject == null) {
+                    calledObject = TackObject.GetUsingHash(args[1]);
+                }
+
+                // If there is no TackObject with name OR hash equal to args[1], return
+                if (calledObject == null) {
+                    TackConsole.EngineLog(EngineLogType.Error, "There is no TackObject that has name/hash with value: " + args[1]);
+                    return;
+                }
+
+                TackConsole.EngineLog(EngineLogType.Message, "TackObject Info");
+                TackConsole.EngineLog(EngineLogType.Message, "--------------------------------------");
+                TackConsole.EngineLog(EngineLogType.Message, "Name: {0:-20}", calledObject.Name);
+                TackConsole.EngineLog(EngineLogType.Message, "Hash: {0:-20}", calledObject.GetHash());
+                TackConsole.EngineLog(EngineLogType.Message, "Position: {0:-20}", calledObject.Position.ToString());
+                TackConsole.EngineLog(EngineLogType.Message, "Scale: {0:-20}", calledObject.Scale.ToString());
+                TackConsole.EngineLog(EngineLogType.Message, "Rotation: {0:-20}", calledObject.Rotation);
+                TackConsole.EngineLog(EngineLogType.Message, "Components ({0}):", calledObject.GetComponents().Length);
+
+                TackComponent[] components = calledObject.GetComponents();
+
+                foreach (TackComponent comp in components) {
+                    TackConsole.EngineLog(EngineLogType.Message, "          - {0}", comp.GetType().Name);
+                }
+
+                return;
+            }
+
+            TackConsole.EngineLog(EngineLogType.Error, "Incorrect number of arguments for command: " + args[0]);
         }
 
         [CommandMethod("physicscomponent.setVariable", "tackobjecthash:string variablename:string newvalue:object")]

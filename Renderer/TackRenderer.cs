@@ -26,9 +26,17 @@ namespace TackEngineLib.Renderer
         private float[] mVertexData;
         private bool mRenderFpsCounter;
         private TextAreaStyle mFpsCounterStyle;
+        private Colour4b mBackgroundColour;
+
+        public static Colour4b BackgroundColour
+        {
+            get { return ActiveInstance.mBackgroundColour; }
+            set { ActiveInstance.mBackgroundColour = value; }
+        }
 
         internal TackRenderer() {
             ActiveInstance = this;
+            mBackgroundColour = new Colour4b(150, 150, 150, 255);
         }
 
         public void OnStart() {
