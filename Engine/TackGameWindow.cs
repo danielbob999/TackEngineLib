@@ -39,6 +39,7 @@ namespace TackEngineLib.Engine
         private TackPhysics mTackPhysics;
         private TackObjectManager mTackObjectManager;
         private TackRenderer mTackRender;
+        private TackGUI m_tackGuiModule;
 
         private Stopwatch updateTimer;
         private Stopwatch frameTimer;
@@ -71,8 +72,6 @@ namespace TackEngineLib.Engine
 
             Sprite.LoadDefaultSprite();
 
-            TackGUI.OnStart();
-
             mTackConsole = new TackConsole();
             mTackConsole.OnStart();
 
@@ -87,6 +86,9 @@ namespace TackEngineLib.Engine
 
             mTackRender = new TackRenderer();
             mTackRender.OnStart();
+
+            m_tackGuiModule = new TackGUI();
+            m_tackGuiModule.OnStart();
 
             mTackPhysics = new TackPhysics();
             mTackPhysics.Start();
@@ -111,6 +113,7 @@ namespace TackEngineLib.Engine
             mTackPhysics.Update();      // If issues arise, try running this below RunTackObjectUpdateMethods()
             mTackObjectManager.OnUpdate();
             mTackObjectManager.RunTackObjectUpdateMethods();
+            m_tackGuiModule.OnUpdate();
 
             mTackConsole.OnUpdate();
             TackInput.OnUpdate();
@@ -128,8 +131,9 @@ namespace TackEngineLib.Engine
             // All OnRender here
             mTackRender.OnRender();
 
-            onGUIRenderFunction(); // This function should be called after all rendering. This means text will render above other objects
+            onGUIRenderFunction(); // This function should be called after all rendering. This means gui will render above other objects
             mTackConsole.OnGUIRender(); // TackConsole should be rendered above everything else, including the onGUIRenderFunction
+            m_tackGuiModule.OnGUIRender();
             mTackRender.RenderFpsCounter();
 
            TackEngine.mFramesPerSecond = (int)RenderFrequency;
@@ -147,6 +151,7 @@ namespace TackEngineLib.Engine
 
             mAudioManager.OnClose();
             SpriteManager.OnClose();
+            m_tackGuiModule.OnClose();
             mTackConsole.OnClose();
         }
 

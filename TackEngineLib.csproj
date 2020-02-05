@@ -64,6 +64,7 @@
     <Compile Include="GUI\TextAreaStyle.cs" />
     <Compile Include="GUI\VerticalAlignment.cs" />
     <Compile Include="Main\CommandMethod.cs" />
+    <Compile Include="Main\Material.cs" />
     <Compile Include="Main\TackCommand.cs" />
     <Compile Include="Main\World.cs" />
     <Compile Include="Math\LinearEquation.cs" />
@@ -105,9 +106,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Renderer\Operations\GUIOperation.cs" />
     <Compile Include="Renderer\RenderObject.cs" />
+    <Compile Include="Renderer\Shaders\Shader.cs" />
     <Compile Include="Renderer\Shaders\ShaderFunctions.cs" />
-    <Compile Include="Renderer\Shaders\TackShaderType.cs" />
     <Compile Include="Renderer\TackRenderer.cs" />
     <Compile Include="Resources\TackResources.cs" />
   </ItemGroup>

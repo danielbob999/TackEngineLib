@@ -53,7 +53,7 @@ namespace TackEngineLib.Main
             mInputFieldStyle.SpriteTexture = Sprite.DefaultSprite;
             mInputFieldStyle.FontSize = 10f;
             mInputFieldStyle.VerticalAlignment = VerticalAlignment.Middle;
-            mInputFieldStyle.FontFamilyId = TackGUI.LoadFontFromFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\cour.ttf");
+            mInputFieldStyle.FontFamilyId = 0; //TackGUI.LoadFontFromFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\cour.ttf");
             mInputFieldStyle.Scrollable = false;
         }
 

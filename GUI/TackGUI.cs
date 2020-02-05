@@ -17,254 +17,85 @@ using TackEngineLib.Engine;
 using TackEngineLib.Renderer;
 using TackEngineLib.Renderer.Shaders;
 using TackEngineLib.Input;
+using TackEngineLib.Renderer.Operations;
 
-namespace TackEngineLib.GUI
-{
+namespace TackEngineLib.GUI {
     /// <summary>
     /// The main class for rendering GUI elements to the screen
     /// </summary>
-    public static class TackGUI
-    {
-        private static PrivateFontCollection fontCollection;
-        private static FontFamily activeFontFamily;
-        private static int uiShaderProgram;
+    public class TackGUI {
+        private static TackGUI ActiveInstance = null;
+
+        private PrivateFontCollection m_fontCollection;
+        private FontFamily m_activeFontFamily;
+        private List<GUIOperation> m_guiOperations;
 
         internal static List<InputField> inputFields = new List<InputField>();
 
-        public static void OnStart()
-        {
-            fontCollection = new PrivateFontCollection();
-            activeFontFamily = new FontFamily("Arial");
-            fontCollection.AddFontFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\Arial.ttf");
+        internal void OnStart() {
+            if (ActiveInstance != null) {
+                TackConsole.EngineLog(EngineLogType.Error, "There is already an active instance of TackGUI.");
+                return;
+            }
+
+            ActiveInstance = this;
+
+            m_fontCollection = new PrivateFontCollection();
+            m_activeFontFamily = new FontFamily("Arial");
+            m_fontCollection.AddFontFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\Arial.ttf");
             TackConsole.EngineLog(EngineLogType.Message, string.Format("Added default font file from: {0}\\Arial.ttf", Environment.GetFolderPath(Environment.SpecialFolder.Fonts)));
+
+            m_guiOperations = new List<GUIOperation>();
         }
 
-        /// <summary>
-        /// Loads a font file into the font collection. Returns the position of the new font family.
-        /// </summary>
-        /// <param name="_fileName"></param>
-        /// <returns></returns>
-        public static int LoadFontFromFile(string _fileName)
-        {
-            if (!File.Exists(_fileName))
-            {
-                TackConsole.EngineLog(EngineLogType.Error, string.Format("Could not locate file at path: {0}", _fileName));
-                return -1;
-            }
+        internal void OnUpdate() {
 
-            fontCollection.AddFontFile(_fileName);
-
-            TackConsole.EngineLog(EngineLogType.Message, string.Format("Added new font with name: {0} to the TackGUI font collection at index: {1}", fontCollection.Families[fontCollection.Families.Length - 1].Name, fontCollection.Families.Length - 1));
-            return fontCollection.Families.Length - 1;
         }
 
-        /// <summary>
-        /// Sets the active FontFamily
-        /// </summary>
-        /// <param name="_familyName">the Name of the FontFamily</param>
-        public static void SetActiveFontFamily(string _familyName)
-        {
-            for (int i = 0; i < fontCollection.Families.Length; i++)
-            {
-                if (fontCollection.Families[i].Name == _familyName)
-                {
-                    SetActiveFontFamily(i);
-                    return;
-                }
-            }
+        internal void OnGUIRender() {
+            // Generate SpriteAtlas object using the list of GUIOperations
 
-            TackConsole.EngineLog(EngineLogType.Error, string.Format("No FontFamily with name: {0} was found in the font collection", _familyName));
-        }
-
-        /// <summary>
-        /// Sets the active FontFamily
-        /// </summary>
-        /// <param name="_familyIndex">The index of the FontFamily</param>
-        public static void SetActiveFontFamily(int _familyIndex)
-        {
-            if (_familyIndex < fontCollection.Families.Length)
-            {
-                activeFontFamily = fontCollection.Families[_familyIndex];
-
-                TackConsole.EngineLog(EngineLogType.Message, "Set the active FontFamily. Name: {0}, FamilyIndex: {1}", activeFontFamily.Name, _familyIndex);
-            }
-
-            TackConsole.EngineLog(EngineLogType.Error, "The specfied family index is outside the bounds of the font collection Families array");
-        }
-
-        /// <summary>
-        /// Renders a box to the screen
-        /// </summary>
-        /// <param name="_rect">The shape (Position and size) of the box</param>
-        /// <param name="_style">The BoxStyle used to render this box</param>
-        public static void Box(RectangleShape _rect, BoxStyle _style = default(BoxStyle))
-        {
-            if (_style == null)
-                _style = new BoxStyle();
-
-            // If there is a border, render a box behind this box
-            if (_style.Border != null)
-            {
-                RectangleShape borderShape = new RectangleShape()
-                {
-                    X = _rect.X - _style.Border.Left,
-                    Y = _rect.Y - _style.Border.Up,
-                    Width = _rect.Width + _style.Border.Right + _style.Border.Left,
-                    Height = _rect.Height + _style.Border.Bottom + _style.Border.Up
-                };
-
-                BoxStyle boxStyle = new BoxStyle()
-                {
-                    Colour = _style.Border.Colour
-                };
-
-                Box(borderShape, boxStyle);
-
-                boxStyle.Destory();
-            }
-
+            // Loop through all GUIOperations 
+            //   - Add vertex postions/colours/texcoords to the dynamic vertex buffer
             
 
-            //Sprite defaultSprite = Sprite.LoadFromBitmap(Properties.Resources.DefaultSprite);
-            //defaultSprite.Create(false);
+            // Call 1 or more draw element calls depending on a maxGUIDrawCallAmount variable 
+        }
 
-            RectangleShape calculatedRect = new RectangleShape()
-            {
-                X = (_rect.X - (TackEngine.ScreenWidth / 2)) / (TackEngine.ScreenWidth / 2),
-                Y = ((TackEngine.ScreenHeight / 2) - _rect.Y) / (TackEngine.ScreenHeight / 2),
-                Width = (_rect.Width / (TackEngine.ScreenWidth / 2)),
-                Height = (_rect.Height / (TackEngine.ScreenHeight / 2))
-            };
+        internal void OnClose() {
 
-            GL.Enable(EnableCap.Texture2D);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
-            // Tell OpenGL to use the default gui shader
-            GL.UseProgram(TackRenderer.GetShader("shaders.default_gui_shader"));
-
-            float[] vertexData = new float[32]
-                {
-                    //       Position (XYZ)                                                                                                      Colours (RGB)                                                                                  TexCoords (XY)
-                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        (_style.Colour.R / 255.0f), (_style.Colour.G / 255.0f), (_style.Colour.B / 255.0f),   1.0f, 0.0f,
-                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                (_style.Colour.R / 255.0f), (_style.Colour.G / 255.0f), (_style.Colour.B / 255.0f),   1.0f, 1.0f,
-                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       (_style.Colour.R / 255.0f), (_style.Colour.G / 255.0f), (_style.Colour.B / 255.0f),   0.0f, 1.0f,
-                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               (_style.Colour.R / 255.0f), (_style.Colour.G / 255.0f), (_style.Colour.B / 255.0f),   0.0f, 0.0f
-                };
-
-            int[] indices = new int[]
-            {
-                    0, 1, 3, // first triangle
-                    1, 2, 3  // second triangle
-            };
-
-            int VAO = GL.GenVertexArray();
-            int VBO = GL.GenBuffer();
-            int EBO = GL.GenBuffer();
-
-            GL.BindVertexArray(VAO);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * 32, vertexData, BufferUsageHint.StaticDraw);
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(int) * 6, indices, BufferUsageHint.StaticDraw);
-
-            // position attribute
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-
-            // color attribute
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
-
-            // texture coord attribute
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
-            GL.EnableVertexAttribArray(2);
-
-            // Set texture attributes
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, _style.SpriteTexture.TextureId);
-
-
-            //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quadRenderer.Sprite.Width, quadRenderer.Sprite.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, quadRenderer.Sprite.SpriteData.Scan0);
-
-
-            // set texture filtering parameters
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-            // set the texture wrapping parameters
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
-
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, _style.SpriteTexture.Width, _style.SpriteTexture.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, _style.SpriteTexture.SpriteData.Scan0);
-            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-            // Set the shader uniform value
-            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader"), "ourTexture"), 0);
-            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader"), "ourOpacity"), (float)(_style.Colour.A / 255.0f));
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, _style.SpriteTexture.TextureId);
-
-            GL.BindVertexArray(VAO);
-
-            GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero);
-
-            //defaultSprite.Destory(false);
-
-            GL.DeleteBuffer(EBO);
-            GL.DeleteBuffer(VBO);
-            GL.DeleteVertexArray(VAO);
-
-            //_style.Destory();
         }
 
         /// <summary>
-        /// Renders text to the screen
+        /// Generates a Brush with a custom colour
         /// </summary>
-        /// <param name="_rect">The shape of box to render the text in</param>
-        /// <param name="_text">The text to render</param>
-        /// <param name="_style">The TextAreaStyle used to render this text</param>
-        public static void TextArea(RectangleShape _rect, string _text, TextAreaStyle _style = default(TextAreaStyle))
-        {
-            if (_style == null)
-                _style = new TextAreaStyle();
+        /// <param name="colour"></param>
+        /// <returns></returns>
+        private Brush GetColouredBrush(Colour4b colour) {
+            return new SolidBrush(Color.FromArgb(colour.A, colour.R, colour.G, colour.B));
+        }
 
-            BoxStyle boxStyle = new BoxStyle() {
-                Colour = _style.BackgroundColour,
-                SpriteTexture = _style.SpriteTexture
-            };
+        /// <summary>
+        /// Generates a Pen with a custom colour and size
+        /// </summary>
+        /// <param name="colour"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        private Pen GetColouredPen(Colour4b colour, float size) {
+            return new Pen(Color.FromArgb(colour.A, colour.R, colour.G, colour.B), size);
+        }
 
-            // Render a box at the back of the TextArea
-            Box(_rect, boxStyle);
-
-            // Generate Bitmap
-            Vector2i size = new Vector2i((int)(_rect.Width), (int)(_rect.Height));
-            Bitmap cBmp = new Bitmap(size.X, size.Y);
-
-            // Generate Graphics Object
-            Graphics graphics = Graphics.FromImage(cBmp);
-
-            Font myFont = new Font(fontCollection.Families[_style.FontFamilyId], _style.FontSize, FontStyle.Regular);
-
-            //Get the perfect Image-Size so that Image-Size = String-Size
-            RectangleF rect = new RectangleF(0, 0, cBmp.Width, cBmp.Height);
-
-            //Use this to become better Text-Quality on Bitmap.
-            graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-            // Set the format of the string
+        /// <summary>
+        /// Generates a StringFormat object based on HorizontalAlignment and VerticalAlignment values
+        /// </summary>
+        /// <param name="hAlign"></param>
+        /// <param name="vAlign"></param>
+        /// <returns></returns>
+        private StringFormat GenerateTextFormat(HorizontalAlignment hAlign, VerticalAlignment vAlign) {
             StringFormat format = new StringFormat();
 
             // Set the vertical alignment of the text
-            switch (_style.VerticalAlignment) {
+            switch (vAlign) {
                 case VerticalAlignment.Top:
                     format.LineAlignment = StringAlignment.Near;
                     break;
@@ -282,7 +113,7 @@ namespace TackEngineLib.GUI
                     break;
             }
 
-            switch (_style.HorizontalAlignment) {
+            switch (hAlign) {
                 case HorizontalAlignment.Left:
                     format.Alignment = StringAlignment.Near;
                     break;
@@ -297,191 +128,136 @@ namespace TackEngineLib.GUI
                     break;
             }
 
-            // Get the height of a single line of text
-            SizeF textSize = graphics.MeasureString("H", myFont);
-            //string actualString = GetRenderableString(_text, _style.ScrollPosition, textSize.Height, _rect.Height);
-
-            //Here we draw the string on the Bitmap
-            Color customColor = Color.FromArgb(_style.FontColour.A, _style.FontColour.R, _style.FontColour.G, _style.FontColour.B);
-            //graphics.DrawString(actualString, myFont, new SolidBrush(customColor), rect, format);
-
-            string str = "";
-            string[] splitStr = null;
-
-            if (!string.IsNullOrEmpty(_text))
-                splitStr = _text.Split(new char[] { '\n', '\r' });
-
-            if (splitStr != null) {
-                for (int i = (int)_style.ScrollPosition; i < splitStr.Length; i++) {
-                    str += splitStr[i] + "\n";
-                }
-            }
-
-            graphics.DrawString(str, myFont, new SolidBrush(customColor), rect, format);
-
-            Sprite textTexture = Sprite.LoadFromBitmap(cBmp);
-            textTexture.Create(false);
-
-            RectangleShape calculatedRect = new RectangleShape() {
-                X = (_rect.X - (TackEngine.ScreenWidth / 2)) / (TackEngine.ScreenWidth / 2),
-                Y = ((TackEngine.ScreenHeight / 2) - _rect.Y) / (TackEngine.ScreenHeight / 2),
-                Width = (_rect.Width / (TackEngine.ScreenWidth / 2)),
-                Height = (_rect.Height / (TackEngine.ScreenHeight / 2))
-            };
-
-            GL.Enable(EnableCap.Texture2D);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
-            // Tell OpenGL to use the default gui shader
-            GL.UseProgram(TackRenderer.GetShader("shaders.default_gui_shader"));
-
-            float[] vertexData = new float[32]
-                {
-                    //       Position (XYZ)                                                                                              Colours (RGB)         TexCoords (XY)
-                    /* v1 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y), 1.0f,                                        1f, 1f, 1f,            1.0f, 0.0f,
-                    /* v2 */ (calculatedRect.X + calculatedRect.Width), (calculatedRect.Y - calculatedRect.Height), 1.0f,                1f, 1f, 1f,            1.0f, 1.0f,
-                    /* v3 */ (calculatedRect.X), (calculatedRect.Y - calculatedRect.Height), 1.0f,                                       1f, 1f, 1f,            0.0f, 1.0f,
-                    /* v4 */ (calculatedRect.X), (calculatedRect.Y), 1.0f,                                                               1f, 1f, 1f,            0.0f, 0.0f
-                };
-
-            int[] indices = new int[]
-            {
-                    0, 1, 3, // first triangle
-                    1, 2, 3  // second triangle
-            };
-
-            int VAO = GL.GenVertexArray();
-            int VBO = GL.GenBuffer();
-            int EBO = GL.GenBuffer();
-
-            GL.BindVertexArray(VAO);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * 32, vertexData, BufferUsageHint.StaticDraw);
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(int) * 6, indices, BufferUsageHint.StaticDraw);
-
-            // position attribute
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-
-            // color attribute
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
-
-            // texture coord attribute
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
-            GL.EnableVertexAttribArray(2);
-
-            // Set texture attributes
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, textTexture.TextureId);
-
-
-            //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quadRenderer.Sprite.Width, quadRenderer.Sprite.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, quadRenderer.Sprite.SpriteData.Scan0);
-
-
-            // set texture filtering parameters
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-            // set the texture wrapping parameters
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
-
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, textTexture.Width, textTexture.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, textTexture.SpriteData.Scan0);
-            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-            // Set the shader uniform value
-            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader"), "ourTexture"), 0);
-            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader"), "ourOpacity"), (float)(_style.FontColour.A / 255.0f));
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, textTexture.TextureId);
-
-            GL.BindVertexArray(VAO);
-
-            GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero);
-
-            textTexture.Destory(false);
-
-            GL.DeleteBuffer(EBO);
-            GL.DeleteBuffer(VBO);
-            GL.DeleteVertexArray(VAO);
-
-
-
-            /*
-            GL.Enable(EnableCap.Texture2D);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
-            GL.BindTexture(TextureTarget.Texture2D, textTexture.TextureId);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, textTexture.Width, textTexture.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, textTexture.SpriteData.Scan0);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
-            GL.BindTexture(TextureTarget.Texture2D, textTexture.TextureId);
-
-            RectangleShape calculatedRect = new RectangleShape()
-            {
-                X = (_rect.X - (TackEngine.ScreenWidth / 2)) / (TackEngine.ScreenWidth / 2),
-                Y = ((TackEngine.ScreenHeight / 2) - _rect.Y) / (TackEngine.ScreenHeight / 2),
-                Width = (_rect.Width / (TackEngine.ScreenWidth / 2)),
-                Height = (_rect.Height / (TackEngine.ScreenHeight / 2))
-            };
-
-            GL.Begin(PrimitiveType.Quads);
-
-            // Vertex Positions
-            // 
-            // V1 ------ V2
-            // |         |
-            // |         |
-            // V4 ------ v3
-
-            // V1
-            GL.TexCoord2(0, 0);
-            GL.Vertex2(calculatedRect.X, calculatedRect.Y);
-
-            // V2
-            GL.TexCoord2(1, 0);
-            GL.Vertex2(calculatedRect.X + calculatedRect.Width, calculatedRect.Y);
-
-            // V3
-            GL.TexCoord2(1, 1);
-            GL.Vertex2(calculatedRect.X + calculatedRect.Width, calculatedRect.Y + -calculatedRect.Height);
-
-            // V4
-            GL.TexCoord2(0, 1);
-            GL.Vertex2(calculatedRect.X, calculatedRect.Y + -calculatedRect.Height);
-
-            GL.End();
-
-            textTexture.Destory(false);
-
-            //Console.WriteLine("Rendered 1 string '{0}'", _text);*/
+            return format;
         }
 
-        public static int GetFontFamilyId(string _familyName)
-        {
-            for (int i = 0; i < fontCollection.Families.Length; i++)
-            {
-                if (fontCollection.Families[i].Name == _familyName)
-                {
-                    return i;
+        /// <summary>
+        /// Loads a font file into the font collection. Returns the position of the new font family.
+        /// </summary>
+        /// <param name="_fileName"></param>
+        /// <returns></returns>
+        public static int LoadFontFromFile(string _fileName) {
+            if (!File.Exists(_fileName)) {
+                TackConsole.EngineLog(EngineLogType.Error, string.Format("Could not locate file at path: {0}", _fileName));
+                return -1;
+            }
+
+            ActiveInstance.m_fontCollection.AddFontFile(_fileName);
+
+            TackConsole.EngineLog(EngineLogType.Message, string.Format("Added new font with name: {0} to the TackGUI font collection at index: {1}", ActiveInstance.m_fontCollection.Families[ActiveInstance.m_fontCollection.Families.Length - 1].Name, ActiveInstance.m_fontCollection.Families.Length - 1));
+            return ActiveInstance.m_fontCollection.Families.Length - 1;
+        }
+
+        /// <summary>
+        /// Sets the active FontFamily
+        /// </summary>
+        /// <param name="_familyName">the Name of the FontFamily</param>
+        public static void SetActiveFontFamily(string _familyName) {
+            for (int i = 0; i < ActiveInstance.m_fontCollection.Families.Length; i++) {
+                if (ActiveInstance.m_fontCollection.Families[i].Name == _familyName) {
+                    SetActiveFontFamily(i);
+                    return;
                 }
             }
 
             TackConsole.EngineLog(EngineLogType.Error, string.Format("No FontFamily with name: {0} was found in the font collection", _familyName));
+        }
+
+        /// <summary>
+        /// Sets the active FontFamily
+        /// </summary>
+        /// <param name="_familyIndex">The index of the FontFamily</param>
+        public static void SetActiveFontFamily(int _familyIndex) {
+            if (_familyIndex < ActiveInstance.m_fontCollection.Families.Length) {
+                ActiveInstance.m_activeFontFamily = ActiveInstance.m_fontCollection.Families[_familyIndex];
+
+                TackConsole.EngineLog(EngineLogType.Message, "Set the active FontFamily. Name: {0}, FamilyIndex: {1}", ActiveInstance.m_activeFontFamily.Name, _familyIndex);
+            }
+
+            TackConsole.EngineLog(EngineLogType.Error, "The specfied family index is outside the bounds of the font collection Families array");
+        }
+
+        /// <summary>
+        /// Draws a box on the screen
+        /// </summary>
+        /// <param name="rect">The shape (Position and size) of the box</param>
+        /// <param name="style">The BoxStyle used to render this box</param>
+        public static void Box(RectangleShape rect, BoxStyle style = default(BoxStyle)) {
+            if (style == null) {
+                style = new BoxStyle();
+            }
+
+            GUIOperation operation = new GUIOperation(0);
+            operation.Border = style.Border;
+            operation.Bounds = rect;
+            operation.DrawLevel = 1;
+            
+            if (style.SpriteTexture == null) {
+                operation.IsSpriteDrawMode = false;
+                operation.Colour = style.Colour;
+            } else {
+                operation.IsSpriteDrawMode = true;
+                operation.Sprite = style.SpriteTexture;
+            }
+
+            ActiveInstance.m_guiOperations.Add(operation);
+        }
+
+        /// <summary>
+        /// Renders text to the screen
+        /// </summary>
+        /// <param name="rect">The shape of box to render the text in</param>
+        /// <param name="text">The text to render</param>
+        /// <param name="style">The TextAreaStyle used to render this text</param>
+        public static void TextArea(RectangleShape rect, string text, TextAreaStyle style = default(TextAreaStyle)) {
+            if (style == null) {
+                style = new TextAreaStyle();
+            }
+
+            // Add a background operation
+            GUIOperation backgroundOperation = new GUIOperation(0);
+            backgroundOperation.Border = null;
+            backgroundOperation.Bounds = rect;
+            backgroundOperation.DrawLevel = 1;
+
+            if (style.SpriteTexture == null) {
+                backgroundOperation.IsSpriteDrawMode = false;
+                backgroundOperation.Colour = style.BackgroundColour;
+            } else {
+                backgroundOperation.IsSpriteDrawMode = true;
+                backgroundOperation.Sprite = style.SpriteTexture;
+            }
+
+            ActiveInstance.m_guiOperations.Add(backgroundOperation);
+
+            // Add a text area operation
+
+            GUIOperation textOperation = new GUIOperation(1);
+            textOperation.Text = text;
+            textOperation.Font = new Font(GetFontFamily(style.FontFamilyId), style.FontSize, FontStyle.Regular);
+            textOperation.FontSize = style.FontSize;
+            textOperation.TextColour = style.FontColour;
+            textOperation.Bounds = rect;
+            textOperation.TextHAlignment = style.HorizontalAlignment;
+            textOperation.TextVAlignment = style.VerticalAlignment;
+            textOperation.DrawLevel = 1;
+
+            ActiveInstance.m_guiOperations.Add(textOperation);
+        }
+
+        public static int GetFontFamilyId(string familyName) {
+            if (ActiveInstance == null) {
+                return 0;
+            }
+            
+            for (int i = 0; i < ActiveInstance.m_fontCollection.Families.Length; i++)
+            {
+                if (ActiveInstance.m_fontCollection.Families[i].Name == familyName) {
+                    return i;
+                }
+            }
+
+            TackConsole.EngineLog(EngineLogType.Error, string.Format("No FontFamily with name: {0} was found in the font collection", familyName));
             return -1;
         }
 
@@ -490,14 +266,12 @@ namespace TackEngineLib.GUI
         /// </summary>
         /// <param name="a_fontId">The index of the FontFamily in the collection</param>
         /// <returns></returns>
-        public static FontFamily GetFontFamily(int a_fontId)
-        {
-            if (a_fontId < fontCollection.Families.Length)
-            {
-                return fontCollection.Families[a_fontId];
+        public static FontFamily GetFontFamily(int fontId) {
+            if (fontId < ActiveInstance.m_fontCollection.Families.Length) {
+                return ActiveInstance.m_fontCollection.Families[fontId];
             }
 
-            return fontCollection.Families[0];
+            return ActiveInstance.m_fontCollection.Families[0];
         }
 
         private static string GetRenderableString(string aString, float aScrollPos, float aHeightPerLine, float aTextAreaHeight) {
