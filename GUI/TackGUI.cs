@@ -57,7 +57,7 @@ namespace TackEngineLib.GUI {
 
             // Loop through all GUIOperations 
             //   - Add vertex postions/colours/texcoords to the dynamic vertex buffer
-            
+
 
             // Call 1 or more draw element calls depending on a maxGUIDrawCallAmount variable 
         }

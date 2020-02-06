@@ -110,6 +110,8 @@
     <Compile Include="Renderer\RenderObject.cs" />
     <Compile Include="Renderer\Shaders\Shader.cs" />
     <Compile Include="Renderer\Shaders\ShaderFunctions.cs" />
+    <Compile Include="Renderer\Sprite\SpriteAtlas.cs" />
+    <Compile Include="Renderer\Sprite\SpriteAtlasEntry.cs" />
     <Compile Include="Renderer\TackRenderer.cs" />
     <Compile Include="Resources\TackResources.cs" />
   </ItemGroup>

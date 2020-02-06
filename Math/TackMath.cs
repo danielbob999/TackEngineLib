@@ -27,6 +27,18 @@ namespace TackEngineLib.Math
                 return _val * -1.0f;
         }
 
+        public static float Clamp(float val, float min, float max) {
+            if (val < min) {
+                return min;
+            }
+
+            if (val > max) {
+                return max;
+            }
+
+            return val;
+        }
+
         /// <summary>
         /// Converts an angle in degrees to and angle in radians
         /// </summary>
