@@ -27,6 +27,7 @@ namespace TackEngineLib.Renderer
         private bool mRenderFpsCounter;
         private TextAreaStyle mFpsCounterStyle;
         private Colour4b mBackgroundColour;
+        private TackGUI m_guiInstance;
 
         public static Colour4b BackgroundColour
         {
@@ -53,6 +54,9 @@ namespace TackEngineLib.Renderer
             mVertexData = new float[4];
             mRenderFpsCounter = false;
 
+            m_guiInstance = new TackGUI();
+            m_guiInstance.OnStart();
+
             mFpsCounterStyle = new TextAreaStyle() {
                 BackgroundColour = new Colour4b(0, 0, 0, 0),
                 FontColour = Colour4b.Black,
@@ -69,7 +73,11 @@ namespace TackEngineLib.Renderer
         }
 
         public void OnRender() {
+            // Render everything in world
             RenderQuadRendererComponents();
+
+            // Render GUI
+            m_guiInstance.OnGUIRender();
         }
 
         public void RenderFpsCounter() {
@@ -85,6 +93,8 @@ namespace TackEngineLib.Renderer
                 GL.DeleteProgram(pair.Value);
                 TackConsole.EngineLog(EngineLogType.Message, "Deleted shader program with name '{0}' and id: {1}", pair.Key, pair.Value);
             }
+
+            m_guiInstance.OnClose();
         }
 
         public static void SetFpsCounterState(bool state) {
@@ -118,7 +128,7 @@ namespace TackEngineLib.Renderer
         {
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcAlpha);
 
             GL.EnableClientState(ArrayCap.ColorArray);
             GL.EnableClientState(ArrayCap.VertexArray);
