@@ -113,6 +113,7 @@
     <Compile Include="Renderer\Sprite\SpriteAtlas.cs" />
     <Compile Include="Renderer\Sprite\SpriteAtlasEntry.cs" />
     <Compile Include="Renderer\TackRenderer.cs" />
+    <Compile Include="Renderer\TackShaderType.cs" />
     <Compile Include="Resources\TackResources.cs" />
   </ItemGroup>
   <ItemGroup>

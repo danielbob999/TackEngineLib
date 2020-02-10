@@ -9,10 +9,19 @@ using TackEngineLib.Main;
 
 namespace TackEngineLib.Renderer.Shaders {
     public class Shader {
-        public int Id { get; internal set; }
-        internal bool CompiledAndLinked { get; set; }
+        public int Id { get; private set; }
+        public string Name { get; }
+        public TackShaderType Type { get; private set; }
+        internal bool CompiledAndLinked { get; private set; }
+        public bool SupportsBatchRendering { get; private set; }
+        public Dictionary<string, ActiveUniformType> Uniforms { get; private set; }
 
-        public Shader(string vertexSoure, string fragmentSource) {
+        public Shader(string shaderName, TackShaderType type, string vertexSoure, string fragmentSource) {
+            Name = shaderName;
+            Type = type;
+
+            TackConsole.EngineLog(Engine.EngineLogType.Message, "Starting compilation and linking of shader with name: " + Name);
+
             // Create shader program
             int shaderProgram = GL.CreateProgram();
 
@@ -39,8 +48,10 @@ namespace TackEngineLib.Renderer.Shaders {
                 CompiledAndLinked = false;
                 return;
             }
-                
-            TackConsole.EngineLog(Engine.EngineLogType.Message, "Successfully created shader program");
+
+            Uniforms = GetShaderUniformVars();
+
+            TackConsole.EngineLog(Engine.EngineLogType.Message, "Successfully created shader program with Id: {0}. Name: \"{1}\". SupportsBatchRendering: {2}", Id, Name, SupportsBatchRendering);
 
             GL.DeleteShader(vertShaderId);
             GL.DeleteShader(fragShaderId);
@@ -51,12 +62,12 @@ namespace TackEngineLib.Renderer.Shaders {
 
         private int CompileSubShader(string source, ShaderType type) {
             if (type != ShaderType.VertexShader && type != ShaderType.FragmentShader) {
-                TackConsole.EngineLog(Engine.EngineLogType.Error, "Cannot compile sub shader of unknown type.");
+                TackConsole.EngineLog(Engine.EngineLogType.Error, "Cannot compile sub-shader of unknown type.");
                 return -1;
             }
 
             // Compile shader
-            int subShaderId = GL.CreateShader(ShaderType.VertexShader);
+            int subShaderId = GL.CreateShader(type);
 
             // Set the shader source
             GL.ShaderSource(subShaderId, source);
@@ -71,19 +82,36 @@ namespace TackEngineLib.Renderer.Shaders {
                 return -1;
             }
 
-            TackConsole.EngineLog(Engine.EngineLogType.Message, "Successfully complied vertex shader. " + source.Count(x => x == '\n') + " lines.");
+            TackConsole.EngineLog(Engine.EngineLogType.Message, "Successfully complied sub-shader. Type: {0}, Lines: {1}.", type.ToString(), source.Count(x => x == '\n'));
             return subShaderId;
         }
 
-        public List<Tuple<string, ActiveUniformType>> GetShaderUniformVars() {
-            List<Tuple<string, ActiveUniformType>> vars = new List<Tuple<string, ActiveUniformType>>();
+        public void Destroy() {
+            GL.DeleteProgram(Id);
+        }
+
+        private Dictionary<string, ActiveUniformType> GetShaderUniformVars() {
+            Dictionary<string, ActiveUniformType> vars = new Dictionary<string, ActiveUniformType>();
 
             // Get count of uniforms
-            int uniformCount;
+            int uniformCount = 0;
+
+            GL.GetProgram(Id, GetProgramParameterName.ActiveUniforms, out uniformCount);
+
+            Console.WriteLine("Count: " + uniformCount);
+
+            SupportsBatchRendering = false;
 
             // for loop that iterates through 0-count, getting the uniform name/type at pos i
+            for (int i = 0; i < uniformCount; i++) {
+                string uniformName = GL.GetActiveUniform(Id, i, out int size, out ActiveUniformType type);
+                TackConsole.EngineLog(Engine.EngineLogType.Error, "Type: {0}, Name: {1}", type.ToString(), uniformName);
+                if (type == ActiveUniformType.Sampler2D || uniformName == "b_texture") {
+                    SupportsBatchRendering = true;
+                }
 
-            // add tuple (name, type) to list
+                vars.Add(uniformName, type);
+            }
 
             return vars;
         }

@@ -24,14 +24,6 @@ namespace TackEngineLib.Main {
         /// Gets the uniform variable names/types from the shader and populates the local dictionary
         /// </summary>
         private void RefreshShaderUniformVars() {
-            List<Tuple<string, ActiveUniformType>> uniformVars = Shader.GetShaderUniformVars();
-            m_uniformVariables.Clear();
-
-            foreach (Tuple<string, ActiveUniformType> t in uniformVars) {
-                if (t.Item2 == ActiveUniformType.UnsignedInt || t.Item2 == ActiveUniformType.Int || t.Item2 == ActiveUniformType.Float || t.Item2 == ActiveUniformType.Double) {
-                    m_uniformVariables.Add(t, 0);
-                }
-            }
         }
 
         public void SetVariableValue<T>(string varName, T varValue) {

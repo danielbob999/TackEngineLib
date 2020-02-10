@@ -150,8 +150,8 @@ namespace TackEngineLib.GUI {
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             // Set the shader uniform value
-            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader"), "ourTexture"), 0);
-            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader"), "ourOpacity"), 255.0f);
+            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader", TackShaderType.GUI).Id, "ourTexture"), 0);
+            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader", TackShaderType.GUI).Id, "ourOpacity"), 255.0f);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, atlasTexture.Id);

@@ -93,7 +93,7 @@ namespace TackEngineLib.Objects.Components
             //rectange = _rect;
             mColour = _colour;
 
-            Sprite = Main.Sprite.LoadFromBitmap(Properties.Resources.DefaultSprite);
+            Sprite = Sprite.DefaultSprite;
             Sprite.Create(false);
         }
 

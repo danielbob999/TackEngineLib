@@ -22,7 +22,9 @@ namespace TackEngineLib.Renderer
     {
         private static TackRenderer ActiveInstance;
 
-        private Dictionary<string, int> mShaderProgramIds = new Dictionary<string, int>();
+        private List<Shader> m_loadedShaders;
+        private Shader m_defaultWorldShader;
+        private Shader m_defaultGUIShader;
         private float[] mVertexData;
         private bool mRenderFpsCounter;
         private TextAreaStyle mFpsCounterStyle;
@@ -40,16 +42,25 @@ namespace TackEngineLib.Renderer
         internal TackRenderer() {
             ActiveInstance = this;
             mBackgroundColour = new Colour4b(150, 150, 150, 255);
+
+            m_loadedShaders = new List<Shader>();
         }
 
         public void OnStart() {
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
+            /*
             mShaderProgramIds.Add("shaders.default_object_shader", ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.DefaultFragmentShader));
             TackConsole.EngineLog(EngineLogType.Message, "Successfully registered shader with name 'shaders.default_object_shader'");
             mShaderProgramIds.Add("shaders.default_gui_shader", ShaderFunctions.CompileAndLinkShaders(Properties.Resources.DefaultVertexShader, Properties.Resources.GUIFragmentShader));
             TackConsole.EngineLog(EngineLogType.Message, "Successfully registered shader with name 'shaders.default_gui_shader'");
+            */
+
+            m_defaultGUIShader = new Shader("shaders.default_gui_shader", TackShaderType.GUI, System.IO.File.ReadAllText("tackresources/shaders/gui/default_gui_vertex_shader.vs"), 
+                                                                                              System.IO.File.ReadAllText("tackresources/shaders/gui/default_gui_fragment_shader.fs"));
+            m_defaultWorldShader = new Shader("shaders.default_world_shader", TackShaderType.World, System.IO.File.ReadAllText("tackresources/shaders/world/default_world_vertex_shader.vs"), 
+                                                                                                    System.IO.File.ReadAllText("tackresources/shaders/world/default_world_fragment_shader.fs"));
 
             mVertexData = new float[4];
             mRenderFpsCounter = false;
@@ -89,9 +100,8 @@ namespace TackEngineLib.Renderer
         }
 
         public void OnClose() {
-            foreach (KeyValuePair<string, int> pair in mShaderProgramIds) {
-                GL.DeleteProgram(pair.Value);
-                TackConsole.EngineLog(EngineLogType.Message, "Deleted shader program with name '{0}' and id: {1}", pair.Key, pair.Value);
+            for (int i = 0; i < m_loadedShaders.Count; i++) {
+                m_loadedShaders[i].Destroy();
             }
 
             m_guiInstance.OnClose();
@@ -101,12 +111,26 @@ namespace TackEngineLib.Renderer
             ActiveInstance.mRenderFpsCounter = state;
         }
 
-        public static int GetShader(string shaderName) {
-            if (!ActiveInstance.mShaderProgramIds.ContainsKey(shaderName)) {
-                return ActiveInstance.mShaderProgramIds["shaders.default_object_shader"];
+        public static Shader GetShader(string shaderName, TackShaderType shaderType) {
+            if (shaderName == "shaders.default_world_shader") {
+                return ActiveInstance.m_defaultWorldShader;
             }
 
-            return ActiveInstance.mShaderProgramIds[shaderName];
+            if (shaderName == "shaders.default_gui_shader") {
+                return ActiveInstance.m_defaultGUIShader;
+            }
+
+            for (int i = 0; i < ActiveInstance.m_loadedShaders.Count; i++) {
+                if (ActiveInstance.m_loadedShaders[i].Name == shaderName && ActiveInstance.m_loadedShaders[i].Type == shaderType) {
+                    return ActiveInstance.m_loadedShaders[i];
+                }
+            }
+
+            if (shaderType == TackShaderType.GUI) {
+                return ActiveInstance.m_defaultGUIShader;
+            } else {
+                return ActiveInstance.m_defaultWorldShader;
+            }
         }
 
          /// <summary>
@@ -136,7 +160,7 @@ namespace TackEngineLib.Renderer
             GL.EnableClientState(ArrayCap.TextureCoordArray);
 
             // Tell OpenGL to use teh default object shader
-            GL.UseProgram(mShaderProgramIds["shaders.default_object_shader"]);
+            GL.UseProgram(GetShader("shaders.default_world_shader", TackShaderType.World).Id);
 
             TackObject[] allObjects = TackObject.Get();
 
@@ -257,7 +281,7 @@ namespace TackEngineLib.Renderer
                 //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
                 // Set the shader uniform value
-                GL.Uniform1(GL.GetUniformLocation(mShaderProgramIds["shaders.default_object_shader"], "ourTexture"), 0);
+                GL.Uniform1(GL.GetUniformLocation(GetShader("shaders.default_world_shader", TackShaderType.World).Id, "ourTexture"), 0);
 
                 GL.ActiveTexture(TextureUnit.Texture0);
                 if (quadRenderer.RenderMode == RendererMode.SpriteSheet) {

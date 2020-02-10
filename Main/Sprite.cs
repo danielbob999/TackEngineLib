@@ -160,8 +160,14 @@ namespace TackEngineLib.Main {
         }
 
         internal static void LoadDefaultSprite() {
-            DefaultSprite = Sprite.LoadFromBitmap(TackEngineLib.Properties.Resources.DefaultSprite);
+            Bitmap defaultBitmap = new Bitmap(32, 32);
+            Graphics g = Graphics.FromImage(defaultBitmap);
+            g.Clear(Color.White);
+
+            DefaultSprite = LoadFromBitmap(defaultBitmap);
             DefaultSprite.Create();
+
+            defaultBitmap.Dispose();
 
             TackConsole.EngineLog(EngineLogType.Message, "Loaded the default sprite into Sprite.DefaultSprite");
         }
