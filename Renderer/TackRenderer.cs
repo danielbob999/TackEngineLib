@@ -57,10 +57,11 @@ namespace TackEngineLib.Renderer
             TackConsole.EngineLog(EngineLogType.Message, "Successfully registered shader with name 'shaders.default_gui_shader'");
             */
 
-            m_defaultGUIShader = new Shader("shaders.default_gui_shader", TackShaderType.GUI, System.IO.File.ReadAllText("tackresources/shaders/gui/default_gui_vertex_shader.vs"), 
-                                                                                              System.IO.File.ReadAllText("tackresources/shaders/gui/default_gui_fragment_shader.fs"));
+            /*
             m_defaultWorldShader = new Shader("shaders.default_world_shader", TackShaderType.World, System.IO.File.ReadAllText("tackresources/shaders/world/default_world_vertex_shader.vs"), 
                                                                                                     System.IO.File.ReadAllText("tackresources/shaders/world/default_world_fragment_shader.fs"));
+
+            */
 
             mVertexData = new float[4];
             mRenderFpsCounter = false;
@@ -85,7 +86,7 @@ namespace TackEngineLib.Renderer
 
         public void OnRender() {
             // Render everything in world
-            RenderQuadRendererComponents();
+            //RenderQuadRendererComponents();
 
             // Render GUI
             m_guiInstance.OnGUIRender();
@@ -160,7 +161,7 @@ namespace TackEngineLib.Renderer
             GL.EnableClientState(ArrayCap.TextureCoordArray);
 
             // Tell OpenGL to use teh default object shader
-            GL.UseProgram(GetShader("shaders.default_world_shader", TackShaderType.World).Id);
+            //GL.UseProgram(GetShader("shaders.default_world_shader", TackShaderType.World).Id);
 
             TackObject[] allObjects = TackObject.Get();
 

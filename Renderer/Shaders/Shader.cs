@@ -98,14 +98,12 @@ namespace TackEngineLib.Renderer.Shaders {
 
             GL.GetProgram(Id, GetProgramParameterName.ActiveUniforms, out uniformCount);
 
-            Console.WriteLine("Count: " + uniformCount);
-
             SupportsBatchRendering = false;
 
             // for loop that iterates through 0-count, getting the uniform name/type at pos i
             for (int i = 0; i < uniformCount; i++) {
                 string uniformName = GL.GetActiveUniform(Id, i, out int size, out ActiveUniformType type);
-                TackConsole.EngineLog(Engine.EngineLogType.Error, "Type: {0}, Name: {1}", type.ToString(), uniformName);
+
                 if (type == ActiveUniformType.Sampler2D || uniformName == "b_texture") {
                     SupportsBatchRendering = true;
                 }

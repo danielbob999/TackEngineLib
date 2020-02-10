@@ -29,7 +29,7 @@ namespace TackEngineLib.GUI {
         private PrivateFontCollection m_fontCollection;
         private FontFamily m_activeFontFamily;
         private List<GUIOperation> m_guiOperations;
-        private int[] m_uniformSamplerTexUnits;
+        private Shader m_defaultGUIShader;
 
         internal static List<InputField> inputFields = new List<InputField>();
 
@@ -48,10 +48,8 @@ namespace TackEngineLib.GUI {
 
             m_guiOperations = new List<GUIOperation>();
 
-            m_uniformSamplerTexUnits = new int[32];
-            for (int i = 0; i < 32; i++) {
-                m_uniformSamplerTexUnits[i] = i;
-            }
+            m_defaultGUIShader = new Shader("shaders.default_gui_shader", TackShaderType.GUI, System.IO.File.ReadAllText("tackresources/shaders/gui/default_gui_vertex_shader.vs"),
+                                                                                             System.IO.File.ReadAllText("tackresources/shaders/gui/default_gui_fragment_shader.fs"));
         }
 
         internal void OnUpdate() {
@@ -149,9 +147,9 @@ namespace TackEngineLib.GUI {
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, atlasTexture.Width, atlasTexture.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, atlasTexture.Data);
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            // Set the shader uniform value
-            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader", TackShaderType.GUI).Id, "ourTexture"), 0);
-            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader", TackShaderType.GUI).Id, "ourOpacity"), 255.0f);
+            m_defaultGUIShader.Use();
+            m_defaultGUIShader.SetUniformValue("bTexture", 0);
+            m_defaultGUIShader.SetUniformValue("ourOpacity", 255.0f);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, atlasTexture.Id);
@@ -313,10 +311,6 @@ namespace TackEngineLib.GUI {
         public static void TextArea(RectangleShape rect, string text, TextAreaStyle style = null) {
             if (style == null) {
                 style = new TextAreaStyle();
-            }
-
-            if (style.SpriteTexture == null) {
-                Console.WriteLine("UH, OH, STINKY, NULL");
             }
 
             // Add a background operation
