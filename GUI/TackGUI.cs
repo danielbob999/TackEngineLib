@@ -53,13 +53,118 @@ namespace TackEngineLib.GUI {
         }
 
         internal void OnGUIRender() {
+            TackConsole.EngineLog(EngineLogType.Message, "Rendering {0} operations", m_guiOperations.Count);
+
+            if (m_guiOperations.Count == 0) {
+                return;
+            }
+
             // Generate SpriteAtlas object using the list of GUIOperations
+            Renderer.Sprite.SpriteAtlas atlas = new Renderer.Sprite.SpriteAtlas();
+
+            for (int i = 0; i < m_guiOperations.Count; i++) {
+                atlas.AddSprite(m_guiOperations[i].Sprite);
+            }
+
+            List<float> vertexBuffer = new List<float>();
+            List<int> indicies = new List<int>();
 
             // Loop through all GUIOperations 
             //   - Add vertex postions/colours/texcoords to the dynamic vertex buffer
+            int currentIndex = 0;
+
+            for (int i = 0; i < m_guiOperations.Count; i++) {
+                RectangleShape rectInScreenCoords = new RectangleShape() {
+                    X = (m_guiOperations[i].Bounds.X - (TackEngine.ScreenWidth / 2)) / (TackEngine.ScreenWidth / 2),
+                    Y = ((TackEngine.ScreenHeight / 2) - m_guiOperations[i].Bounds.Y) / (TackEngine.ScreenHeight / 2),
+                    Width = (m_guiOperations[i].Bounds.Width / (TackEngine.ScreenWidth / 2)),
+                    Height = (m_guiOperations[i].Bounds.Height / (TackEngine.ScreenHeight / 2))
+                };
+
+                // Get the texture coordinates in a tuple format
+                Tuple<float, float>[] texCoords = atlas.GetTexCoords(m_guiOperations[i].Sprite.Id);
+
+                //                                  Pos: XYZ                                                                                                                Colour:  RGB                                                                                                               TexCoords: UV
+                vertexBuffer.AddRange(new float[] { (rectInScreenCoords.X + rectInScreenCoords.Width),      (rectInScreenCoords.Y),                                 1.0f,   (m_guiOperations[i].Colour.R / 255.0f), (m_guiOperations[i].Colour.G / 255.0f), (m_guiOperations[i].Colour.B / 255.0f),     texCoords[0].Item1, texCoords[0].Item2, }); // v1
+                vertexBuffer.AddRange(new float[] { (rectInScreenCoords.X + rectInScreenCoords.Width),      (rectInScreenCoords.Y - rectInScreenCoords.Height),     1.0f,   (m_guiOperations[i].Colour.R / 255.0f), (m_guiOperations[i].Colour.G / 255.0f), (m_guiOperations[i].Colour.B / 255.0f),     texCoords[1].Item1, texCoords[1].Item2, }); // v2
+                vertexBuffer.AddRange(new float[] { (rectInScreenCoords.X),                                 (rectInScreenCoords.Y - rectInScreenCoords.Height),     1.0f,   (m_guiOperations[i].Colour.R / 255.0f), (m_guiOperations[i].Colour.G / 255.0f), (m_guiOperations[i].Colour.B / 255.0f),     texCoords[2].Item1, texCoords[2].Item2, }); // v3
+                vertexBuffer.AddRange(new float[] { (rectInScreenCoords.X),                                 (rectInScreenCoords.Y),                                 1.0f,   (m_guiOperations[i].Colour.R / 255.0f), (m_guiOperations[i].Colour.G / 255.0f), (m_guiOperations[i].Colour.B / 255.0f),     texCoords[3].Item1, texCoords[3].Item2, }); // v4
+
+                indicies.AddRange(new int[] { currentIndex,       (currentIndex + 1), (currentIndex + 3) });
+                indicies.AddRange(new int[] { (currentIndex + 1), (currentIndex + 2), (currentIndex + 3) });
+
+                currentIndex += 4;
+            }
 
 
             // Call 1 or more draw element calls depending on a maxGUIDrawCallAmount variable 
+
+            int VAO = GL.GenVertexArray();
+            int VBO = GL.GenBuffer();
+            int EBO = GL.GenBuffer();
+
+            GL.BindVertexArray(VAO);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+            GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * 32, vertexBuffer.ToArray(), BufferUsageHint.StaticDraw);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(int) * 6, indicies.ToArray(), BufferUsageHint.StaticDraw);
+
+            // position attribute
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
+            GL.EnableVertexAttribArray(0);
+
+            // color attribute
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
+            GL.EnableVertexAttribArray(1);
+
+            // texture coord attribute
+            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
+            GL.EnableVertexAttribArray(2);
+
+            // Generate texture from SpriteAtlas
+            Sprite atlasTexture = Sprite.LoadFromBitmap(atlas.GetBitmap());
+            atlasTexture.Create(false);
+
+            // Set texture attributes
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, atlasTexture.Id);
+
+            // set texture filtering parameters
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            // set the texture wrapping parameters
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, atlasTexture.Width, atlasTexture.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, atlasTexture.Data);
+            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            // Set the shader uniform value
+            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader"), "ourTexture"), 0);
+            GL.Uniform1(GL.GetUniformLocation(TackRenderer.GetShader("shaders.default_gui_shader"), "ourOpacity"), 255.0f);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, atlasTexture.Id);
+
+            GL.BindVertexArray(VAO);
+
+            GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero);
+
+            //defaultSprite.Destory(false);
+
+            GL.DeleteBuffer(EBO);
+            GL.DeleteBuffer(VBO);
+            GL.DeleteVertexArray(VAO);
+
+            atlasTexture.Destory(false);
+
+            m_guiOperations.Clear();
         }
 
         internal void OnClose() {
@@ -182,7 +287,7 @@ namespace TackEngineLib.GUI {
         /// </summary>
         /// <param name="rect">The shape (Position and size) of the box</param>
         /// <param name="style">The BoxStyle used to render this box</param>
-        public static void Box(RectangleShape rect, BoxStyle style = default(BoxStyle)) {
+        public static void Box(RectangleShape rect, BoxStyle style = null) {
             if (style == null) {
                 style = new BoxStyle();
             }
@@ -191,14 +296,8 @@ namespace TackEngineLib.GUI {
             operation.Border = style.Border;
             operation.Bounds = rect;
             operation.DrawLevel = 1;
-            
-            if (style.SpriteTexture == null) {
-                operation.IsSpriteDrawMode = false;
-                operation.Colour = style.Colour;
-            } else {
-                operation.IsSpriteDrawMode = true;
-                operation.Sprite = style.SpriteTexture;
-            }
+            operation.Sprite = style.SpriteTexture;
+            operation.Colour = style.Colour;
 
             ActiveInstance.m_guiOperations.Add(operation);
         }
@@ -209,9 +308,13 @@ namespace TackEngineLib.GUI {
         /// <param name="rect">The shape of box to render the text in</param>
         /// <param name="text">The text to render</param>
         /// <param name="style">The TextAreaStyle used to render this text</param>
-        public static void TextArea(RectangleShape rect, string text, TextAreaStyle style = default(TextAreaStyle)) {
+        public static void TextArea(RectangleShape rect, string text, TextAreaStyle style = null) {
             if (style == null) {
                 style = new TextAreaStyle();
+            }
+
+            if (style.SpriteTexture == null) {
+                Console.WriteLine("UH, OH, STINKY, NULL");
             }
 
             // Add a background operation
@@ -219,14 +322,8 @@ namespace TackEngineLib.GUI {
             backgroundOperation.Border = null;
             backgroundOperation.Bounds = rect;
             backgroundOperation.DrawLevel = 1;
-
-            if (style.SpriteTexture == null) {
-                backgroundOperation.IsSpriteDrawMode = false;
-                backgroundOperation.Colour = style.BackgroundColour;
-            } else {
-                backgroundOperation.IsSpriteDrawMode = true;
-                backgroundOperation.Sprite = style.SpriteTexture;
-            }
+            backgroundOperation.Colour = style.BackgroundColour;
+            backgroundOperation.Sprite = style.SpriteTexture;
 
             ActiveInstance.m_guiOperations.Add(backgroundOperation);
 

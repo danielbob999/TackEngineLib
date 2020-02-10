@@ -105,6 +105,7 @@ namespace TackEngineLib.Main
         {
             for (int i = 0; i < mSpriteCount; i++)
             {
+                /*
                 mSingleSpriteTextures[i] = Sprite.LoadFromBitmap(mSpriteSheetTexture.GetBitmap().Clone(
                     new System.Drawing.RectangleF(i * mSingleSpriteWidth, 0, mSingleSpriteWidth, mSingleSpriteHeight), mSpriteSheetTexture.GetBitmap().PixelFormat));
 
@@ -112,6 +113,7 @@ namespace TackEngineLib.Main
                 mSingleSpriteTextures[i].Height = mSingleSpriteHeight;
 
                 mSingleSpriteTextures[i].Create();
+                */
             }
 
             TackConsole.EngineLog(EngineLogType.Message, string.Format("Created {0} Sprites from a SpriteSheet. SingleWidth: {1}, SingleHeight{2}", mSpriteCount, mSingleSpriteWidth, mSingleSpriteHeight));
@@ -127,13 +129,14 @@ namespace TackEngineLib.Main
         public Sprite SetFirstSprite()
         {
             Sprite newSprite = new Sprite();
+            /*
             newSprite = Sprite.LoadFromBitmap(mSpriteSheetTexture.GetBitmap().Clone(
                     new System.Drawing.RectangleF(0, 0, mSingleSpriteWidth, mSingleSpriteHeight), mSpriteSheetTexture.GetBitmap().PixelFormat));
 
             newSprite.Width = mSingleSpriteWidth;
             newSprite.Height = mSingleSpriteHeight;
 
-            newSprite.Create();
+            newSprite.Create();*/
 
             return newSprite;
         }

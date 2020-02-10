@@ -15,9 +15,9 @@ namespace TackEngineLib.Renderer
         public bool renderSprite = true;
         public RectangleShape rectangle;
         public Colour4b colour;
-        public Sprite sprite;
+        public Main.Sprite sprite;
 
-        public RenderObject(RectangleShape _r, Colour4b _c, Sprite _sprite, bool _shs)
+        public RenderObject(RectangleShape _r, Colour4b _c, Main.Sprite _sprite, bool _shs)
         {
             rectangle = _r;
             colour = _c;

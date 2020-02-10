@@ -16,12 +16,9 @@ namespace TackEngineLib.Renderer.Operations {
 													//	- 0 if this object should be treated as a default box
 													//	- 1 if this object should be treated as a text area
 
-		public bool IsSpriteDrawMode { get; set; }  // Sets the draw mode for the background. 
-													//	- (true) if background should be drawn as an image
-													//	- (false) if background should be drawn as a colour
 		public RectangleShape Bounds { get; set; }
 		public GUIBorder Border { get; set; }
-		public Sprite Sprite { get; set; }
+		public Main.Sprite Sprite { get; set; }
 		public Colour4b Colour { get; set; }
 		public string Text { get; set; }
 		public Font Font { get; set; }
@@ -33,6 +30,7 @@ namespace TackEngineLib.Renderer.Operations {
 		public GUIOperation(int opType) {
 			OperationType = opType;
 			DrawLevel = 0;
+			this.Sprite = Main.Sprite.DefaultSprite;
 		}
 	}
 }

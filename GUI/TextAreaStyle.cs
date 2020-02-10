@@ -102,7 +102,7 @@ namespace TackEngineLib.GUI
             FontSize = 8f;
             mFontFamily = 0;
             mFontColour = new Colour4b(0, 0, 0, 255);
-            mSpriteTexture = null;
+            mSpriteTexture = Sprite.DefaultSprite;
             mHorizontalAlignment = HorizontalAlignment.Left;
             mVerticalAlignment = VerticalAlignment.Top;
         }

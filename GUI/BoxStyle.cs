@@ -37,7 +37,7 @@ namespace TackEngineLib.GUI
         public BoxStyle()
         {
             mColour = new Colour4b(255, 255, 255, 255);
-            mSprite = null;
+            mSprite = Sprite.DefaultSprite;
 
             mBorder = null;
         }

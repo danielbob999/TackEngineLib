@@ -18,8 +18,12 @@ namespace TackEngineLib.Renderer.Sprite {
         }
 
         public void AddSprite(Main.Sprite sp) {
+            if (sp == null) {
+                return;
+            }
+
             for (int i = 0; i < m_atlasEntries.Count; i++) {
-                if (m_atlasEntries[i].Sprite.TextureId == sp.TextureId) {
+                if (m_atlasEntries[i].Sprite.Id == sp.Id) {
                     return; // If the sprite has already been added to the atlas, return without adding again
                 }
             }
@@ -83,7 +87,9 @@ namespace TackEngineLib.Renderer.Sprite {
             float currOffset = 0.0f;
 
             for (int i = 0; i < m_atlasEntries.Count; i++) {
-                g.DrawImage(m_atlasEntries[i].Sprite.GetBitmap(), 0, currOffset);
+                Bitmap singleBmp = m_atlasEntries[i].Sprite.GetBitmapCopy();
+                g.DrawImage(singleBmp, 0, currOffset);
+                singleBmp.Dispose();
 
                 currOffset += m_atlasEntries[i].Sprite.Height;
             }
@@ -93,7 +99,7 @@ namespace TackEngineLib.Renderer.Sprite {
 
         public Tuple<float, float>[] GetTexCoords(int spriteId) {
             for (int i = 0; i < m_atlasEntries.Count; i++) {
-                if (m_atlasEntries[i].Sprite.TextureId == spriteId) {
+                if (m_atlasEntries[i].Sprite.Id == spriteId) {
                     return m_atlasEntries[i].GetTexCoords();
                 }
             }

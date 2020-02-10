@@ -18,8 +18,8 @@ namespace TackEngineLib.Engine
         {
             foreach (Sprite sp in loadedSprites)
             {
-                GL.DeleteTexture(sp.TextureId);
-                TackConsole.EngineLog(EngineLogType.Message, string.Format("Deleted (OpenGL) Sprite texture with id '{0}'", sp.TextureId));
+                GL.DeleteTexture(sp.Id);
+                TackConsole.EngineLog(EngineLogType.Message, string.Format("Deleted (OpenGL) Sprite texture with id '{0}'", sp.Id));
             }
 
             loadedSprites.Clear();
@@ -36,7 +36,7 @@ namespace TackEngineLib.Engine
 
         public static void AddSprite(Sprite _sprite, bool _debugMsgs = true)
         {
-            if (_sprite.TextureId <= 0)
+            if (_sprite.Id <= 0)
             {
                 if (_debugMsgs)
                     TackConsole.EngineLog(EngineLogType.Error, "Cannot add Sprite with id lower than 1 to SpriteManager");
@@ -46,13 +46,13 @@ namespace TackEngineLib.Engine
             if (loadedSprites.Contains(_sprite))
             {
                 if (_debugMsgs)
-                    TackConsole.EngineLog(EngineLogType.Error, string.Format("Sprite with id '{0}' cannot be added because it is already in SpriteManager", _sprite.TextureId));
+                    TackConsole.EngineLog(EngineLogType.Error, string.Format("Sprite with id '{0}' cannot be added because it is already in SpriteManager", _sprite.Id));
                 return;
             }
 
             loadedSprites.Add(_sprite);
             if (_debugMsgs)
-                TackConsole.EngineLog(EngineLogType.Message, string.Format("Added new Sprite with id '{0}' to SpriteManager", _sprite.TextureId));
+                TackConsole.EngineLog(EngineLogType.Message, string.Format("Added new Sprite with id '{0}' to SpriteManager", _sprite.Id));
         }
 
         public static void RemoveSprite(Sprite _sprite, bool _debugMsgs = true)
@@ -60,14 +60,14 @@ namespace TackEngineLib.Engine
             if (!loadedSprites.Contains(_sprite))
             {
                 if (_debugMsgs)
-                    TackConsole.EngineLog(EngineLogType.Error, string.Format("Trying to remove Sprite with id '{0}' but it doesn't exist in SpriteManager", _sprite.TextureId));
+                    TackConsole.EngineLog(EngineLogType.Error, string.Format("Trying to remove Sprite with id '{0}' but it doesn't exist in SpriteManager", _sprite.Id));
                 return;
             }
 
-            GL.DeleteTexture(_sprite.TextureId);
+            GL.DeleteTexture(_sprite.Id);
             loadedSprites.Remove(_sprite);
             if (_debugMsgs)
-                TackConsole.EngineLog(EngineLogType.Message, string.Format("Removed Sprite with id '{0}' from SpriteManager", _sprite.TextureId));
+                TackConsole.EngineLog(EngineLogType.Message, string.Format("Removed Sprite with id '{0}' from SpriteManager", _sprite.Id));
         }
 
     }
