@@ -32,5 +32,12 @@ namespace TackEngineLib.Renderer.Operations {
 			DrawLevel = 0;
 			this.Sprite = Main.Sprite.DefaultSprite;
 		}
+
+		/// <summary>
+		/// Destroys all data, including Sprites in this GUIOperation
+		/// </summary>
+		public void Destory() {
+			this.Sprite.Destory(false);
+		}
 	}
 }

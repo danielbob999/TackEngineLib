@@ -57,17 +57,19 @@ namespace TackEngineLib.Engine
 
         public static void RemoveSprite(Sprite _sprite, bool _debugMsgs = true)
         {
-            if (!loadedSprites.Contains(_sprite))
-            {
-                if (_debugMsgs)
+            if (!loadedSprites.Contains(_sprite)) {
+                if (_debugMsgs) {
                     TackConsole.EngineLog(EngineLogType.Error, string.Format("Trying to remove Sprite with id '{0}' but it doesn't exist in SpriteManager", _sprite.Id));
+                }
                 return;
             }
 
             GL.DeleteTexture(_sprite.Id);
             loadedSprites.Remove(_sprite);
-            if (_debugMsgs)
+
+            if (_debugMsgs) {
                 TackConsole.EngineLog(EngineLogType.Message, string.Format("Removed Sprite with id '{0}' from SpriteManager", _sprite.Id));
+            }
         }
 
     }

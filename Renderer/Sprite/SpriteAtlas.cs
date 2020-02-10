@@ -8,9 +8,12 @@ using System.Drawing;
 using TackEngineLib.Main;
 
 namespace TackEngineLib.Renderer.Sprite {
-    internal class SpriteAtlas {
+    public class SpriteAtlas {
         private List<SpriteAtlasEntry> m_atlasEntries;
         private Bitmap m_bitmap;
+
+        public int Width { get { return m_bitmap.Width; } }
+        public int Height { get { return m_bitmap.Height; } }
 
         public SpriteAtlas() {
             m_bitmap = new Bitmap(1, 1);
@@ -18,7 +21,7 @@ namespace TackEngineLib.Renderer.Sprite {
         }
 
         public void AddSprite(Main.Sprite sp) {
-            if (sp == null) {
+            if (sp == null || m_bitmap == null) {
                 return;
             }
 
@@ -32,38 +35,21 @@ namespace TackEngineLib.Renderer.Sprite {
             SpriteAtlasEntry newEntry = new SpriteAtlasEntry();
             newEntry.Sprite = sp;
 
-            // Calculate it's texcoords
-            int heightOffset = 0;
-
-            for (int i = 0; i < m_atlasEntries.Count; i++) {
-                heightOffset += m_atlasEntries[i].Sprite.Height;
-            }
-
-            float fullWidth = 0.0f;
-
-            // If the new sprite is now the widest one set fullwidth to 1.0f, else calculate the value
-            if (sp.Width > m_bitmap.Width) {
-                fullWidth = 1.0f;
-            } else {
-                fullWidth = sp.Width / m_bitmap.Width;
-            }
-
-            float top = Math.TackMath.Clamp(heightOffset / (m_bitmap.Height + sp.Height), 0.0f, 1.0f);
-            float bottom = Math.TackMath.Clamp((heightOffset + sp.Height) / (m_bitmap.Height + sp.Height), 0.0f, 1.0f);
-
-            newEntry.TexCoordVert1 = new Tuple<float, float>(fullWidth, top);
-            newEntry.TexCoordVert2 = new Tuple<float, float>(fullWidth, bottom);
-            newEntry.TexCoordVert3 = new Tuple<float, float>(0, bottom);
-            newEntry.TexCoordVert4 = new Tuple<float, float>(0, top);
-
             // Add it to the list
             m_atlasEntries.Add(newEntry);
 
             // Redraw the bitmap
             RedrawBitmap();
+
+            // Recalculate all texture coords
+            RecalculateTexCoords();
         }
 
         public void RedrawBitmap() {
+            if (m_bitmap == null) {
+                return;
+            }
+
             m_bitmap.Dispose();
 
             if (m_atlasEntries.Count == 0) {
@@ -84,6 +70,8 @@ namespace TackEngineLib.Renderer.Sprite {
 
             m_bitmap = new Bitmap(maxWidth, height);
             Graphics g = Graphics.FromImage(m_bitmap);
+            //g.Clear(Color.Black);
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
             float currOffset = 0.0f;
 
             for (int i = 0; i < m_atlasEntries.Count; i++) {
@@ -95,6 +83,38 @@ namespace TackEngineLib.Renderer.Sprite {
             }
 
             g.Dispose();
+        }
+
+        /// <summary>
+        /// Recalculates the texture coordinates for all entries. Needs to be called after RedrawBitmap()
+        /// </summary>
+        public void RecalculateTexCoords() {
+            if (m_bitmap == null) {
+                return;
+            }
+
+            int currentHeightOffset = 0;
+            int maxWidth = m_bitmap.Width;
+            int maxHeight = m_bitmap.Height;
+
+            for (int i = 0; i < m_atlasEntries.Count; i++) {
+                int spriteWidth = m_atlasEntries[i].Sprite.Width;
+                int spriteHeight = m_atlasEntries[i].Sprite.Height;
+
+                // mw = 1628
+                // mh = 1128
+
+                float top = Math.TackMath.Clamp(currentHeightOffset / (float)maxHeight, 0.0f, 1.0f); // 0 / 
+                float bottom = Math.TackMath.Clamp((currentHeightOffset + spriteHeight) / (float)maxHeight, 0.0f, 1.0f); // 48 / 1128
+                float width = Math.TackMath.Clamp(spriteWidth / (float)maxWidth, 0.0f, 1.0f);
+
+                m_atlasEntries[i].TexCoordVert1 = new Tuple<float, float>(width, top);
+                m_atlasEntries[i].TexCoordVert2 = new Tuple<float, float>(width, bottom);
+                m_atlasEntries[i].TexCoordVert3 = new Tuple<float, float>(0, bottom);
+                m_atlasEntries[i].TexCoordVert4 = new Tuple<float, float>(0, top);
+
+                currentHeightOffset += m_atlasEntries[i].Sprite.Height;
+            }
         }
 
         public Tuple<float, float>[] GetTexCoords(int spriteId) {
@@ -109,6 +129,15 @@ namespace TackEngineLib.Renderer.Sprite {
 
         public Bitmap GetBitmap() {
             return m_bitmap;
+        }
+
+        public void SaveToFile(string path) {
+            m_bitmap.Save(path);
+        }
+
+        public void Destory() {
+            m_bitmap.Dispose();
+            m_bitmap = null;
         }
     }
 }

@@ -34,6 +34,8 @@ namespace TackEngineLib.Renderer
             set { ActiveInstance.mBackgroundColour = value; }
         }
 
+        internal static int MaxTextureUnits { get; private set; }
+
         internal TackRenderer() {
             ActiveInstance = this;
             mBackgroundColour = new Colour4b(150, 150, 150, 255);

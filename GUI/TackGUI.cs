@@ -29,6 +29,7 @@ namespace TackEngineLib.GUI {
         private PrivateFontCollection m_fontCollection;
         private FontFamily m_activeFontFamily;
         private List<GUIOperation> m_guiOperations;
+        private int[] m_uniformSamplerTexUnits;
 
         internal static List<InputField> inputFields = new List<InputField>();
 
@@ -46,6 +47,11 @@ namespace TackEngineLib.GUI {
             TackConsole.EngineLog(EngineLogType.Message, string.Format("Added default font file from: {0}\\Arial.ttf", Environment.GetFolderPath(Environment.SpecialFolder.Fonts)));
 
             m_guiOperations = new List<GUIOperation>();
+
+            m_uniformSamplerTexUnits = new int[32];
+            for (int i = 0; i < 32; i++) {
+                m_uniformSamplerTexUnits[i] = i;
+            }
         }
 
         internal void OnUpdate() {
@@ -53,8 +59,6 @@ namespace TackEngineLib.GUI {
         }
 
         internal void OnGUIRender() {
-            TackConsole.EngineLog(EngineLogType.Message, "Rendering {0} operations", m_guiOperations.Count);
-
             if (m_guiOperations.Count == 0) {
                 return;
             }
@@ -72,6 +76,7 @@ namespace TackEngineLib.GUI {
             // Loop through all GUIOperations 
             //   - Add vertex postions/colours/texcoords to the dynamic vertex buffer
             int currentIndex = 0;
+            int operationCountToRender = 0;
 
             for (int i = 0; i < m_guiOperations.Count; i++) {
                 RectangleShape rectInScreenCoords = new RectangleShape() {
@@ -94,6 +99,7 @@ namespace TackEngineLib.GUI {
                 indicies.AddRange(new int[] { (currentIndex + 1), (currentIndex + 2), (currentIndex + 3) });
 
                 currentIndex += 4;
+                operationCountToRender++;
             }
 
 
@@ -106,10 +112,10 @@ namespace TackEngineLib.GUI {
             GL.BindVertexArray(VAO);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * 32, vertexBuffer.ToArray(), BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * vertexBuffer.Count, vertexBuffer.ToArray(), BufferUsageHint.StaticDraw);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(int) * 6, indicies.ToArray(), BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(int) * indicies.Count, indicies.ToArray(), BufferUsageHint.StaticDraw);
 
             // position attribute
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
@@ -136,10 +142,8 @@ namespace TackEngineLib.GUI {
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
             // set the texture wrapping parameters
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
-
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, atlasTexture.Width, atlasTexture.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, atlasTexture.Data);
@@ -154,9 +158,7 @@ namespace TackEngineLib.GUI {
 
             GL.BindVertexArray(VAO);
 
-            GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero);
-
-            //defaultSprite.Destory(false);
+            GL.DrawElements(PrimitiveType.Triangles, indicies.Count, DrawElementsType.UnsignedInt, IntPtr.Zero);
 
             GL.DeleteBuffer(EBO);
             GL.DeleteBuffer(VBO);

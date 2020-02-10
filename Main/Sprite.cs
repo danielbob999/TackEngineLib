@@ -89,6 +89,10 @@ namespace TackEngineLib.Main {
         public void Destory(bool _logMsgs = true) {
             SpriteManager.RemoveSprite(this, _logMsgs);
         }
+        
+        internal void BindToTextureUnit(uint textureUnit) {
+
+        }
 
         public Bitmap GetBitmapCopy() {
             Bitmap bmpCopy = new Bitmap(Width, Height, PixelFormat);
