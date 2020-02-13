@@ -32,12 +32,33 @@ namespace TackEngineLib.Main
         private int mPreviousCommandsIndex = -1;
         private bool mPreviousCommandInputLocker = false;
         private string m_logPath;
+        private bool m_allowLoggingToFile = true;
 
         private TextAreaStyle mConsoleUIStyle;
         private InputField mInputField;
         private InputFieldStyle mInputFieldStyle;
         private BoxStyle mCaretBoxStyle;
         private string mInputString;
+
+        /// <summary>
+        /// Gets or Sets whether the ActiveInstance of TackConsole has logging to file enable. 
+        /// If Get is called and ActiveInstance is null, false is returned
+        /// </summary>
+        public static bool EnableLoggingToFile {
+            get {
+                if (ActiveInstance != null) {
+                    return ActiveInstance.m_allowLoggingToFile;
+                } else {
+                    return false;
+                }
+            }
+
+            set {
+                if (ActiveInstance != null) {
+                    ActiveInstance.m_allowLoggingToFile = value;
+                }
+            }
+        }
 
         internal TackConsole()
         {
@@ -183,8 +204,10 @@ namespace TackEngineLib.Main
             }
         }
 
-        internal void OnClose() { 
-            File.AppendAllLines(Directory.GetCurrentDirectory() + "/" + m_logPath, mMessages);
+        internal void OnClose() {
+            if (m_allowLoggingToFile) {
+                File.AppendAllLines(Directory.GetCurrentDirectory() + "/" + m_logPath, mMessages);
+            }
         }
 
         public static void Log(string _msg)

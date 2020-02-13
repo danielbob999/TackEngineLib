@@ -1,10 +1,14 @@
-#TackEngineLib ChangeLog
+#TackEngineLib Update Notes
 
 ##Update 1.3
 ###Known Issues:
 - The SpriteSheet class so fucking broken
 
+###Changes:
 - Changed out the Sprite class holds data.
 	> Data is now stored in a byte array (representing RGBA values)
 	> If you need the Sprite in a Bitmap format, called GetBitmapCopy(). Don't forget to dispose of the Bitmap after you are done!
 - Added a SpriteAtlas class.
+- Updated TackConsole
+	> All alog messages are now appended to a log file when the engine closes
+	> Logging to file can be enabled/disabled
