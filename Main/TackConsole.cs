@@ -31,6 +31,7 @@ namespace TackEngineLib.Main
         private List<string> mPreviousCommands = new List<string>();
         private int mPreviousCommandsIndex = -1;
         private bool mPreviousCommandInputLocker = false;
+        private string m_logPath;
 
         private TextAreaStyle mConsoleUIStyle;
         private InputField mInputField;
@@ -42,6 +43,12 @@ namespace TackEngineLib.Main
         {
             // Set the static instance
             ActiveInstance = this;
+
+            m_logPath = string.Format("logs/log_{0}_{1}_{2}.txt", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+
+            if (!Directory.Exists(Directory.GetCurrentDirectory() + "/logs")) {
+                Directory.CreateDirectory(Directory.GetCurrentDirectory() + "/logs");
+            }
 
             mInputField = new InputField();
             mInputFieldStyle = new InputFieldStyle();
@@ -55,17 +62,10 @@ namespace TackEngineLib.Main
             mInputFieldStyle.VerticalAlignment = VerticalAlignment.Middle;
             mInputFieldStyle.FontFamilyId = 0; //TackGUI.LoadFontFromFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\cour.ttf");
             mInputFieldStyle.Scrollable = false;
-        }
-
-        internal void OnStart()
-        {
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
 
             mActivationKey = KeyboardKey.Tilde;
 
-            mConsoleUIStyle = new TextAreaStyle()
-            {
+            mConsoleUIStyle = new TextAreaStyle() {
                 BackgroundColour = new Colour4b(0, 0, 0, 190),
                 FontColour = new Colour4b(0, 255, 0, 255),
                 FontFamilyId = TackGUI.GetFontFamilyId("Courier New"),
@@ -75,15 +75,20 @@ namespace TackEngineLib.Main
                 Scrollable = true
             };
 
-            mCaretBoxStyle = new BoxStyle()
-            {
+            mCaretBoxStyle = new BoxStyle() {
                 Colour = new Colour4b(255, 0, 0, 255),
             };
+        }
+
+        internal void OnStart()
+        {
+            //Stopwatch timer = new Stopwatch();
+            //timer.Start();
 
             GetCommandsFromAssembly(typeof(TackEngine).Assembly.FullName);
 
-            EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
-            timer.Stop();
+            //EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
+            //timer.Stop();
         }
 
         internal void OnUpdate()
@@ -178,9 +183,8 @@ namespace TackEngineLib.Main
             }
         }
 
-        internal void OnClose()
-        {
-
+        internal void OnClose() { 
+            File.AppendAllLines(Directory.GetCurrentDirectory() + "/" + m_logPath, mMessages);
         }
 
         public static void Log(string _msg)

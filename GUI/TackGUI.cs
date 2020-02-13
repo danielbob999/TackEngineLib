@@ -313,29 +313,12 @@ namespace TackEngineLib.GUI {
                 style = new TextAreaStyle();
             }
 
-            // Add a background operation
-            GUIOperation backgroundOperation = new GUIOperation(0);
-            backgroundOperation.Border = null;
-            backgroundOperation.Bounds = rect;
-            backgroundOperation.DrawLevel = 1;
-            backgroundOperation.Colour = style.BackgroundColour;
-            backgroundOperation.Sprite = style.SpriteTexture;
+            Bitmap textBitmap = new Bitmap((int)rect.Width, (int)rect.Height);
+            Graphics g = Graphics.FromImage(textBitmap);
+            g.FillRectangle(ActiveInstance.GetColouredBrush(style.BackgroundColour), 0, 0, rect.Width, rect.Height);
+            g.DrawString(text, new Font(GetFontFamily(style.FontFamilyId), style.FontSize, FontStyle.Regular), ActiveInstance.GetColouredBrush(style.FontColour), new PointF(0, 0), ActiveInstance.GenerateTextFormat(style.HorizontalAlignment, style.VerticalAlignment));
 
-            ActiveInstance.m_guiOperations.Add(backgroundOperation);
 
-            // Add a text area operation
-
-            GUIOperation textOperation = new GUIOperation(1);
-            textOperation.Text = text;
-            textOperation.Font = new Font(GetFontFamily(style.FontFamilyId), style.FontSize, FontStyle.Regular);
-            textOperation.FontSize = style.FontSize;
-            textOperation.TextColour = style.FontColour;
-            textOperation.Bounds = rect;
-            textOperation.TextHAlignment = style.HorizontalAlignment;
-            textOperation.TextVAlignment = style.VerticalAlignment;
-            textOperation.DrawLevel = 1;
-
-            ActiveInstance.m_guiOperations.Add(textOperation);
         }
 
         public static int GetFontFamilyId(string familyName) {

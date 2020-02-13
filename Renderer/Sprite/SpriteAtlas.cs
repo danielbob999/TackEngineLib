@@ -70,7 +70,7 @@ namespace TackEngineLib.Renderer.Sprite {
 
             m_bitmap = new Bitmap(maxWidth, height);
             Graphics g = Graphics.FromImage(m_bitmap);
-            //g.Clear(Color.Black);
+            g.Clear(Color.Transparent);
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
             float currOffset = 0.0f;
 

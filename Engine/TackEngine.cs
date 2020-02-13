@@ -85,8 +85,14 @@ namespace TackEngineLib.Engine
         /// <param name="_clos">The method called on engine shutdown</param>
         public static void Init(int _windowWidth, int _windowHeight, int _updatesPerSec, int _framesPerSec, bool _vsync, string _windowName, EngineDelegates.OnStart _st, EngineDelegates.OnUpdate _up, EngineDelegates.OnGUIRender _guirend, EngineDelegates.OnClose _clos)
         {
+            TackConsole activeConsoleInstance = new TackConsole();
+            activeConsoleInstance.OnStart();
+
+            TackConsole.EngineLog(EngineLogType.Message, "Starting TackEngine.");
+            TackConsole.EngineLog(EngineLogType.Message, string.Format("EngineVersion: {0}", GetEngineVersion().ToString()));
+
             // Create new window
-            NewGameWindow(_windowWidth, _windowHeight, _updatesPerSec, _framesPerSec, _windowName, _st, _up, _guirend, _clos);
+            NewGameWindow(_windowWidth, _windowHeight, _updatesPerSec, _framesPerSec, _windowName, _st, _up, _guirend, _clos, activeConsoleInstance);
 
             if (_vsync)
                 currentWindow.VSync = OpenTK.VSyncMode.On;
@@ -94,11 +100,14 @@ namespace TackEngineLib.Engine
                 currentWindow.VSync = OpenTK.VSyncMode.Off;
 
             currentWindow.Run(_updatesPerSec, _framesPerSec);
+
+            TackConsole.EngineLog(EngineLogType.Message, "Stopping Tackengine\n\n");
+            activeConsoleInstance.OnClose();
         }
 
-        private static void NewGameWindow(int _w, int _h, int _u_s, int _f_s, string _n, EngineDelegates.OnStart _s, EngineDelegates.OnUpdate _u, EngineDelegates.OnGUIRender _r, EngineDelegates.OnClose _c) {
+        private static void NewGameWindow(int _w, int _h, int _u_s, int _f_s, string _n, EngineDelegates.OnStart _s, EngineDelegates.OnUpdate _u, EngineDelegates.OnGUIRender _r, EngineDelegates.OnClose _c, TackConsole consoleInstance) {
             if (currentWindow == null) {
-                currentWindow = new TackGameWindow(_w, _h, _n, _s, _u, _r, _c);
+                currentWindow = new TackGameWindow(_w, _h, _n, _s, _u, _r, _c, consoleInstance);
 
                 TackConsole.EngineLog(EngineLogType.Message, "Successfully created new CustomGameWindow instance");
                 return;

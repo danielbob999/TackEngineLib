@@ -54,13 +54,15 @@ namespace TackEngineLib.Engine
         public static int ColourShaderProgramInt { get { return colourShaderProgramId; } }
         public static int ImageShaderProgramInt { get { return imageShaderProgramId; } }
 
-        public TackGameWindow(int _width, int _height, string _n, EngineDelegates.OnStart _strtFunc, EngineDelegates.OnUpdate _updtFunc, EngineDelegates.OnGUIRender _guiRendFunc, EngineDelegates.OnClose _onCloseFunc) 
+        public TackGameWindow(int _width, int _height, string _n, EngineDelegates.OnStart _strtFunc, EngineDelegates.OnUpdate _updtFunc, EngineDelegates.OnGUIRender _guiRendFunc, EngineDelegates.OnClose _onCloseFunc, TackConsole consoleHandle) 
             : base(_width, _height, GraphicsMode.Default, _n)
         {
             onStartFunction = _strtFunc;
             onUpdateFunction = _updtFunc;
             onGUIRenderFunction = _guiRendFunc;
             onCloseFunction = _onCloseFunc;
+
+            mTackConsole = consoleHandle;
 
             ActiveInstance = this;
         }
@@ -71,11 +73,7 @@ namespace TackEngineLib.Engine
 
             Sprite.LoadDefaultSprite();
 
-            mTackConsole = new TackConsole();
-            mTackConsole.OnStart();
-
-            TackConsole.EngineLog(EngineLogType.Message, "Starting TackEngine.");
-            TackConsole.EngineLog(EngineLogType.Message, string.Format("EngineVersion: {0}", TackEngine.GetEngineVersion().ToString()));
+            //mTackConsole.OnStart();
 
             mAudioManager = new AudioManager();
             mAudioManager.OnStart();
