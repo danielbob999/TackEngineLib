@@ -58,28 +58,28 @@ namespace TackEngineLib.Renderer.Sprite {
             }
 
             int maxWidth = 0;
-            int height = 0;
+            int height = 5; // Start at 5, to allow for 5px gap at top
 
             for (int i = 0; i < m_atlasEntries.Count; i++) {
-                if (m_atlasEntries[i].Sprite.Width > maxWidth) {
-                    maxWidth = m_atlasEntries[i].Sprite.Width;
+                if ((m_atlasEntries[i].Sprite.Width + 10) > maxWidth) { // Add 10 on for 5px spacing each side
+                    maxWidth = m_atlasEntries[i].Sprite.Width + 10;
                 }
 
-                height += m_atlasEntries[i].Sprite.Height;
+                height += (m_atlasEntries[i].Sprite.Height + 5);
             }
 
             m_bitmap = new Bitmap(maxWidth, height);
             Graphics g = Graphics.FromImage(m_bitmap);
-            g.Clear(Color.Transparent);
+            g.Clear(Color.FromArgb(255, 255, 255, 255));
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-            float currOffset = 0.0f;
+            float currOffset = 5.0f; // start at 5 to allow for a 5px gap at the top
 
             for (int i = 0; i < m_atlasEntries.Count; i++) {
                 Bitmap singleBmp = m_atlasEntries[i].Sprite.GetBitmapCopy();
-                g.DrawImage(singleBmp, 0, currOffset);
+                g.DrawImage(singleBmp, 5, currOffset);
                 singleBmp.Dispose();
 
-                currOffset += m_atlasEntries[i].Sprite.Height;
+                currOffset += (m_atlasEntries[i].Sprite.Height + 5.0f);
             }
 
             g.Dispose();
@@ -93,7 +93,7 @@ namespace TackEngineLib.Renderer.Sprite {
                 return;
             }
 
-            int currentHeightOffset = 0;
+            int currentHeightOffset = 5; // startat 5 because there will always be a 5px gap at the top
             int maxWidth = m_bitmap.Width;
             int maxHeight = m_bitmap.Height;
 
@@ -101,19 +101,17 @@ namespace TackEngineLib.Renderer.Sprite {
                 int spriteWidth = m_atlasEntries[i].Sprite.Width;
                 int spriteHeight = m_atlasEntries[i].Sprite.Height;
 
-                // mw = 1628
-                // mh = 1128
-
                 float top = Math.TackMath.Clamp(currentHeightOffset / (float)maxHeight, 0.0f, 1.0f); // 0 / 
                 float bottom = Math.TackMath.Clamp((currentHeightOffset + spriteHeight) / (float)maxHeight, 0.0f, 1.0f); // 48 / 1128
-                float width = Math.TackMath.Clamp(spriteWidth / (float)maxWidth, 0.0f, 1.0f);
+                float left = Math.TackMath.Clamp(5.0f / (float)maxWidth, 0.0f, 1.0f);
+                float right = Math.TackMath.Clamp((spriteWidth + 5.0f) / (float)maxWidth, 0.0f, 1.0f);
 
-                m_atlasEntries[i].TexCoordVert1 = new Tuple<float, float>(width, top);
-                m_atlasEntries[i].TexCoordVert2 = new Tuple<float, float>(width, bottom);
-                m_atlasEntries[i].TexCoordVert3 = new Tuple<float, float>(0, bottom);
-                m_atlasEntries[i].TexCoordVert4 = new Tuple<float, float>(0, top);
+                m_atlasEntries[i].TexCoordVert1 = new Tuple<float, float>(right, top);
+                m_atlasEntries[i].TexCoordVert2 = new Tuple<float, float>(right, bottom);
+                m_atlasEntries[i].TexCoordVert3 = new Tuple<float, float>(left, bottom);
+                m_atlasEntries[i].TexCoordVert4 = new Tuple<float, float>(left, top);
 
-                currentHeightOffset += m_atlasEntries[i].Sprite.Height;
+                currentHeightOffset += (m_atlasEntries[i].Sprite.Height + 5);
             }
         }
 
