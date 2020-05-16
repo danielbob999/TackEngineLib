@@ -111,6 +111,7 @@ namespace TackEngineLib.GUI
         /// </summary>
         public void Update()
         {
+            /*
             // Get keyboard keys and deal with them
             KeyboardKey bufferKey;
             if (TackInput.GetKeyFromInputBuffer(out bufferKey))
@@ -148,6 +149,7 @@ namespace TackEngineLib.GUI
                         SubmitInput.Invoke(this, EventArgs.Empty);
                 }
             }
+            */
         }
 
         /// <summary>
@@ -156,6 +158,7 @@ namespace TackEngineLib.GUI
         /// <param name="_value">The string to be rendered in this InputField</param>
         public void Render(InputFieldStyle _style = default(InputFieldStyle))
         {
+            /*
             if (!string.IsNullOrEmpty(mInputString))
                 mcaretPosition = (mInputString.Length - 1);
 
@@ -194,6 +197,7 @@ namespace TackEngineLib.GUI
                 }
 
             }
+            */
         }
 
         /// <summary>

@@ -12,9 +12,15 @@ namespace TackEngineLib.Renderer.Operations {
 	public class GUIOperation {
 		public int DrawLevel { get; set; }			// The order that sets the order that all operations are drawn.
 													//	- Drawn from smallest value to largest (Operation with a larger draw level value be be drawn over the top of a smaller draw level value operation)
+
 		public int OperationType { get; }           // The operation type that this object should be drawn as
 													//	- 0 if this object should be treated as a default box
 													//	- 1 if this object should be treated as a text area
+
+		public int ParentType { get; }				// The type of parent that this operation was generated from
+													// - 0 if this object came from a box gui call
+													// - 1 if this object came from a text area gui call
+													// - 2 if this object came from a input field gui call
 
 		public RectangleShape Bounds { get; set; }
 		public GUIBorder Border { get; set; }
@@ -27,9 +33,10 @@ namespace TackEngineLib.Renderer.Operations {
 		public VerticalAlignment TextVAlignment { get; set; }
 		public float FontSize { get; set; }
 
-		public GUIOperation(int opType) {
+		public GUIOperation(int opType, int parentType) {
 			OperationType = opType;
 			DrawLevel = 0;
+			ParentType = parentType;
 			this.Sprite = Main.Sprite.DefaultSprite;
 		}
 

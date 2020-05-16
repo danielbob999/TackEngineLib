@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 
+using OpenTK.Graphics.OpenGL;
+
 using TackEngineLib.Main;
 using TackEngineLib.Objects;
 using TackEngineLib.Objects.Components;
@@ -46,6 +48,9 @@ namespace TackEngineLib.Engine
             get { return currentWindow.Height; }
         }
 
+        public static long UpdateCycleCount { get { return TackGameWindow.Internal_UpdateCycleCounter; } }
+        public static long RenderCycleCount { get { return TackGameWindow.Internal_RenderCycleCounter; } }
+
         public static Camera MainCamera {
             get {
                 if (mMainCameraTackObject == null)
@@ -68,6 +73,10 @@ namespace TackEngineLib.Engine
 
                 return mMainCameraTackObject.GetComponent<Camera>();
             }
+        }
+
+        public static double TotalRunTime {
+            get { return (TackGameWindow.ActiveInstance.Timer.ElapsedMilliseconds / 1000.0d); }
         }
 
         /// <summary>

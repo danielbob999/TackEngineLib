@@ -84,6 +84,10 @@ namespace TackEngineLib.Renderer
             TackConsole.EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
         }
 
+        public void OnUpdate() {
+            m_guiInstance.OnUpdate();
+        }
+
         public void OnRender() {
             // Render everything in world
             //RenderQuadRendererComponents();
@@ -96,7 +100,7 @@ namespace TackEngineLib.Renderer
             int width = 100;
             int height = 100;
             if (mRenderFpsCounter) {
-                TackGUI.TextArea(new RectangleShape(TackEngine.MainCamera.CameraScreenWidth - (width + 5), 5, width, height), TackEngine.RenderCyclesPerSecond.ToString(), mFpsCounterStyle);
+                //TackGUI.TextArea(new RectangleShape(TackEngine.MainCamera.CameraScreenWidth - (width + 5), 5, width, height), TackEngine.RenderCyclesPerSecond.ToString(), mFpsCounterStyle);
             }
         }
 

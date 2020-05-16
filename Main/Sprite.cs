@@ -87,7 +87,9 @@ namespace TackEngineLib.Main {
         }
 
         public void Destory(bool _logMsgs = true) {
-            SpriteManager.RemoveSprite(this, _logMsgs);
+            if (Id != DefaultSprite.Id) {
+                SpriteManager.RemoveSprite(this, _logMsgs);
+            }
         }
         
         internal void BindToTextureUnit(uint textureUnit) {

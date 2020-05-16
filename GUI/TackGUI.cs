@@ -30,6 +30,8 @@ namespace TackEngineLib.GUI {
         private FontFamily m_activeFontFamily;
         private List<GUIOperation> m_guiOperations;
         private Shader m_defaultGUIShader;
+        private List<GUIMouseEvent> m_currentMouseEvents;
+        private List<object> m_guiObjects = new List<object>();
 
         internal static List<InputField> inputFields = new List<InputField>();
 
@@ -41,6 +43,8 @@ namespace TackEngineLib.GUI {
 
             ActiveInstance = this;
 
+            m_currentMouseEvents = new List<GUIMouseEvent>();
+
             m_fontCollection = new PrivateFontCollection();
             m_activeFontFamily = new FontFamily("Arial");
             m_fontCollection.AddFontFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\Arial.ttf");
@@ -49,15 +53,27 @@ namespace TackEngineLib.GUI {
             m_guiOperations = new List<GUIOperation>();
 
             m_defaultGUIShader = new Shader("shaders.default_gui_shader", TackShaderType.GUI, System.IO.File.ReadAllText("tackresources/shaders/gui/default_gui_vertex_shader.vs"),
-                                                                                             System.IO.File.ReadAllText("tackresources/shaders/gui/default_gui_fragment_shader.fs"));
+                                                                                              System.IO.File.ReadAllText("tackresources/shaders/gui/default_gui_fragment_shader.fs"));
         }
 
         internal void OnUpdate() {
-
+            // Loop through the current GUIObject List calling the OnUpdate function on each
+            for (int i = 0; i < m_guiObjects.Count; i++) {
+                ((GUIObject)m_guiObjects[i]).OnUpdate();
+            }
         }
 
         internal void OnGUIRender() {
+            // Loop through the current GUIObject List calling the OnRender function on each
+            for (int i = 0; i < m_guiObjects.Count; i++) {
+                ((GUIObject)m_guiObjects[i]).OnRender();
+            }
+
             if (m_guiOperations.Count == 0) {
+                if (TackInput.GUIInputRequired) {
+                    //TackInput.GUIInputRequired = false;
+                    //Console.WriteLine("GUIInputRequired is now false");
+                }
                 return;
             }
 
@@ -75,8 +91,13 @@ namespace TackEngineLib.GUI {
             //   - Add vertex postions/colours/texcoords to the dynamic vertex buffer
             int currentIndex = 0;
             int operationCountToRender = 0;
+            bool includesOpThatNeedsInput = false;
 
             for (int i = 0; i < m_guiOperations.Count; i++) {
+                if (m_guiOperations[i].ParentType == 2) {
+                    includesOpThatNeedsInput = true;
+                }
+
                 RectangleShape rectInScreenCoords = new RectangleShape() {
                     X = (m_guiOperations[i].Bounds.X - (TackEngine.ScreenWidth / 2)) / (TackEngine.ScreenWidth / 2),
                     Y = ((TackEngine.ScreenHeight / 2) - m_guiOperations[i].Bounds.Y) / (TackEngine.ScreenHeight / 2),
@@ -98,6 +119,19 @@ namespace TackEngineLib.GUI {
 
                 currentIndex += 4;
                 operationCountToRender++;
+            }
+
+            if (!includesOpThatNeedsInput) {
+                if (TackInput.GUIInputRequired) {
+                    //TackInput.GUIInputRequired = false;
+                    //Console.WriteLine("GUIInputRequired is now false");
+                }
+            } else {
+                /*
+                if (!TackInput.GUIInputRequired) {
+                    TackInput.GUIInputRequired = true;
+                    Console.WriteLine("GUIInputRequired is now true");
+                }*/
             }
 
             GL.Enable(EnableCap.Texture2D);
@@ -153,7 +187,6 @@ namespace TackEngineLib.GUI {
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, atlasTexture.Width, atlasTexture.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, atlasTexture.Data);
-            //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Sprite.DefaultSprite.Width, Sprite.DefaultSprite.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, Sprite.DefaultSprite.Data);
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             m_defaultGUIShader.Use();
@@ -173,11 +206,28 @@ namespace TackEngineLib.GUI {
 
             atlasTexture.Destory(false);
 
+            for (int i = 0; i < m_guiOperations.Count; i++) {
+                if (m_guiOperations[i].OperationType == 1) {
+                    m_guiOperations[i].Destory();
+                }
+            }
+
             m_guiOperations.Clear();
+
+            // Clear all the GUI mouse events
+            m_currentMouseEvents.Clear();
+            //Console.WriteLine("Cleared mouse events ({0})", TackEngine.RenderCycleCount);
         }
 
         internal void OnClose() {
+            // Loop through the current GUIObject List calling the OnUpdate function on each
+            for (int i = 0; i < m_guiObjects.Count; i++) {
+                ((GUIObject)m_guiObjects[i]).OnClose();
+            }
+        }
 
+        public static void RegisterGUIObject(object guiObject) {
+            ActiveInstance.m_guiObjects.Add(guiObject);
         }
 
         /// <summary>
@@ -296,16 +346,12 @@ namespace TackEngineLib.GUI {
         /// </summary>
         /// <param name="rect">The shape (Position and size) of the box</param>
         /// <param name="style">The BoxStyle used to render this box</param>
-        public static void Box(RectangleShape rect, BoxStyle style = null) {
-            if (style == null) {
-                style = new BoxStyle();
-            }
-
-            GUIOperation operation = new GUIOperation(0);
+        internal static void InternalBox(RectangleShape rect, GUIBox.GUIBoxStyle style) {
+            GUIOperation operation = new GUIOperation(0, 0);
             operation.Border = style.Border;
             operation.Bounds = rect;
             operation.DrawLevel = 1;
-            operation.Sprite = style.SpriteTexture;
+            operation.Sprite = style.Texture;
             operation.Colour = style.Colour;
 
             ActiveInstance.m_guiOperations.Add(operation);
@@ -317,17 +363,194 @@ namespace TackEngineLib.GUI {
         /// <param name="rect">The shape of box to render the text in</param>
         /// <param name="text">The text to render</param>
         /// <param name="style">The TextAreaStyle used to render this text</param>
-        public static void TextArea(RectangleShape rect, string text, TextAreaStyle style = null) {
+        internal static void InternalTextArea(RectangleShape rect, string text, GUITextArea.GUITextAreaStyle style) {
+            Bitmap textBitmap = new Bitmap((int)rect.Width, (int)rect.Height);
+            Graphics g = Graphics.FromImage(textBitmap);
+            g.FillRectangle(ActiveInstance.GetColouredBrush(style.Colour), 0, 0, rect.Width, rect.Height);
+            g.DrawString(text, new Font(GetFontFamily(style.FontFamilyId), style.FontSize, FontStyle.Regular), ActiveInstance.GetColouredBrush(style.FontColour), new Rectangle(0, 0, (int)rect.Width, (int)rect.Height), ActiveInstance.GenerateTextFormat(style.HorizontalAlignment, style.VerticalAlignment));
+
+            Sprite textSprite = Sprite.LoadFromBitmap(textBitmap);
+            textSprite.Create(false);
+
+            // Border operation
+            GUIOperation borderOperation = new GUIOperation(0, 1);
+            borderOperation.Bounds = rect;
+            borderOperation.DrawLevel = 1;
+            borderOperation.Sprite = Sprite.DefaultSprite;
+            borderOperation.Colour = style.Border.Colour;
+
+            // Text operation
+            GUIOperation operation = new GUIOperation(1, 1);
+            operation.Bounds = new RectangleShape(rect.X + style.Border.Left, rect.Y + style.Border.Up, rect.Width - (style.Border.Left + style.Border.Right), rect.Height - (style.Border.Up + style.Border.Bottom));
+            operation.DrawLevel = 1;
+            operation.Sprite = textSprite;
+            operation.Colour = Colour4b.White;
+
+            g.Dispose();
+            textBitmap.Dispose();
+
+            ActiveInstance.m_guiOperations.Add(borderOperation);
+            ActiveInstance.m_guiOperations.Add(operation);
+        }
+
+        public static string InputField(RectangleShape rect, string textToRender, ref InputFieldStyle style) {
             if (style == null) {
-                style = new TextAreaStyle();
+                style = new InputFieldStyle();
             }
+
+            // Instead of calling TextArea(), just run the dup code from the method, cause lazy
+            //TextArea(rect, textToRender, style.GetTextStyle());
 
             Bitmap textBitmap = new Bitmap((int)rect.Width, (int)rect.Height);
             Graphics g = Graphics.FromImage(textBitmap);
             g.FillRectangle(ActiveInstance.GetColouredBrush(style.BackgroundColour), 0, 0, rect.Width, rect.Height);
-            g.DrawString(text, new Font(GetFontFamily(style.FontFamilyId), style.FontSize, FontStyle.Regular), ActiveInstance.GetColouredBrush(style.FontColour), new PointF(0, 0), ActiveInstance.GenerateTextFormat(style.HorizontalAlignment, style.VerticalAlignment));
+            g.DrawString(textToRender, new Font(GetFontFamily(style.FontFamilyId), style.FontSize, FontStyle.Regular), ActiveInstance.GetColouredBrush(style.FontColour), new Rectangle(0, 0, (int)rect.Width, (int)rect.Height), ActiveInstance.GenerateTextFormat(style.HorizontalAlignment, style.VerticalAlignment));
+
+            Sprite textSprite = Sprite.LoadFromBitmap(textBitmap);
+            textSprite.Create(false);
+
+            GUIOperation operation = new GUIOperation(1, 2);
+            operation.Bounds = rect;
+            operation.DrawLevel = 1;
+            operation.Sprite = textSprite;
+            operation.Colour = Colour4b.White;
+
+            g.Dispose();
+            textBitmap.Dispose();
+
+            ActiveInstance.m_guiOperations.Add(operation);
+            // Finished creating text operation
+
+            bool registeredADownClick = false;
+
+            //Console.WriteLine("{0} mouse events on ({1})", ActiveInstance.m_currentMouseEvents.Count, TackEngine.RenderCycleCount);
+
+            for (int i = 0; i < ActiveInstance.m_currentMouseEvents.Count; i++) {
+                //Console.WriteLine("Pos: {0}, X: {1}, X + Width: {2}", ActiveInstance.m_currentMouseEvents[i].Position.X, rect.X, (rect.X + rect.Width));
+                if (ActiveInstance.m_currentMouseEvents[i].Position.X >= rect.X && ActiveInstance.m_currentMouseEvents[i].Position.X <= (rect.X + rect.Width)) {
+                    //Console.WriteLine("Is X");
+                    if (ActiveInstance.m_currentMouseEvents[i].Position.Y >= rect.Y && ActiveInstance.m_currentMouseEvents[i].Position.Y <= (rect.Y + rect.Height)) {
+                        if (ActiveInstance.m_currentMouseEvents[i].EventType == 0) {
+                            registeredADownClick = true;
+                            Console.WriteLine("Found a GUI mouse event of type: {0} involving the InputField", ActiveInstance.m_currentMouseEvents[i].EventType);
+                        }
+                    }
+                }
+            }
+
+            if (registeredADownClick) {
+                TackInput.GUIInputRequired = true;
+            } else if (!registeredADownClick && ActiveInstance.m_currentMouseEvents.Count(x => x.EventType == 0) > 0) {
+                Console.WriteLine("Found that a mouse down happened outside this inputfield");
+                TackInput.GUIInputRequired = false;
+            }
+
+            KeyboardKey[] bufferOperations = TackInput.GetInputBufferArray();
+            string newString;
+            
+            if (textToRender == null) {
+                newString = "";
+            } else {
+                newString = textToRender;
+            }
+
+            for (int i = 0; i < bufferOperations.Length; i++) {
+                if (bufferOperations[i] == KeyboardKey.Left) {
+                    if (style.CaretPosition > 0) {
+                        style.CaretPosition -= 1;
+                    }
+                } else if (bufferOperations[i] == KeyboardKey.Right) {
+                    if (style.CaretPosition < newString.Length) {
+                        style.CaretPosition += 1;
+                    }
+                } else if (bufferOperations[i] == KeyboardKey.BackSpace) {
+                    if (style.CaretPosition > 0) {
+                        newString = newString.Remove((int)style.CaretPosition - 1, 1);
+                    }
+
+                    if (style.CaretPosition > 0) {
+                        style.CaretPosition -= 1;
+                    }
+                } else if (bufferOperations[i] == KeyboardKey.Delete) {
+                    
+                    if (style.CaretPosition < newString.Length) {
+                        newString = newString.Remove((int)style.CaretPosition, 1);
+                    }
+                } else if (bufferOperations[i] == KeyboardKey.Space) {
+                    newString = newString.Insert((int)style.CaretPosition, " ");
+
+                    if (style.CaretPosition < newString.Length) {
+                        style.CaretPosition += 1;
+                    }
+                } else if (bufferOperations[i] == KeyboardKey.Period) {
+                    newString = newString.Insert((int)style.CaretPosition, ".");
+
+                    if (style.CaretPosition < newString.Length) {
+                        style.CaretPosition += 1;
+                    }
+                } else if (bufferOperations[i] == KeyboardKey.Quote) {
+                    newString = newString.Insert((int)style.CaretPosition, "\"");
+
+                    if (style.CaretPosition < newString.Length) {
+                        style.CaretPosition += 1;
+                    }
+                } else if (bufferOperations[i] == KeyboardKey.Minus) {
+                    if (TackInput.InputBufferShift) {
+                        newString = newString.Insert((int)style.CaretPosition, "_");
+                    } else {
+                        newString = newString.Insert((int)style.CaretPosition, "-");
+                    }
+
+                    if (style.CaretPosition < newString.Length) {
+                        style.CaretPosition += 1;
+                    }
+                }
+                
+                else if (bufferOperations[i] >= KeyboardKey.Number0 && bufferOperations[i] <= KeyboardKey.Number9) {
+                    newString = newString.Insert((int)style.CaretPosition, ((char)((int)bufferOperations[i] - 61)).ToString());
+
+                    if (style.CaretPosition < newString.Length) {
+                        style.CaretPosition += 1;
+                    }
+                } else if (bufferOperations[i] >= KeyboardKey.A && bufferOperations[i] <= KeyboardKey.Z) {
+                    if (TackInput.InputBufferCapsLock || TackInput.InputBufferShift) {
+                        newString = newString.Insert((int)style.CaretPosition, ((char)((int)bufferOperations[i] - 18)).ToString());
+                    } else {
+                        newString = newString.Insert((int)style.CaretPosition, ((char)((int)bufferOperations[i] + 14)).ToString());
+                    }
+
+                    if (style.CaretPosition < newString.Length) {
+                        style.CaretPosition += 1;
+                    }
+                }
+            }
+
+            TackInput.ClearInputBuffer();
+
+            return newString;
+        }
+
+        /// <summary>
+        /// Draws a toggle box on the screen
+        /// </summary>
+        /// <param name="rect"></param>
+        /// <param name="style"></param>
+        internal static void InternalToggle(RectangleShape rect, bool selected, string text, GUIToggle.GUIToggleStyle style) {
+            RectangleShape checkBoxShape = new RectangleShape(rect.X + 2, rect.Y + 2, rect.Height - 4, rect.Height - 4);
 
 
+            // Draw border
+            InternalBox(checkBoxShape, new GUIBox.GUIBoxStyle() { Colour = style.Border.Colour });
+
+            // Draw background
+            InternalBox(new RectangleShape(checkBoxShape.X + 2, checkBoxShape.Y + 2, checkBoxShape.Width - 4, checkBoxShape.Height - 4), new GUIBox.GUIBoxStyle() { Colour = style.Colour });
+
+            // Draw selection
+            if (selected) {
+                InternalBox(new RectangleShape(checkBoxShape.X + 2 + 4, checkBoxShape.Y + 2 + 4, checkBoxShape.Width - 4 - 8, checkBoxShape.Height - 4 - 8), new GUIBox.GUIBoxStyle() { Colour = style.SelectionColour });
+            }
+
+            InternalTextArea(new RectangleShape(checkBoxShape.X + checkBoxShape.Width + 5, rect.Y, rect.Width - (checkBoxShape.Width + 5), rect.Height), text, style.ConvertToGUITextStyle());
         }
 
         public static int GetFontFamilyId(string familyName) {
@@ -349,7 +572,7 @@ namespace TackEngineLib.GUI {
         /// <summary>
         /// Gets the FontFamily at a specified index
         /// </summary>
-        /// <param name="a_fontId">The index of the FontFamily in the collection</param>
+        /// <param name="fontId">The index of the FontFamily in the collection</param>
         /// <returns></returns>
         public static FontFamily GetFontFamily(int fontId) {
             if (fontId < ActiveInstance.m_fontCollection.Families.Length) {
@@ -386,6 +609,10 @@ namespace TackEngineLib.GUI {
             }
 
             return returnString;
+        }
+
+        internal static void AddMouseEvent(GUIMouseEvent mouseEvent) {
+            ActiveInstance.m_currentMouseEvents.Add(mouseEvent);
         }
     }
 }

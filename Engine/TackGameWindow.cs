@@ -26,7 +26,7 @@ namespace TackEngineLib.Engine
     {
         // Reference to the current GameWindow instance. CANNOT BE CHANGED
         private GameWindow gameWindowRef;
-        private static TackGameWindow ActiveInstance;
+        internal static TackGameWindow ActiveInstance;
 
         private EngineDelegates.OnStart onStartFunction;
         private EngineDelegates.OnUpdate onUpdateFunction;
@@ -40,12 +40,13 @@ namespace TackEngineLib.Engine
         private TackObjectManager mTackObjectManager;
         private TackRenderer mTackRender;
 
-        private Stopwatch updateTimer;
-        private Stopwatch frameTimer;
+        public Stopwatch Timer { get; private set; }
         //private long elapsedTicks = 0;
         //private long lastElapsedTicks = 0;
         private int updatesPerSec;
         private int framesPerSec;
+        internal static long Internal_UpdateCycleCounter { get; private set; }
+        internal static long Internal_RenderCycleCounter { get; private set; }
 
         private static int colourShaderProgramId;
         private static int imageShaderProgramId;
@@ -71,6 +72,12 @@ namespace TackEngineLib.Engine
         {
             base.OnLoad(e);
 
+            Timer = new Stopwatch();
+            Timer.Start();
+
+            Internal_UpdateCycleCounter = 0;
+            Internal_RenderCycleCounter = 0;
+
             Sprite.LoadDefaultSprite();
 
             //mTackConsole.OnStart();
@@ -91,9 +98,6 @@ namespace TackEngineLib.Engine
 
             onStartFunction();
 
-            updateTimer = new Stopwatch();
-            updateTimer.Start();
-
             mTackObjectManager.RunTackObjectStartMethods();
         }
 
@@ -109,9 +113,11 @@ namespace TackEngineLib.Engine
             mTackObjectManager.RunTackObjectUpdateMethods();
 
             mTackConsole.OnUpdate();
+            mTackRender.OnUpdate();
             TackInput.OnUpdate();
 
             TackEngine.mUpdateCyclesPerSecond = (int)UpdateFrequency;
+            Internal_UpdateCycleCounter++;
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -121,14 +127,15 @@ namespace TackEngineLib.Engine
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(TackRenderer.BackgroundColour.ConvertToOpenGLColor4());
 
-            // All OnRender here
-            mTackRender.OnRender();
-
             onGUIRenderFunction(); // This function should be called after all rendering. This means gui will render above other objects
             mTackConsole.OnGUIRender(); // TackConsole should be rendered above everything else, including the onGUIRenderFunction
             mTackRender.RenderFpsCounter();
 
+            // All OnRender here
+            mTackRender.OnRender();
+
            TackEngine.mFramesPerSecond = (int)RenderFrequency;
+            Internal_RenderCycleCounter++;
 
             this.SwapBuffers();
         }

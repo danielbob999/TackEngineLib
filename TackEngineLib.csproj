@@ -55,9 +55,15 @@
     <Compile Include="Engine\EngineLogType.cs" />
     <Compile Include="Engine\EngineModule.cs" />
     <Compile Include="GUI\BoxStyle.cs" />
+    <Compile Include="GUI\GUIBox.cs" />
     <Compile Include="GUI\GUIButton.cs" />
     <Compile Include="GUI\GUIButtonStyle.cs" />
     <Compile Include="GUI\GUIBorder.cs" />
+    <Compile Include="GUI\GUIInputField.cs" />
+    <Compile Include="GUI\GUIMouseEvent.cs" />
+    <Compile Include="GUI\GUIObject.cs" />
+    <Compile Include="GUI\GUITextArea.cs" />
+    <Compile Include="GUI\GUIToggle.cs" />
     <Compile Include="GUI\HorizontalAlignment.cs" />
     <Compile Include="GUI\InputField.cs" />
     <Compile Include="GUI\InputFieldStyle.cs" />
