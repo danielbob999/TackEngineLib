@@ -63,6 +63,9 @@ namespace TackEngineLib.Renderer
 
             */
 
+            m_defaultWorldShader = new Shader("shaders.default_world_shader", TackShaderType.World, System.IO.File.ReadAllText("tackresources/shaders/world/default_world_vertex_shader.vs"),
+                                                                                                    System.IO.File.ReadAllText("tackresources/shaders/world/default_world_fragment_shader.fs"));
+
             mVertexData = new float[4];
             mRenderFpsCounter = false;
 
@@ -90,7 +93,7 @@ namespace TackEngineLib.Renderer
 
         public void OnRender() {
             // Render everything in world
-            //RenderQuadRendererComponents();
+            RenderQuadRendererComponents();
 
             // Render GUI
             m_guiInstance.OnGUIRender();
@@ -285,8 +288,10 @@ namespace TackEngineLib.Renderer
                 }
                 //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
+                m_defaultWorldShader.Use();
+                m_defaultWorldShader.SetUniformValue("ourTexture", 0);
                 // Set the shader uniform value
-                GL.Uniform1(GL.GetUniformLocation(GetShader("shaders.default_world_shader", TackShaderType.World).Id, "ourTexture"), 0);
+                //GL.Uniform1(GL.GetUniformLocation(GetShader("shaders.default_world_shader", TackShaderType.World).Id, "ourTexture"), 0);
 
                 GL.ActiveTexture(TextureUnit.Texture0);
                 if (quadRenderer.RenderMode == RendererMode.SpriteSheet) {
