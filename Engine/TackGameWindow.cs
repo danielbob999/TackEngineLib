@@ -26,7 +26,7 @@ namespace TackEngineLib.Engine
     {
         // Reference to the current GameWindow instance. CANNOT BE CHANGED
         private GameWindow gameWindowRef;
-        private static TackGameWindow ActiveInstance;
+        internal static TackGameWindow ActiveInstance;
 
         private EngineDelegates.OnStart onStartFunction;
         private EngineDelegates.OnUpdate onUpdateFunction;
@@ -40,12 +40,13 @@ namespace TackEngineLib.Engine
         private TackObjectManager mTackObjectManager;
         private TackRenderer mTackRender;
 
-        private Stopwatch updateTimer;
-        private Stopwatch frameTimer;
+        public Stopwatch Timer { get; private set; }
         //private long elapsedTicks = 0;
         //private long lastElapsedTicks = 0;
         private int updatesPerSec;
         private int framesPerSec;
+        internal static long Internal_UpdateCycleCounter { get; private set; }
+        internal static long Internal_RenderCycleCounter { get; private set; }
 
         private static int colourShaderProgramId;
         private static int imageShaderProgramId;
@@ -54,13 +55,15 @@ namespace TackEngineLib.Engine
         public static int ColourShaderProgramInt { get { return colourShaderProgramId; } }
         public static int ImageShaderProgramInt { get { return imageShaderProgramId; } }
 
-        public TackGameWindow(int _width, int _height, string _n, EngineDelegates.OnStart _strtFunc, EngineDelegates.OnUpdate _updtFunc, EngineDelegates.OnGUIRender _guiRendFunc, EngineDelegates.OnClose _onCloseFunc) 
+        public TackGameWindow(int _width, int _height, string _n, EngineDelegates.OnStart _strtFunc, EngineDelegates.OnUpdate _updtFunc, EngineDelegates.OnGUIRender _guiRendFunc, EngineDelegates.OnClose _onCloseFunc, TackConsole consoleHandle) 
             : base(_width, _height, GraphicsMode.Default, _n)
         {
             onStartFunction = _strtFunc;
             onUpdateFunction = _updtFunc;
             onGUIRenderFunction = _guiRendFunc;
             onCloseFunction = _onCloseFunc;
+
+            mTackConsole = consoleHandle;
 
             ActiveInstance = this;
         }
@@ -69,15 +72,15 @@ namespace TackEngineLib.Engine
         {
             base.OnLoad(e);
 
+            Timer = new Stopwatch();
+            Timer.Start();
+
+            Internal_UpdateCycleCounter = 0;
+            Internal_RenderCycleCounter = 0;
+
             Sprite.LoadDefaultSprite();
 
-            TackGUI.OnStart();
-
-            mTackConsole = new TackConsole();
-            mTackConsole.OnStart();
-
-            TackConsole.EngineLog(EngineLogType.Message, "Starting TackEngine.");
-            TackConsole.EngineLog(EngineLogType.Message, string.Format("EngineVersion: {0}", TackEngine.GetEngineVersion().ToString()));
+            //mTackConsole.OnStart();
 
             mAudioManager = new AudioManager();
             mAudioManager.OnStart();
@@ -95,9 +98,6 @@ namespace TackEngineLib.Engine
 
             onStartFunction();
 
-            updateTimer = new Stopwatch();
-            updateTimer.Start();
-
             mTackObjectManager.RunTackObjectStartMethods();
         }
 
@@ -113,9 +113,11 @@ namespace TackEngineLib.Engine
             mTackObjectManager.RunTackObjectUpdateMethods();
 
             mTackConsole.OnUpdate();
+            mTackRender.OnUpdate();
             TackInput.OnUpdate();
 
             TackEngine.mUpdateCyclesPerSecond = (int)UpdateFrequency;
+            Internal_UpdateCycleCounter++;
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -125,14 +127,15 @@ namespace TackEngineLib.Engine
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(TackRenderer.BackgroundColour.ConvertToOpenGLColor4());
 
-            // All OnRender here
-            mTackRender.OnRender();
-
-            onGUIRenderFunction(); // This function should be called after all rendering. This means text will render above other objects
+            onGUIRenderFunction(); // This function should be called after all rendering. This means gui will render above other objects
             mTackConsole.OnGUIRender(); // TackConsole should be rendered above everything else, including the onGUIRenderFunction
             mTackRender.RenderFpsCounter();
 
+            // All OnRender here
+            mTackRender.OnRender();
+
            TackEngine.mFramesPerSecond = (int)RenderFrequency;
+            Internal_RenderCycleCounter++;
 
             this.SwapBuffers();
         }

@@ -7,127 +7,150 @@ using System.Threading.Tasks;
 using TackEngineLib.Main;
 using TackEngineLib.Input;
 
-namespace TackEngineLib.GUI
-{
-    public class GUIButton
-    {
-        private GUIButtonStyle mStyle;
-        private GUIButtonStyle mHoverStyle;
-        private GUIButtonStyle mPressStyle;
-        private RectangleShape mShape;
-        private string mText;
-        private bool mHovering = false;
-        private bool mPressing = false;
-        public event EventHandler Click;
-        public event EventHandler OnHover;
+namespace TackEngineLib.GUI {
+    public class GUIButton : GUIObject {
+
+        /// <summary>
+        /// The style of a GUIButton object
+        /// </summary>
+        public class GUIButtonStyle {
+
+            public Colour4b Colour { get; set; }
+            public GUIBorder Border { get; set; }
+            public int FontFamilyId { get; set; }
+            public float FontSize { get; set; }
+            public Colour4b FontColour { get; set; }
+            public HorizontalAlignment HorizontalAlignment { get; set; }
+            public VerticalAlignment VerticalAlignment { get; set; }
+            public Sprite Texture { get; set; }
+            public float ScrollPosition { get; set; }
+            public bool Scrollable { get; set; }
+
+            public GUIButtonStyle() {
+                Colour = Colour4b.White;
+                Border = new GUIBorder(0, 0, 0, 0, Colour4b.Black);
+                FontSize = 8f;
+                FontFamilyId = 0;
+                FontColour = Colour4b.Black;
+                HorizontalAlignment = HorizontalAlignment.Left;
+                VerticalAlignment = VerticalAlignment.Top;
+                Texture = Sprite.DefaultSprite;
+                ScrollPosition = 0.0f;
+                Scrollable = false;
+            }
+
+            internal GUITextArea.GUITextAreaStyle ConvertToGUITextAreaStyle() {
+                GUITextArea.GUITextAreaStyle style = new GUITextArea.GUITextAreaStyle();
+                style.Border = Border;
+                style.Colour = Colour;
+                style.FontColour = FontColour;
+                style.FontFamilyId = FontFamilyId;
+                style.FontSize = FontSize;
+                style.HorizontalAlignment = HorizontalAlignment;
+                style.VerticalAlignment = VerticalAlignment;
+                style.Texture = Texture;
+                style.Scrollable = Scrollable;
+                style.ScrollPosition = ScrollPosition;
+
+                return style;
+            }
+        }
+
+        private bool m_hovering;
+        private bool m_pressing;
 
         /// <summary>
         /// The regular style of this GUIButton
         /// </summary>
-        public GUIButtonStyle Style
-        {
-            get { return mStyle; }
-            set { mStyle = value; }
-        }
+        public GUIButtonStyle NormalStyle { get; set; }
 
         /// <summary>
         /// The style of this GUIButton when being hovered over
         /// </summary>
-        public GUIButtonStyle HoverStyle
-        {
-            get { return mHoverStyle; }
-            set { mHoverStyle = value; }
-        }
+        public GUIButtonStyle HoverStyle { get; set; }
 
         /// <summary>
-        /// The style of thi GUIButton when it is being pressed
+        /// The style of this GUIButton when it is being pressed
         /// </summary>
-        public GUIButtonStyle PressStyle
-        {
-            get { return mPressStyle; }
-            set { mPressStyle = value; }
-        }
+        public GUIButtonStyle ClickedStyle { get; set; }
 
         /// <summary>
         /// The text of this GUIButton
         /// </summary>
-        public string Text
-        {
-            get { return mText; }
-            set { mText = value; }
-        }
+        public string Text { get; set; }
 
         /// <summary>
         /// The shape of this GUIButton
         /// </summary>
-        public RectangleShape Shape
-        {
-            get { return mShape; }
-            set { mShape = value; }
-        }
+        public RectangleShape Bounds { get; set; }
+
+        /// <summary>
+        /// The event that is invoked when this GUIButton is pressed 
+        /// </summary>
+        public event EventHandler OnClickEvent;
 
         /// <summary>
         /// Intialises a new Button
         /// </summary>
         public GUIButton() {
-            mText = "Button";
-            mStyle = GUIButtonStyle.DefaultStyle;
-            mHoverStyle = GUIButtonStyle.DefaultHoverStyle;
-            mPressStyle = GUIButtonStyle.DefaultPressStyle;
+            Text = "GUIButton";
 
-            mHovering = false;
-            mPressing = false;
+            NormalStyle = new GUIButtonStyle();
+
+            HoverStyle = new GUIButtonStyle();
+            HoverStyle.Colour = new Colour4b(225, 225, 225, 255);
+
+            ClickedStyle = new GUIButtonStyle();
+            ClickedStyle.Colour = new Colour4b(195, 195, 195, 255);
+
+            TackGUI.RegisterGUIObject(this);
         }
 
-        public void Update() {
-            Vector2f mouseVec = TackInput.MousePosition();
+        internal override void OnStart() {
 
-            if (mouseVec.X > mShape.X && mouseVec.X < (mShape.X + mShape.Width)) {
-                if (mouseVec.Y > mShape.Y && mouseVec.Y < (mShape.Y + mShape.Height)) {
-                    mHovering = true;
+        }
 
-                    if (OnHover != null) {
-                        if (OnHover.GetInvocationList().Length > 0) {
-                            OnHover.Invoke(this, EventArgs.Empty);
-                        }
-                    }
+        internal override void OnUpdate() {
+            Vector2f mousePosition = Input.TackInput.MousePosition();
+
+            if (mousePosition.X >= Bounds.X && mousePosition.X <= (Bounds.X + Bounds.Width)) {
+                if (mousePosition.Y >= Bounds.Y && mousePosition.Y <= (Bounds.Y + Bounds.Height)) {
+                    m_hovering = true;
 
                     if (TackInput.MouseButtonDown(MouseButtonKey.Left)) {
-                        mPressing = true;
+                        m_pressing = true;
 
-                        if (Click != null) {
-                            if (Click.GetInvocationList().Length > 0) {
-                                Click.Invoke(this, EventArgs.Empty);
+                        if (OnClickEvent != null) {
+                            if (OnClickEvent.GetInvocationList().Length > 0) {
+                                OnClickEvent.Invoke(this, EventArgs.Empty);
                             }
                         }
                     }
 
                 } else {
-                    mHovering = false;
+                    m_hovering = false;
                 }
             } else {
-                mHovering = false;
+                m_hovering = false;
             }
 
             if (TackInput.MouseButtonUp(MouseButtonKey.Left)) {
-                mPressing = false;
+                m_pressing = false;
             }
         }
 
-        public void Render() {
-            if (mPressing) {
-                // If the button is being pressed
-                TackGUI.Box(mShape, mPressStyle.GetBoxStyle());
-                TackGUI.TextArea(mShape, mText, mPressStyle.GetTextAreaStyle());
-            } else if (mHovering) {
-                // If the button is being hovered
-                TackGUI.Box(mShape, mHoverStyle.GetBoxStyle());
-                TackGUI.TextArea(mShape, mText, mHoverStyle.GetTextAreaStyle());
+        internal override void OnRender() {
+            if (m_pressing) {
+                TackGUI.InternalTextArea(Bounds, Text, ClickedStyle.ConvertToGUITextAreaStyle());
+            } else if (m_hovering){
+                TackGUI.InternalTextArea(Bounds, Text, HoverStyle.ConvertToGUITextAreaStyle());
             } else {
-                // Regular style
-                TackGUI.Box(mShape, mStyle.GetBoxStyle());
-                TackGUI.TextArea(mShape, mText, mStyle.GetTextAreaStyle());
+                TackGUI.InternalTextArea(Bounds, Text, NormalStyle.ConvertToGUITextAreaStyle());
             }
+        }
+
+        internal override void OnClose() {
+
         }
     }
 }

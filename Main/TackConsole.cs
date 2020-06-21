@@ -31,41 +31,57 @@ namespace TackEngineLib.Main
         private List<string> mPreviousCommands = new List<string>();
         private int mPreviousCommandsIndex = -1;
         private bool mPreviousCommandInputLocker = false;
+        private string m_logPath;
+        private bool m_allowLoggingToFile = true;
 
-        private TextAreaStyle mConsoleUIStyle;
-        private InputField mInputField;
+        private TextAreaStyle mConsoleUIStyle; // Style used for the output TextArea
         private InputFieldStyle mInputFieldStyle;
         private BoxStyle mCaretBoxStyle;
         private string mInputString;
+
+        /// <summary>
+        /// Gets or Sets whether the ActiveInstance of TackConsole has logging to file enable. 
+        /// If Get is called and ActiveInstance is null, false is returned
+        /// </summary>
+        public static bool EnableLoggingToFile {
+            get {
+                if (ActiveInstance != null) {
+                    return ActiveInstance.m_allowLoggingToFile;
+                } else {
+                    return false;
+                }
+            }
+
+            set {
+                if (ActiveInstance != null) {
+                    ActiveInstance.m_allowLoggingToFile = value;
+                }
+            }
+        }
 
         internal TackConsole()
         {
             // Set the static instance
             ActiveInstance = this;
 
-            mInputField = new InputField();
+            m_logPath = string.Format("logs/log_{0}_{1}_{2}.txt", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+
+            if (!Directory.Exists(Directory.GetCurrentDirectory() + "/logs")) {
+                Directory.CreateDirectory(Directory.GetCurrentDirectory() + "/logs");
+            }
+
             mInputFieldStyle = new InputFieldStyle();
-
-            mInputField.SubmitInput += ProcessCommand;
-
             mInputFieldStyle.BackgroundColour = new Colour4b(100, 100, 100, 190);
             mInputFieldStyle.FontColour = new Colour4b(0, 0, 0, 255);
             mInputFieldStyle.SpriteTexture = Sprite.DefaultSprite;
             mInputFieldStyle.FontSize = 10f;
             mInputFieldStyle.VerticalAlignment = VerticalAlignment.Middle;
-            mInputFieldStyle.FontFamilyId = TackGUI.LoadFontFromFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\cour.ttf");
+            mInputFieldStyle.FontFamilyId = 0; //TackGUI.LoadFontFromFile(Environment.GetFolderPath(Environment.SpecialFolder.Fonts) + "\\cour.ttf");
             mInputFieldStyle.Scrollable = false;
-        }
-
-        internal void OnStart()
-        {
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
 
             mActivationKey = KeyboardKey.Tilde;
 
-            mConsoleUIStyle = new TextAreaStyle()
-            {
+            mConsoleUIStyle = new TextAreaStyle() {
                 BackgroundColour = new Colour4b(0, 0, 0, 190),
                 FontColour = new Colour4b(0, 255, 0, 255),
                 FontFamilyId = TackGUI.GetFontFamilyId("Courier New"),
@@ -75,40 +91,28 @@ namespace TackEngineLib.Main
                 Scrollable = true
             };
 
-            mCaretBoxStyle = new BoxStyle()
-            {
+            mCaretBoxStyle = new BoxStyle() {
                 Colour = new Colour4b(255, 0, 0, 255),
             };
+        }
+
+        internal void OnStart()
+        {
+            //Stopwatch timer = new Stopwatch();
+            //timer.Start();
 
             GetCommandsFromAssembly(typeof(TackEngine).Assembly.FullName);
 
-            EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
-            timer.Stop();
+            //EngineLog(EngineLogType.ModuleStart, "", timer.ElapsedMilliseconds);
+            //timer.Stop();
         }
 
         internal void OnUpdate()
         {
-            mInputField.Shape = new RectangleShape(0, (TackEngine.ScreenHeight * 0.7f), TackEngine.ScreenWidth, 30);
-            mInputField.Update();
-
             // Check to see if user wants to display the TackConsole GUI
             if (TackInput.InputActiveKeyDown(mActivationKey))
             {
                 mConsoleGUIActive = !mConsoleGUIActive;
-            }
-
-            if (TackInput.MouseButtonDown(MouseButtonKey.Left))
-            {
-                if (mInputField.IsMouseInBounds())
-                {
-                    //Console.WriteLine("Enabled TackConsole InputField input");
-                    mInputField.ReceivingInput = true;
-                }
-                else
-                {
-                    //Console.WriteLine("Disabled TackConsole InputField input");
-                    mInputField.ReceivingInput = false;
-                }
             }
 
             if (TackInput.KeyDown(KeyboardKey.PageDown))
@@ -123,39 +127,7 @@ namespace TackEngineLib.Main
                     mConsoleUIStyle.ScrollPosition -= 1.0f;
             }
 
-            if (TackInput.KeyDown(KeyboardKey.Up)) {
-                if (mPreviousCommands.Count > 0) {
-                    if (mPreviousCommandsIndex == -1) {
-                        mPreviousCommandsIndex = mPreviousCommands.Count - 1;
-                        mInputField.InputString = mPreviousCommands[mPreviousCommandsIndex];
-                    } else {
-                        mPreviousCommandsIndex -= 1;
-
-                        if (mPreviousCommandsIndex < 0)
-                            mPreviousCommandsIndex = 0;
-
-                        mInputField.InputString = mPreviousCommands[mPreviousCommandsIndex];
-                    }
-                }
-            }
-
-            if (TackInput.KeyDown(KeyboardKey.Down)) {
-                if (mPreviousCommands.Count > 0) {
-                    if (mPreviousCommandsIndex == -1) {
-                        mPreviousCommandsIndex = 0;
-                        mInputField.InputString = mPreviousCommands[mPreviousCommandsIndex];
-                    } else {
-                        mPreviousCommandsIndex += 1;
-
-                        if (mPreviousCommandsIndex > (mPreviousCommands.Count - 1))
-                            mPreviousCommandsIndex = (mPreviousCommands.Count - 1);
-
-                        mInputField.InputString = mPreviousCommands[mPreviousCommandsIndex];
-                    }
-                }
-            }
-
-            mInputString = mInputField.InputString;
+            //mInputString = mInputField.InputString;
         }
 
         internal void OnGUIRender()
@@ -172,15 +144,16 @@ namespace TackEngineLib.Main
                     consoleString += (str + "\n");
                 }
 
-                TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, (TackEngine.ScreenHeight * 0.70f)), consoleString, mConsoleUIStyle);
-
-                mInputField.Render(mInputFieldStyle);
+                //TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, (TackEngine.ScreenHeight * 0.70f)), consoleString, mConsoleUIStyle);
+                mInputString = TackGUI.InputField(new Main.RectangleShape(0, (TackEngine.ScreenHeight * 0.70f), TackEngine.ScreenWidth, 35.0f), mInputString, ref mInputFieldStyle);
+                //Console.WriteLine("Console Input: " + mInputString);
             }
         }
 
-        internal void OnClose()
-        {
-
+        internal void OnClose() {
+            if (m_allowLoggingToFile) {
+                File.AppendAllLines(Directory.GetCurrentDirectory() + "/" + m_logPath, mMessages);
+            }
         }
 
         public static void Log(string _msg)
@@ -300,15 +273,12 @@ namespace TackEngineLib.Main
             foreach (TackCommand command in mValidCommands) {
                 if (splitCommandBySpaces[0] == command.CommandCallString) {
                     command.CommandDelegate.Invoke(splitCommandBySpaces);
-
-                    mInputField.InputString = "";
                     return;
                 }
             }
 
             EngineLog(EngineLogType.Message, "No valid TackCommand with call string '" + splitCommandBySpaces[0] + "'");
             EngineLog(EngineLogType.Message, "Use 'help' to get a list of valid commands");
-            mInputField.InputString = "";
         }
 
         internal static List<TackCommand> GetLoadedTackCommands() {

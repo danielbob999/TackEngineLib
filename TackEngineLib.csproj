@@ -55,15 +55,22 @@
     <Compile Include="Engine\EngineLogType.cs" />
     <Compile Include="Engine\EngineModule.cs" />
     <Compile Include="GUI\BoxStyle.cs" />
+    <Compile Include="GUI\GUIBox.cs" />
     <Compile Include="GUI\GUIButton.cs" />
     <Compile Include="GUI\GUIButtonStyle.cs" />
     <Compile Include="GUI\GUIBorder.cs" />
+    <Compile Include="GUI\GUIInputField.cs" />
+    <Compile Include="GUI\GUIMouseEvent.cs" />
+    <Compile Include="GUI\GUIObject.cs" />
+    <Compile Include="GUI\GUITextArea.cs" />
+    <Compile Include="GUI\GUIToggle.cs" />
     <Compile Include="GUI\HorizontalAlignment.cs" />
     <Compile Include="GUI\InputField.cs" />
     <Compile Include="GUI\InputFieldStyle.cs" />
     <Compile Include="GUI\TextAreaStyle.cs" />
     <Compile Include="GUI\VerticalAlignment.cs" />
     <Compile Include="Main\CommandMethod.cs" />
+    <Compile Include="Main\Material.cs" />
     <Compile Include="Main\TackCommand.cs" />
     <Compile Include="Main\World.cs" />
     <Compile Include="Math\LinearEquation.cs" />
@@ -105,10 +112,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Renderer\Operations\GUIOperation.cs" />
     <Compile Include="Renderer\RenderObject.cs" />
+    <Compile Include="Renderer\Shaders\Shader.cs" />
     <Compile Include="Renderer\Shaders\ShaderFunctions.cs" />
-    <Compile Include="Renderer\Shaders\TackShaderType.cs" />
+    <Compile Include="Renderer\Sprite\SpriteAtlas.cs" />
+    <Compile Include="Renderer\Sprite\SpriteAtlasEntry.cs" />
     <Compile Include="Renderer\TackRenderer.cs" />
+    <Compile Include="Renderer\TackShaderType.cs" />
     <Compile Include="Resources\TackResources.cs" />
   </ItemGroup>
   <ItemGroup>

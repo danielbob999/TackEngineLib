@@ -10,18 +10,14 @@ using System.Drawing.Imaging;
 using TackEngineLib.Engine;
 using OpenTK.Graphics.OpenGL;
 
-namespace TackEngineLib.Main
-{
+namespace TackEngineLib.Main {
     /// <summary>
     /// 
     /// </summary>
-    public class Sprite
-    {
-        private static Sprite mDefaultSprite;
+    public class Sprite {
         internal static bool mLogMessageOverride = false;
 
-        internal static bool LogMessageOverride
-        {
+        internal static bool LogMessageOverride {
             get { return mLogMessageOverride; }
             set { mLogMessageOverride = value; }
         }
@@ -29,156 +25,151 @@ namespace TackEngineLib.Main
         /// <summary>
         /// The default sprite.
         /// </summary>
-        public static Sprite DefaultSprite
-        {
-            get { return mDefaultSprite; }
-        }
-
-        private int mTextureId;
-        private Bitmap mSpriteBmp;
-        private BitmapData mSpriteData;
-        private int mWidth = 0, mHeight = 0;
+        public static Sprite DefaultSprite { get; internal set; }
 
         /// <summary>
         /// The width of the Sprite
         /// </summary>
-        public int Width
-        {
-            get { return mWidth; }
-            set
-            {
-                if (value < 0 || value > 16384)
-                {
-                    mWidth = 0;
-                    TackConsole.EngineLog(EngineLogType.Error, "Sprite.Width cannot be set to less than 0 or more than 16384");
-                } else { mWidth = value; }
-            }
-        }
+        public int Width { get; private set; }
 
         /// <summary>
         /// The height of the Sprite
         /// </summary>
-        public int Height
-        {
-            get { return mHeight; }
-            set
-            {
-                if (value < 0 || value > 16384)
-                {
-                    mHeight = 0;
-                    TackConsole.EngineLog(EngineLogType.Error, "Sprite.Height cannot be set to less than 0 or more than 16384");
-                } else { mHeight = value; }
-            }
-        }
+        public int Height { get; private set; }
 
         /// <summary>
         /// The auto-generated texture ID for this Sprite
         /// </summary>
-        public int TextureId { get { return mTextureId; } }
+        public int Id { get; private set; }
+
 
         /// <summary>
-        /// The BitmapData of this Sprite
+        /// The PixelFormat of the data for this Sprite
         /// </summary>
-        public BitmapData SpriteData
-        {
-            get { return mSpriteData; }
-        }
+        public System.Drawing.Imaging.PixelFormat PixelFormat { get; private set; }
 
         /// <summary>
-        /// Initialises a new Sprite
+        /// The RGBA data of this Sprite
         /// </summary>
-        internal Sprite() {
+        public byte[] Data { get; private set; }
+        private int m_stride;
 
-        }
-
-        /// <summary>
-        /// Initialises a new Sprite
-        /// </summary>
-        /// <param name="_w">The width of the Sprite</param>
-        /// <param name="_h">The height of the Sprite</param>
-        public Sprite(int _w, int _h)
-        {
-            Width = _w;
-            Height = _h;
+        internal Sprite(int w = 0, int h = 0) {
+            Width = w;
+            Height = h;
         }
 
         /// <summary>
         /// Loads the sprite into memory.
         /// </summary>
         /// <param name="_logMsgs">True if messages should be logged to console, false otherwise</param>
-        public void Create(bool _logMsgs = true)
-        {
-            GL.GenTextures(1, out mTextureId);
+        public void Create(bool _logMsgs = true) {
+            int newId;
+            GL.GenTextures(1, out newId);
 
-            if (mTextureId <= 0) {
-                if (_logMsgs || (mLogMessageOverride))
-                    TackConsole.EngineLog(EngineLogType.Error, string.Format("Error with generating sprite texture. Sprite. TextureId cannot be set to 0 or below. (Current Id = {0})", mTextureId));
+            Id = newId;
+
+            if (Id <= 0) {
+                if (_logMsgs || (mLogMessageOverride)) {
+                    TackConsole.EngineLog(EngineLogType.Error, string.Format("Error with generating sprite texture. Sprite. TextureId cannot be set to 0 or below. (Current Id = {0})", Id));
+                }
                 return;
             }
 
             GL.Enable(EnableCap.Texture2D);
             GL.ActiveTexture(TextureUnit.Texture0);
 
-            mSpriteData = mSpriteBmp.LockBits(new System.Drawing.Rectangle(0, 0, mSpriteBmp.Width, mSpriteBmp.Height),
-                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
             SpriteManager.AddSprite(this, _logMsgs);
-            if (_logMsgs || (mLogMessageOverride))
-                TackConsole.EngineLog(EngineLogType.Message, string.Format("Generated Sprite texture with TextureId '{0}'", mTextureId));
+
+            if (_logMsgs || (mLogMessageOverride)) {
+                TackConsole.EngineLog(EngineLogType.Message, string.Format("Generated Sprite texture with TextureId '{0}'", Id));
+            }
         }
 
-        public void Destory(bool _logMsgs = true)
-        {
-            mSpriteBmp.UnlockBits(mSpriteData);
-            SpriteManager.RemoveSprite(this, _logMsgs);
+        public void Destory(bool _logMsgs = true) {
+            if (Id != DefaultSprite.Id) {
+                SpriteManager.RemoveSprite(this, _logMsgs);
+            }
+        }
+        
+        internal void BindToTextureUnit(uint textureUnit) {
+
         }
 
-        public Bitmap GetBitmap()
-        {
-            return mSpriteBmp;
+        public Bitmap GetBitmapCopy() {
+            Bitmap bmpCopy = new Bitmap(Width, Height, PixelFormat);
+            BitmapData bmpCopyData = bmpCopy.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.ReadWrite, PixelFormat);
+            bmpCopyData.Stride = m_stride;
+
+            // Copy m_data back to the bitmap Scan0 
+            System.Runtime.InteropServices.Marshal.Copy(Data, 0, bmpCopyData.Scan0, Data.Length);
+
+            bmpCopy.UnlockBits(bmpCopyData);
+
+            return bmpCopy;
         }
 
-        public static Sprite LoadFromFile(string _path)
-        {
+        public static Sprite LoadFromFile(string path) {
             Sprite newSprite = new Sprite();
             Bitmap newBp;
 
-            try
-            {
-                newBp = new Bitmap(Directory.GetCurrentDirectory() + "\\" + _path);
-            }
-            catch (FileNotFoundException)
-            {
-                TackConsole.EngineLog(EngineLogType.Error, string.Format("Failed to load image data. No file found at path: '{0}'", _path));
+            try {
+                newBp = new Bitmap(Directory.GetCurrentDirectory() + "\\" + path);
+            } catch (FileNotFoundException) {
+                TackConsole.EngineLog(EngineLogType.Error, string.Format("Failed to load image data. No file found at path: '{0}'", path));
                 return newSprite;
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 TackConsole.EngineLog(EngineLogType.Error, string.Format("'{0}'", e.ToString()));
                 return newSprite;
             }
 
-            newSprite.mSpriteBmp = newBp;
             newSprite.Width = newBp.Width;
             newSprite.Height = newBp.Height;
 
+            BitmapData bmpData = newBp.LockBits(new System.Drawing.Rectangle(0, 0, newBp.Width, newBp.Height),
+                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            newSprite.PixelFormat = bmpData.PixelFormat;
+            newSprite.m_stride = bmpData.Stride;
+            newSprite.Data = new byte[Math.TackMath.AbsVali(bmpData.Stride) * newBp.Height];
+
+            System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, newSprite.Data, 0, newSprite.Data.Length);
+
+            newBp.UnlockBits(bmpData);
+            newBp.Dispose();
+
             return newSprite;
         }
 
-        public static Sprite LoadFromBitmap(Bitmap _bitmap)
-        {
+        public static Sprite LoadFromBitmap(Bitmap original) {
             Sprite newSprite = new Sprite();
-            newSprite.mSpriteBmp = _bitmap;
-            newSprite.Width = _bitmap.Width;
-            newSprite.Height = _bitmap.Height;
+
+            newSprite.Width = original.Width;
+            newSprite.Height = original.Height;
+
+            BitmapData bmpData = original.LockBits(new System.Drawing.Rectangle(0, 0, original.Width, original.Height),
+                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            newSprite.PixelFormat = bmpData.PixelFormat;
+            newSprite.m_stride = bmpData.Stride;
+            newSprite.Data = new byte[Math.TackMath.AbsVali(bmpData.Stride) * original.Height];
+
+            System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, newSprite.Data, 0, newSprite.Data.Length);
+
+            original.UnlockBits(bmpData);
 
             return newSprite;
         }
 
-        internal static void LoadDefaultSprite()
-        {
-            mDefaultSprite = Sprite.LoadFromBitmap(TackEngineLib.Properties.Resources.DefaultSprite);
-            mDefaultSprite.Create();
+        internal static void LoadDefaultSprite() {
+            Bitmap defaultBitmap = new Bitmap(32, 32);
+            Graphics g = Graphics.FromImage(defaultBitmap);
+            g.Clear(Color.White);
+
+            DefaultSprite = LoadFromBitmap(defaultBitmap);
+            DefaultSprite.Create();
+
+            defaultBitmap.Dispose();
 
             TackConsole.EngineLog(EngineLogType.Message, "Loaded the default sprite into Sprite.DefaultSprite");
         }

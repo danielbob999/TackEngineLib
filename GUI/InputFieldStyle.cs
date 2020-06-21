@@ -20,6 +20,7 @@ namespace TackEngineLib.GUI
         private GUIBorder mBorder;
         private Sprite mSpriteTexture;
         private bool mScrollable;
+        private uint mCaretPosition;
 
         public float FontSize
         {
@@ -66,6 +67,11 @@ namespace TackEngineLib.GUI
             set { mScrollable = value; }
         }
 
+        public uint CaretPosition {
+            get { return mCaretPosition; }
+            set { mCaretPosition = value; }
+        }
+
         /// <summary>
         /// The VerticalAlignment of this text
         /// </summary>
@@ -92,6 +98,7 @@ namespace TackEngineLib.GUI
             mFontColour = new Colour4b(0, 0, 0, 255);
             mColour = new Colour4b(255, 255, 255, 255);
             mBorder = new GUIBorder(0, 0, 0, 0, new Colour4b(0, 0, 0, 255));
+            mCaretPosition = 0;
         }
 
         public BoxStyle GetBoxStyle()
@@ -122,8 +129,7 @@ namespace TackEngineLib.GUI
             return style;
         }
 
-        public void Destory()
-        {
+        public void Destory() {
         }
     }
 }

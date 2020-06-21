@@ -86,6 +86,8 @@ namespace TackEngineLib.Input
             mMouseKeysUpPerFrame = new bool[1024];
 
             locker_mMouseKeysDownPerFrame = new bool[1024];
+
+            GUIInputRequired = false;
         }
 
         internal static void OnUpdate()
@@ -123,6 +125,7 @@ namespace TackEngineLib.Input
             if (mGUIInputRequired)
             {
                 mInputBuffer.Add(_key);
+                //Console.WriteLine("Register key down: [{0}]", _key.ToString());
 
                 if (_key == KeyboardKey.CapsLock)
                     mInputBufferCapsLock = !mInputBufferCapsLock;
@@ -181,6 +184,9 @@ namespace TackEngineLib.Input
             }
 
             mMouseKeysHeld[(int)_key] = true;
+
+            // Register the mouse event to the gui
+            GUI.TackGUI.AddMouseEvent(new GUI.GUIMouseEvent(0, new Vector2f(mMousePositionX, mMousePositionY), _key));
         }
 
         internal static void MouseUpEvent(MouseButtonKey _key)
@@ -189,6 +195,9 @@ namespace TackEngineLib.Input
             mMouseKeysHeld[(int)_key] = false;
 
             locker_mMouseKeysDownPerFrame[(int)_key] = false; // Unlock the down key
+
+            // Register the mouse event to the gui
+            GUI.TackGUI.AddMouseEvent(new GUI.GUIMouseEvent(1, new Vector2f(mMousePositionX, mMousePositionY), _key));
         }
 
         public static bool KeyDown(KeyboardKey _keyCode)
@@ -304,6 +313,10 @@ namespace TackEngineLib.Input
             }
 
             return returnStr;
+        }
+
+        internal static KeyboardKey[] GetInputBufferArray() {
+            return mInputBuffer.ToArray();
         }
 
         /// <summary>

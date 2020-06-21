@@ -19,7 +19,7 @@ namespace TackEngineLib.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -57,79 +57,6 @@ namespace TackEngineLib.Properties {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///out vec4 FragColor;
-        ///  
-        ///in vec3 ourColor;
-        ///in vec2 TexCoord;
-        ///
-        ///uniform sampler2D ourTexture;
-        ///
-        ///void main()
-        ///{
-        ///    FragColor = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0);
-        ///}.
-        /// </summary>
-        public static string DefaultFragmentShader {
-            get {
-                return ResourceManager.GetString("DefaultFragmentShader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap DefaultSprite {
-            get {
-                object obj = ResourceManager.GetObject("DefaultSprite", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///layout (location = 0) in vec3 aPos;
-        ///layout (location = 1) in vec3 aColor;
-        ///layout (location = 2) in vec2 aTexCoord;
-        ///
-        ///out vec3 ourColor;
-        ///out vec2 TexCoord;
-        ///
-        ///void main()
-        ///{
-        ///    gl_Position = vec4(aPos, 1.0);
-        ///    ourColor = aColor;
-        ///    TexCoord = aTexCoord;
-        ///}.
-        /// </summary>
-        public static string DefaultVertexShader {
-            get {
-                return ResourceManager.GetString("DefaultVertexShader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to #version 330 core
-        ///out vec4 FragColor;
-        ///  
-        ///in vec3 ourColor;
-        ///in vec2 TexCoord;
-        ///
-        ///uniform sampler2D ourTexture;
-        ///uniform float ourOpacity;
-        ///
-        ///void main()
-        ///{
-        ///    FragColor = texture(ourTexture, TexCoord) * vec4(ourColor, ourOpacity);
-        ///}.
-        /// </summary>
-        public static string GUIFragmentShader {
-            get {
-                return ResourceManager.GetString("GUIFragmentShader", resourceCulture);
             }
         }
     }

@@ -3,15 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 using TackEngineLib.Main;
 using TackEngineLib.Objects;
 using TackEngineLib.Objects.Components;
+using TackEngineLib.GUI;
 
 namespace TackEngineLib.Engine
 {
     /// <summary>
     /// The holder class for all TackConsole commands
+    /// 
+    /// Command Args info
+    /// - First value in the args array will always be the cmd string, the rest of the args will be values
+    ///         - e.g command: "some.command hello 6 "
+    ///             - Array: [some.command] [hello] [6]
     /// </summary>
     internal static class EngineConsoleCommands
     {
