@@ -218,10 +218,10 @@ namespace TackEngineLib.Renderer
                 mVertexData = new float[32]
                 {
                     //       Position (XYZ)                                                                                                      Colours (RGB)                                                                                  TexCoords (XY)
-                    /* v1 */ FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(1)).X, FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(1)).Y, 1.0f,                                          (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   1.0f, 0.0f,
-                    /* v2 */ FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(2)).X, FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(2)).Y, 1.0f,                (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   1.0f, 1.0f,
-                    /* v3 */ FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(3)).X, FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(3)).Y, 1.0f,                                         (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   0.0f, 1.0f,
-                    /* v4 */ FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(4)).X, FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(4)).Y, 1.0f,                                                                   (quadRenderer.Colour.R / 255), (quadRenderer.Colour.G / 255), (quadRenderer.Colour.B / 255),   0.0f, 0.0f
+                    /* v1 */ FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(1)).X, FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(1)).Y, 1.0f,                (quadRenderer.Colour.R / 255.0f), (quadRenderer.Colour.G / 255.0f), (quadRenderer.Colour.B / 255.0f),   1.0f, 0.0f,
+                    /* v2 */ FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(2)).X, FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(2)).Y, 1.0f,                (quadRenderer.Colour.R / 255.0f), (quadRenderer.Colour.G / 255.0f), (quadRenderer.Colour.B / 255.0f),   1.0f, 1.0f,
+                    /* v3 */ FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(3)).X, FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(3)).Y, 1.0f,                (quadRenderer.Colour.R / 255.0f), (quadRenderer.Colour.G / 255.0f), (quadRenderer.Colour.B / 255.0f),   0.0f, 1.0f,
+                    /* v4 */ FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(4)).X, FindScreenCoordsFromPosition(quadRenderer.FindVertexPoint(4)).Y, 1.0f,                (quadRenderer.Colour.R / 255.0f), (quadRenderer.Colour.G / 255.0f), (quadRenderer.Colour.B / 255.0f),   0.0f, 0.0f
                 };
 
                 int[] indices = new int[]
