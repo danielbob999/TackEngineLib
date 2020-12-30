@@ -15,6 +15,7 @@ using TackEngineLib.Objects;
 using TackEngineLib.Objects.Components;
 using TackEngineLib.Renderer.Shaders;
 using TackEngineLib.GUI;
+using TackEngineLib.Physics;
 
 namespace TackEngineLib.Renderer
 {
@@ -94,6 +95,9 @@ namespace TackEngineLib.Renderer
         public void OnRender() {
             // Render everything in world
             RenderQuadRendererComponents();
+
+            // Render TackPhysics debug objects
+            TackPhysics.DebugDrawPhysicsWorld();
 
             // Render GUI
             m_guiInstance.OnGUIRender();
@@ -312,7 +316,7 @@ namespace TackEngineLib.Renderer
             }
         }
 
-        private Vector2f FindScreenCoordsFromPosition(Vector2f _pos)
+        public static Vector2f FindScreenCoordsFromPosition(Vector2f _pos)
         {
             Vector2f vec = new Vector2f()
             {

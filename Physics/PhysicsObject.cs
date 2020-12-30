@@ -9,7 +9,7 @@ namespace TackEngineLib.Physics
     public struct PhysicsObject
     {
         public string mTackObjectHash;
-        public TackEngineLib.Objects.Components.PhysicsComponent mPhysicsComponent;
+        public TackEngineLib.Objects.Components.PhysicsBodyComponent mPhysicsComponent;
         public TackEngineLib.Main.Vector2f mLeftOverGravityForce;
         public TackEngineLib.Main.Vector2f mLeftOverUserForce;
 

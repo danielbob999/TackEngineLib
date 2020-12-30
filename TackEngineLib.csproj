@@ -36,6 +36,11 @@
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Aether.Physics2D, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>Libraries\Aether.Physics2D.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="OpenTK, Version=3.3.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\TETestingSolution\packages\OpenTK.3.3.1\lib\net20\OpenTK.dll</HintPath>
     </Reference>
@@ -73,7 +78,6 @@
     <Compile Include="Main\CommandMethod.cs" />
     <Compile Include="Main\Material.cs" />
     <Compile Include="Main\TackCommand.cs" />
-    <Compile Include="Main\World.cs" />
     <Compile Include="Math\LinearEquation.cs" />
     <Compile Include="Objects\Components\AudioComponent.cs" />
     <Compile Include="Physics\MovementDirection.cs" />
@@ -86,7 +90,7 @@
     <Compile Include="Main\Vector2i.cs" />
     <Compile Include="Objects\Components\Camera.cs" />
     <Compile Include="Objects\Components\Light.cs" />
-    <Compile Include="Objects\Components\PhysicsComponent.cs" />
+    <Compile Include="Objects\Components\PhysicsBodyComponent.cs" />
     <Compile Include="Objects\Components\QuadRenderer.cs" />
     <Compile Include="Objects\Components\TackComponent.cs" />
     <Compile Include="Objects\TackObjectManager.cs" />
@@ -125,6 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Engine\WorkerThreads\" />
+    <Folder Include="Libraries\" />
     <Folder Include="_Docs\" />
   </ItemGroup>
   <ItemGroup>
