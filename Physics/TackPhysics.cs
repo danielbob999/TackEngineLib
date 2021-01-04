@@ -61,10 +61,11 @@ namespace TackEngineLib.Physics
         internal void RegisterPhysicsComponent(PhysicsBodyComponent component) {
         }
 
-        internal static void DeregisterPhysicsComponent(PhysicsBodyComponent component) {
+        internal void DeregisterPhysicsComponent(PhysicsBodyComponent component) {
         }
 
-        internal static void DebugDrawPhysicsWorld() {
+        internal void DrawPhysicsObjects() {
+
         }
 
         public void Shutdown() {

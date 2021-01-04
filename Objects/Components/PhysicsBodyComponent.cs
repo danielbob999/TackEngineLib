@@ -62,7 +62,6 @@ namespace TackEngineLib.Objects.Components
         }
 
         public PhysicsBodyComponent() {
-            m_fixtures = new List<Fixture>();
         }
 
         public override void OnStart() {
@@ -71,8 +70,6 @@ namespace TackEngineLib.Objects.Components
 
         public override void OnUpdate() {
             base.OnUpdate();
-
-            GetParent().Position = new Vector2f(m_physicsBody.Position.X, m_physicsBody.Position.Y);
         }
 
         public override void OnAttachedToTackObject() {
@@ -80,6 +77,7 @@ namespace TackEngineLib.Objects.Components
         }
 
         public override void OnDetachedFromTackObject() {
+            TackPhysics.GetInstance().DeregisterPhysicsComponent(this);
         }
 
         public void AddForce(float forceX, float forceY, TackPhysics.ForceType forceType) {
@@ -87,10 +85,6 @@ namespace TackEngineLib.Objects.Components
         }
 
         public void AddForce(Vector2f force, TackPhysics.ForceType forceType) {
-        }
-
-        public void Destroy() {
-            TackPhysics.DeregisterPhysicsComponent(this);
         }
     }
 }
