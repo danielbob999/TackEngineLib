@@ -146,6 +146,8 @@ namespace TackEngineLib.Objects.Components
              * 
              */
 
+            TackObject parentObject = GetParent();
+
             if (_vertIndex < 1 || _vertIndex > 4)
             {
                 TackConsole.EngineLog(EngineLogType.Error, string.Format("Cannot calculate the position of the vertex with index : {0}. Index values must be within the range (1-4, inclusive)", _vertIndex));
@@ -209,13 +211,13 @@ namespace TackEngineLib.Objects.Components
             {
                 Vector2f vertPos = new Vector2f(objectShape.X, objectShape.Y);
 
-                float x = parentObject.Position.X + (vertPos.X - parentObject.Position.X)
-                    * (float)System.Math.Cos(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
-                    * (float)System.Math.Sin(TackMath.DegToRad(parentObject.Rotation));
+                float x = GetParent().Position.X + (vertPos.X - GetParent().Position.X)
+                    * (float)System.Math.Cos(TackMath.DegToRad(GetParent().Rotation)) + (vertPos.Y - GetParent().Position.Y)
+                    * (float)System.Math.Sin(TackMath.DegToRad(GetParent().Rotation));
 
-                float y = parentObject.Position.Y - (vertPos.X - parentObject.Position.X)
-                    * (float)System.Math.Sin(TackMath.DegToRad(parentObject.Rotation)) + (vertPos.Y - parentObject.Position.Y)
-                    * (float)System.Math.Cos(TackMath.DegToRad(parentObject.Rotation));
+                float y = GetParent().Position.Y - (vertPos.X - GetParent().Position.X)
+                    * (float)System.Math.Sin(TackMath.DegToRad(GetParent().Rotation)) + (vertPos.Y - GetParent().Position.Y)
+                    * (float)System.Math.Cos(TackMath.DegToRad(GetParent().Rotation));
 
                 return new Vector2f(x, y);
             }

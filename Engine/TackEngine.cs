@@ -60,7 +60,7 @@ namespace TackEngineLib.Engine
                     mMainCameraTackObject = new TackObject("MainCamera", new Vector2f(0, 0));
                 }
 
-                if (mMainCameraTackObject != null && mMainCameraTackObject.GetComponent<Camera>().IsNullComponent())
+                if (mMainCameraTackObject != null && mMainCameraTackObject.GetComponent<Camera>() == null)
                 {
                     TackConsole.EngineLog(EngineLogType.Error, "The active Camera TackObject does not have a component of type TackComponent.Camera. Adding one...");
 

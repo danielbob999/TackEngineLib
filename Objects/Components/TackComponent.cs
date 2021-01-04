@@ -7,49 +7,67 @@ using System.Threading.Tasks;
 
 namespace TackEngineLib.Objects.Components
 {
-    public class TackComponent 
-    {
-        private bool mActive = true;
-        private bool mIsNullComponent = false;
-        public TackObject parentObject;
+    public class TackComponent {
+        private static int s_nextId = 0;
 
-        // Properties
-        public bool Active { get { return mActive;  } set { mActive = value; } }
+        private bool m_active = true;
+        private string m_parentObjectHash;
+        private int m_componentId;
 
-        public virtual void OnStart()
-        {
-            IsNullComponent(false);
+        /// <summary>
+        /// Is the component active on the TackObject
+        /// </summary>
+        public bool Active { 
+            get { return m_active;  } 
+            set { m_active = value; } 
         }
 
-        public virtual void OnUpdate()
-        {
+
+        internal TackComponent() {
+            m_componentId = s_nextId;
+            s_nextId++;
+        }
+
+        public virtual void OnStart() {
+
+        }
+
+        public virtual void OnUpdate() {
 
         }
 
         
-        public virtual void OnRender()
-        {
+        public virtual void OnRender() {
 
         }
         
 
-        public virtual void OnGUIRender()
-        {
+        public virtual void OnGUIRender() {
 
         }
 
-        public virtual void OnAddedToTackObject() {
+        public virtual void OnAttachedToTackObject() {
 
         }
 
-        public virtual bool IsNullComponent()
-        {
-            return mIsNullComponent;
+        public virtual void OnDetachedFromTackObject() {
+
         }
 
-        public virtual void IsNullComponent(bool _b)
-        {
-            mIsNullComponent = _b;
+        public TackObject GetParent() {
+            return TackObject.GetByHash(m_parentObjectHash);
+        }
+
+        internal void SetParent(string hash) {
+            m_parentObjectHash = hash;
+        }
+
+        public bool Equals(TackComponent comp) {
+            if (comp.m_componentId == this.m_componentId) {
+                return true;
+            }
+
+            return false;
         }
     }
 }

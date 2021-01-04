@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TackEngineLib</RootNamespace>
     <AssemblyName>TackEngineLib</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -36,11 +36,6 @@
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Aether.Physics2D, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>Libraries\Aether.Physics2D.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="OpenTK, Version=3.3.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\TETestingSolution\packages\OpenTK.3.3.1\lib\net20\OpenTK.dll</HintPath>
     </Reference>
@@ -129,7 +124,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Engine\WorkerThreads\" />
-    <Folder Include="Libraries\" />
     <Folder Include="_Docs\" />
   </ItemGroup>
   <ItemGroup>

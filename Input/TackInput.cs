@@ -297,8 +297,8 @@ namespace TackEngineLib.Input
         public static Vector2f MouseCoordsScreenToWorld()
         {
             Vector2f mousePos = MousePosition();
-            float xPos = (mousePos.X * (TackEngine.ScreenWidth / 2)) + TackEngine.MainCamera.parentObject.Position.X;
-            float yPos = (mousePos.Y * (TackEngine.ScreenHeight / 2)) + TackEngine.MainCamera.parentObject.Position.Y;
+            float xPos = (mousePos.X * (TackEngine.ScreenWidth / 2)) + TackEngine.MainCamera.GetParent().Position.X;
+            float yPos = (mousePos.Y * (TackEngine.ScreenHeight / 2)) + TackEngine.MainCamera.GetParent().Position.Y;
 
             return new Vector2f(xPos, yPos);
         }

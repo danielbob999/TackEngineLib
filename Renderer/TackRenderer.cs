@@ -176,13 +176,13 @@ namespace TackEngineLib.Renderer
 
             TackObject[] allObjects = TackObject.Get();
 
-            List<TackObject> allObjectsWithQRComp = new List<TackObject>(allObjects.Where(x => !x.GetComponent<QuadRenderer>().IsNullComponent()));
+            List<TackObject> allObjectsWithQRComp = new List<TackObject>(allObjects.Where(x => x.GetComponent<QuadRenderer>() != null));
             List<TackObject> orderedComponents = new List<TackObject>(allObjectsWithQRComp.OrderBy(x => x.GetComponent<QuadRenderer>().RenderLayer));
 
             foreach (TackObject currentTackObject in orderedComponents)
             {
                 // Continue with the loop if currentTackObject does not contain a QuadRenderer component
-                if (currentTackObject.GetComponent<QuadRenderer>().IsNullComponent())
+                if (currentTackObject.GetComponent<QuadRenderer>() == null)
                     continue;
 
                 /*
@@ -194,8 +194,8 @@ namespace TackEngineLib.Renderer
 
                 RectangleShape tackObjectBounds = new RectangleShape()
                 {
-                    X = ((currentTackObject.Position.X - TackEngine.MainCamera.parentObject.Position.X) - (currentTackObject.Scale.X / 2)) / (TackEngine.ScreenWidth / 2),
-                    Y = ((currentTackObject.Position.Y - TackEngine.MainCamera.parentObject.Position.Y) + (currentTackObject.Scale.Y / 2)) / (TackEngine.ScreenHeight / 2),
+                    X = ((currentTackObject.Position.X - TackEngine.MainCamera.GetParent().Position.X) - (currentTackObject.Scale.X / 2)) / (TackEngine.ScreenWidth / 2),
+                    Y = ((currentTackObject.Position.Y - TackEngine.MainCamera.GetParent().Position.Y) + (currentTackObject.Scale.Y / 2)) / (TackEngine.ScreenHeight / 2),
                     Width = (currentTackObject.Scale.X) / (TackEngine.ScreenWidth / 2),
                     Height = (currentTackObject.Scale.Y) / (TackEngine.ScreenHeight / 2)
                 };
@@ -320,8 +320,8 @@ namespace TackEngineLib.Renderer
         {
             Vector2f vec = new Vector2f()
             {
-                X = ((_pos.X - TackEngine.MainCamera.parentObject.Position.X) / (TackEngine.ScreenWidth / 2)),
-                Y = ((_pos.Y + TackEngine.MainCamera.parentObject.Position.Y) / (TackEngine.ScreenHeight / 2))
+                X = ((_pos.X - TackEngine.MainCamera.GetParent().Position.X) / (TackEngine.ScreenWidth / 2)),
+                Y = ((_pos.Y + TackEngine.MainCamera.GetParent().Position.Y) / (TackEngine.ScreenHeight / 2))
             };
 
             return vec;

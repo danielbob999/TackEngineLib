@@ -145,8 +145,8 @@ namespace TackEngineLib.Objects
 
             if (_component != null)
             {
-                ((TackComponent)_component).parentObject = this;
-                ((TackComponent)_component).OnAddedToTackObject();
+                ((TackComponent)_component).SetParent(gameObjectHash);
+                ((TackComponent)_component).OnAttachedToTackObject();
                 objectComponents.Add(_component);
 
                 TackConsole.EngineLog(EngineLogType.Message, string.Format("Added a '{0}' component to TackObject with name '{1}'", _component.GetType(), mName));
@@ -158,19 +158,14 @@ namespace TackEngineLib.Objects
             }
         }
 
-        public T GetComponent<T>()
-        {
+        public T GetComponent<T>() where T : TackComponent {
             foreach (object comp in objectComponents)
             {
                 if (comp.GetType() == typeof(T))
                     return (T)comp;
             }
 
-            object newComp = (T)Activator.CreateInstance(typeof(T));
-            ((TackComponent)newComp).IsNullComponent(true);
-
-            //EngineLog.WriteError(EngineErrorMode.TackObject, "TackObject with name '{0}' and hash '{1}' does not have a component of type '{2}'", mName, gameObjectHash, typeof(T));
-            return (T)newComp;
+            return null;
         }
 
         public TackComponent[] GetComponents() {
@@ -247,19 +242,33 @@ namespace TackEngineLib.Objects
             return gameObjectHash;
         }
 
-        public static TackObject Get(string _name)
-        {
-            TackObject[] allTackObjects = Get();
+        public static TackObject Get(string _name){
+            return GetByName(_name);
+        }
 
-            foreach (TackObject obj in allTackObjects)
-            {
-                if (obj.Name == _name)
-                    return obj;
+        public static TackObject GetByName(string name) {
+            TackObject[] objs = Get();
+
+            for (int i = 0; i < objs.Length; i++) {
+                if (objs[i].Name == name) {
+                    return objs[i];
+                }
             }
 
-            //TackConsole.EngineLog(EngineLogType.ErrorMessage
             return null;
         }
+
+        public static TackObject GetByHash(string hash) {
+            TackObject[] objs = Get();
+
+            for (int i = 0; i < objs.Length; i++) {
+                if (objs[i].GetHash() == hash) {
+                    return objs[i];
+                }
+            }
+
+            return null;
+        } 
         
         public static TackObject[] Get()
         {
