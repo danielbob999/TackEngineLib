@@ -75,6 +75,9 @@
     <Compile Include="Main\TackCommand.cs" />
     <Compile Include="Math\LinearEquation.cs" />
     <Compile Include="Objects\Components\AudioComponent.cs" />
+    <Compile Include="Objects\Components\BasePhysicsComponent.cs" />
+    <Compile Include="Objects\Components\RectanglePhysicsComponent.cs" />
+    <Compile Include="Physics\AABB.cs" />
     <Compile Include="Physics\MovementDirection.cs" />
     <Compile Include="Main\TackConsole.cs" />
     <Compile Include="Engine\TackEngine.cs" />
@@ -85,7 +88,6 @@
     <Compile Include="Main\Vector2i.cs" />
     <Compile Include="Objects\Components\Camera.cs" />
     <Compile Include="Objects\Components\Light.cs" />
-    <Compile Include="Objects\Components\PhysicsBodyComponent.cs" />
     <Compile Include="Objects\Components\QuadRenderer.cs" />
     <Compile Include="Objects\Components\TackComponent.cs" />
     <Compile Include="Objects\TackObjectManager.cs" />
@@ -102,8 +104,8 @@
     <Compile Include="Main\TackEngineVersion.cs" />
     <Compile Include="Math\TackMath.cs" />
     <Compile Include="Main\Vector2f.cs" />
+    <Compile Include="Physics\PhysicsCollision.cs" />
     <Compile Include="Physics\PhysicsMovement.cs" />
-    <Compile Include="Physics\PhysicsObject.cs" />
     <Compile Include="Physics\PhysicsStatus.cs" />
     <Compile Include="Physics\TackPhysics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

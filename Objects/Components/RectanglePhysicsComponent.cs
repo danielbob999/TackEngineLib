@@ -20,7 +20,7 @@ namespace TackEngineLib.Objects.Components {
             set { m_aabbScale = value; }
         }
 
-        public RectanglePhysicsComponent() : base() {
+        public RectanglePhysicsComponent() : base(typeof(RectanglePhysicsComponent)) {
 
         }
 

@@ -10,6 +10,8 @@ using TackEngineLib.Physics;
 namespace TackEngineLib.Objects.Components {
     public abstract class BasePhysicsComponent : TackComponent {
 
+        private Type m_finalType;
+
         private float m_mass;
         private float m_invMass;
         private Vector2f m_velocity;
@@ -75,8 +77,8 @@ namespace TackEngineLib.Objects.Components {
             }
         }
 
-        public BasePhysicsComponent() {
-
+        protected BasePhysicsComponent(Type finalType) {
+            m_finalType = finalType;
         }
 
         public override void OnStart() {
