@@ -97,7 +97,7 @@ namespace TackEngineLib.Renderer
             RenderQuadRendererComponents();
 
             // Render TackPhysics debug objects
-            TackPhysics.DebugDrawPhysicsWorld();
+            TackPhysics.GetInstance().DrawPhysicsObjects();
 
             // Render GUI
             m_guiInstance.OnGUIRender();

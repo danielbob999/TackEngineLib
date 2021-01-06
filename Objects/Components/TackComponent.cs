@@ -46,6 +46,10 @@ namespace TackEngineLib.Objects.Components
 
         }
 
+        public virtual void OnClose() {
+
+        }
+
         public virtual void OnAttachedToTackObject() {
 
         }

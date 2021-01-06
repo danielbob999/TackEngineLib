@@ -1,17 +1,10 @@
 ﻿/* Copyright (c) 2019 Daniel Phillip Robinson */
-using System;
-using System.Collections.Generic;
 using TackEngineLib.Engine;
 using TackEngineLib.Main;
-using TackEngineLib.Objects;
 using TackEngineLib.Objects.Components;
-using OpenTK.Graphics.OpenGL;
-using TackEngineLib.Renderer;
 
-namespace TackEngineLib.Physics
-{
-    public class TackPhysics : EngineModule
-    {
+namespace TackEngineLib.Physics {
+    public class TackPhysics : EngineModule {
         public enum ForceType {
             Additive,       // Adds to the left-over force attached the the PhysicsComponent
             Set             // Resets the attached force to the new value
@@ -38,6 +31,8 @@ namespace TackEngineLib.Physics
 
         internal override void Update() {
             base.Update();
+
+            // k
         }
 
         internal override void Render() {
@@ -58,10 +53,10 @@ namespace TackEngineLib.Physics
             return s_instance;
         }
 
-        internal void RegisterPhysicsComponent(PhysicsBodyComponent component) {
+        internal void RegisterPhysicsComponent(BasePhysicsComponent component) {
         }
 
-        internal void DeregisterPhysicsComponent(PhysicsBodyComponent component) {
+        internal void DeregisterPhysicsComponent(BasePhysicsComponent component) {
         }
 
         internal void DrawPhysicsObjects() {
