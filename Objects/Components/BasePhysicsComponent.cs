@@ -14,7 +14,9 @@ namespace TackEngineLib.Objects.Components {
 
         private float m_mass;
         private float m_invMass;
+        private float m_drag;
         private Vector2f m_velocity;
+        private Vector2f m_currentActingForce;
         private float m_gravityModifier;
 
         private bool m_affectedByGravity;
@@ -64,7 +66,7 @@ namespace TackEngineLib.Objects.Components {
         }
 
         /// <summary>
-        /// Gets/Sets the gravity modifier of a physics body. This setting only affects how the body is affected by gravity. The modifier may not be set to 0
+        /// Gets/Sets the gravity modifier of the physics body. This setting only affects how the body is affected by gravity. The modifier may not be set to 0
         /// </summary>
         public float GravityModifier {
             get { return m_gravityModifier; }
@@ -75,6 +77,24 @@ namespace TackEngineLib.Objects.Components {
 
                 m_gravityModifier = value; 
             }
+        }
+
+
+        /// <summary>
+        /// Gets/Sets the drag of the physics body
+        /// </summary>
+        public float Drag {
+            get { return m_drag; }
+            set { m_drag = value; }
+        }
+
+        internal float InvMass {
+            get { return m_invMass; }
+        }
+
+        internal Vector2f CurrentActingForce {
+            get { return m_currentActingForce; }
+            set { m_currentActingForce = value; }
         }
 
         protected BasePhysicsComponent(Type finalType) {
@@ -111,12 +131,12 @@ namespace TackEngineLib.Objects.Components {
 
         public virtual void AddForce(Vector2f force, TackPhysics.ForceType forceType) {
             if (forceType == TackPhysics.ForceType.Set) {
-                m_velocity = force * m_invMass;
+                m_currentActingForce = force;
                 return;
             }
 
             Vector2f finalForce = force * m_invMass;
-            m_velocity += finalForce;
+            m_currentActingForce += finalForce;
         }
     }
 }
