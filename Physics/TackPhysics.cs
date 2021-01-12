@@ -85,13 +85,18 @@ namespace TackEngineLib.Physics {
             for (int i = 0; i < m_physicBodyComponents.Count; i++) {
                 // Add gravity
                 if (m_physicBodyComponents[i].IsAffectedByGravity) {
-                    //m_physicBodyComponents[i].AddForce();
+                    m_physicBodyComponents[i].AddGravityForce(1 * 1);
                 }
 
                 // Add Forces
                 if (!m_physicBodyComponents[i].IsStatic) {
+                    // Gravity force
+                    Vector2f calcedGravityForce = new Vector2f();
+                    calcedGravityForce.X = ((m_physicBodyComponents[i].CurrentGravityForce.X * m_physicBodyComponents[i].GravityModifier) * m_gravityForce.X);
+                    calcedGravityForce.Y = ((m_physicBodyComponents[i].CurrentGravityForce.Y * m_physicBodyComponents[i].GravityModifier) * m_gravityForce.Y);
+
                     // Move body
-                    Vector2f moveAmnt = m_physicBodyComponents[i].CurrentActingForce;
+                    Vector2f moveAmnt = m_physicBodyComponents[i].CurrentActingForce + calcedGravityForce;
 
                     TackObject obj = m_physicBodyComponents[i].GetParent();
                     obj.Position += moveAmnt;
