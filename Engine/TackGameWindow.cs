@@ -118,6 +118,7 @@ namespace TackEngineLib.Engine
 
             TackEngine.mUpdateCyclesPerSecond = (int)UpdateFrequency;
             Internal_UpdateCycleCounter++;
+            EngineTimer.LastCycleTime = e.Time;
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

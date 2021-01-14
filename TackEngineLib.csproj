@@ -55,6 +55,7 @@
     <Compile Include="Engine\EngineConsoleCommands.cs" />
     <Compile Include="Engine\EngineLogType.cs" />
     <Compile Include="Engine\EngineModule.cs" />
+    <Compile Include="Engine\EngineTimer.cs" />
     <Compile Include="GUI\BoxStyle.cs" />
     <Compile Include="GUI\GUIBox.cs" />
     <Compile Include="GUI\GUIButton.cs" />

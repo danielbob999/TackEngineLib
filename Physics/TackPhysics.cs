@@ -5,6 +5,7 @@ using TackEngineLib.Engine;
 using TackEngineLib.Main;
 using TackEngineLib.Objects;
 using TackEngineLib.Objects.Components;
+using OpenTK.Graphics.OpenGL;
 
 namespace TackEngineLib.Physics {
     public class TackPhysics : EngineModule {
@@ -24,7 +25,7 @@ namespace TackEngineLib.Physics {
         }
 
         internal TackPhysics() {
-            m_gravityForce = new Vector2f(0, -9.8f);
+            m_gravityForce = new Vector2f(0, -1.2f);
             m_physicBodyComponents = new List<BasePhysicsComponent>();
 
             s_instance = this;
@@ -55,6 +56,8 @@ namespace TackEngineLib.Physics {
 
         internal override void Render() {
             base.Render();
+
+            DrawPhysicsObjects();
         }
 
         /// <summary>
@@ -78,14 +81,54 @@ namespace TackEngineLib.Physics {
         }
 
         internal void DrawPhysicsObjects() {
+            // Vertex layout
+            //  V4----V3
+            //  |     |
+            //  |     |
+            //  V1----V2
 
+            for (int i = 0; i < m_physicBodyComponents.Count; i++) {
+                Type physCompType = m_physicBodyComponents[i].FinalType;
+
+                if (physCompType == typeof(RectanglePhysicsComponent)) {
+                    RectanglePhysicsComponent physComp = (RectanglePhysicsComponent)m_physicBodyComponents[i];
+                    AABB aabb = physComp.BoundingBox;
+                    AABB aabbScreenSpace = new AABB(Renderer.TackRenderer.FindScreenCoordsFromPosition(aabb.BottomLeft), Renderer.TackRenderer.FindScreenCoordsFromPosition(aabb.TopRight));
+
+                    GL.Begin(PrimitiveType.Lines);
+
+                    // V1->V2
+                    GL.Vertex2(aabbScreenSpace.Left, aabbScreenSpace.Bottom);
+                    GL.Vertex2(aabbScreenSpace.Right, aabbScreenSpace.Bottom);
+
+                    // V2->V3
+                    GL.Vertex2(aabbScreenSpace.Right, aabbScreenSpace.Bottom);
+                    GL.Vertex2(aabbScreenSpace.Right, aabbScreenSpace.Top);
+
+                    // V3->V4
+                    GL.Vertex2(aabbScreenSpace.Right, aabbScreenSpace.Top);
+                    GL.Vertex2(aabbScreenSpace.Left, aabbScreenSpace.Top);
+
+                    // V4->V1
+                    GL.Vertex2(aabbScreenSpace.Left, aabbScreenSpace.Top);
+                    GL.Vertex2(aabbScreenSpace.Left, aabbScreenSpace.Bottom);
+
+                    // V1->V3 (diagonal line)
+                    GL.Vertex2(aabbScreenSpace.Left, aabbScreenSpace.Bottom);
+                    GL.Vertex2(aabbScreenSpace.Right, aabbScreenSpace.Top);
+
+                    GL.End();
+                } else {
+                    // Unsupported phyics component
+                }
+            }
         }
 
         internal void ApplyForces() {
             for (int i = 0; i < m_physicBodyComponents.Count; i++) {
                 // Add gravity
                 if (m_physicBodyComponents[i].IsAffectedByGravity) {
-                    m_physicBodyComponents[i].AddGravityForce(1 * 1);
+                    m_physicBodyComponents[i].AddGravityForce(1 * (float)EngineTimer.LastCycleTime);
                 }
 
                 // Add Forces
@@ -119,7 +162,7 @@ namespace TackEngineLib.Physics {
                         newActingForceVec.Y = Math.TackMath.Clamp(newActingForceVec.Y - decreaseMod, 0, float.PositiveInfinity);
                     }
 
-                    m_physicBodyComponents[i].CurrentActingForce = newActingForceVec;
+                    m_physicBodyComponents[i].CurrentActingForce = newActingForceVec * (float)(EngineTimer.LastCycleTime);
                 }
             }
         }

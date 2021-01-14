@@ -106,6 +106,12 @@ namespace TackEngineLib.Objects.Components {
             set { m_currentGravityForce = value; }
         }
 
+        internal Type FinalType { 
+            get { return m_finalType; }
+        }
+
+        public abstract AABB BoundingBox { get; }
+
         protected BasePhysicsComponent(Type finalType) {
             m_finalType = finalType;
         }
