@@ -39,6 +39,10 @@ namespace TackEngineLib.Main
         private BoxStyle mCaretBoxStyle;
         private string mInputString;
 
+        // Implement the new GUI system
+        private GUITextArea mConsoleTextArea;
+        private GUIInputField mConsoleInputField;
+
         /// <summary>
         /// Gets or Sets whether the ActiveInstance of TackConsole has logging to file enable. 
         /// If Get is called and ActiveInstance is null, false is returned
@@ -94,10 +98,13 @@ namespace TackEngineLib.Main
             mCaretBoxStyle = new BoxStyle() {
                 Colour = new Colour4b(255, 0, 0, 255),
             };
+
+            mConsoleInputField = null;
+            mConsoleTextArea = null;
+            mConsoleGUIActive = true;
         }
 
-        internal void OnStart()
-        {
+        internal void OnStart() { 
             //Stopwatch timer = new Stopwatch();
             //timer.Start();
 
@@ -109,6 +116,46 @@ namespace TackEngineLib.Main
 
         internal void OnUpdate()
         {
+            if (mConsoleTextArea == null) {
+                mConsoleTextArea = new GUITextArea() {
+                    Bounds = new RectangleShape(5, 5, TackEngine.ScreenWidth - 10, 400),
+                    NormalStyle = new GUITextArea.GUITextAreaStyle() {
+                        Colour = new Colour4b(0, 0, 0, 190),
+                        Texture = Sprite.DefaultSprite,
+                        FontColour = new Colour4b(0, 255, 0, 255),
+                        FontSize = 9f,
+                        VerticalAlignment = VerticalAlignment.Top,
+                        HorizontalAlignment = HorizontalAlignment.Left
+                    },
+
+                    HoverStyle = new GUITextArea.GUITextAreaStyle() {
+                        Colour = new Colour4b(0, 0, 0, 190),
+                        Texture = Sprite.DefaultSprite,
+                        FontColour = new Colour4b(0, 255, 0, 255),
+                        FontSize = 9f,
+                        VerticalAlignment = VerticalAlignment.Top,
+                        HorizontalAlignment = HorizontalAlignment.Left
+                    },
+                    Text = "",
+                    Active = true
+                };
+            }
+
+            if (mConsoleInputField == null) {
+                mConsoleInputField = new GUIInputField() {
+                    Bounds = new RectangleShape(5, 415, TackEngine.ScreenWidth - 10, 25),
+                    Text = "",
+                    Active = true
+                };
+
+                mConsoleInputField.OnSubmit += ProcessCommand;
+            }
+
+            mConsoleTextArea.Active = mConsoleGUIActive;
+            mConsoleInputField.Active = mConsoleGUIActive;
+            mConsoleTextArea.Bounds = new RectangleShape(5, 5, TackEngine.ScreenWidth - 10, 400);
+            mConsoleInputField.Bounds = new RectangleShape(5, 410, TackEngine.ScreenWidth - 10, 25);
+
             // Check to see if user wants to display the TackConsole GUI
             if (TackInput.InputActiveKeyDown(mActivationKey))
             {
@@ -132,21 +179,17 @@ namespace TackEngineLib.Main
 
         internal void OnGUIRender()
         {
-            // Only display GUI when mConsoleGUIActive=true
-            if (mConsoleGUIActive)
-            {
-                int nextPosition = (int)(TackEngine.ScreenHeight * 0.70f) - 14;
-
+            // Only update GUI when mConsoleGUIActive=true
+            if (mConsoleGUIActive) {
                 string consoleString = "";
 
-                foreach (string str in mMessages)
-                {
+                foreach (string str in mMessages) {
                     consoleString += (str + "\n");
                 }
 
-                //TackGUI.TextArea(new Main.RectangleShape(0, 0, TackEngine.ScreenWidth, (TackEngine.ScreenHeight * 0.70f)), consoleString, mConsoleUIStyle);
-                mInputString = TackGUI.InputField(new Main.RectangleShape(0, (TackEngine.ScreenHeight * 0.70f), TackEngine.ScreenWidth, 35.0f), mInputString, ref mInputFieldStyle);
-                //Console.WriteLine("Console Input: " + mInputString);
+                if (mConsoleTextArea != null) {
+                    mConsoleTextArea.Text = consoleString;
+                }
             }
         }
 
@@ -256,14 +299,14 @@ namespace TackEngineLib.Main
             EngineLog(EngineLogType.Message, "Found " + i + " valid CommandMethods in Assembly: " + assembly.FullName);
         }
 
-        private void ProcessCommand(object sender, EventArgs e)
+        private void ProcessCommand(object sender, string input)
         {
-            if (string.IsNullOrEmpty(mInputString)) {
+            if (string.IsNullOrEmpty(input)) {
                 EngineLog(EngineLogType.Message, "Command input string is null or empty");
                 return;
             }
 
-            string commandInput = mInputString;
+            string commandInput = input;
             EngineLog(EngineLogType.Message, "> " + commandInput);
             mPreviousCommands.Add(commandInput);
             mPreviousCommandsIndex = -1;
@@ -279,6 +322,9 @@ namespace TackEngineLib.Main
 
             EngineLog(EngineLogType.Message, "No valid TackCommand with call string '" + splitCommandBySpaces[0] + "'");
             EngineLog(EngineLogType.Message, "Use 'help' to get a list of valid commands");
+
+            mConsoleInputField.Text = "";
+            mConsoleInputField.SelectionStart = 0;
         }
 
         internal static List<TackCommand> GetLoadedTackCommands() {

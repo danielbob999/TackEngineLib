@@ -59,14 +59,18 @@ namespace TackEngineLib.GUI {
         internal void OnUpdate() {
             // Loop through the current GUIObject List calling the OnUpdate function on each
             for (int i = 0; i < m_guiObjects.Count; i++) {
-                ((GUIObject)m_guiObjects[i]).OnUpdate();
+                if (((GUIObject)m_guiObjects[i]).Active) {
+                    ((GUIObject)m_guiObjects[i]).OnUpdate();
+                }
             }
         }
 
         internal void OnGUIRender() {
             // Loop through the current GUIObject List calling the OnRender function on each
             for (int i = 0; i < m_guiObjects.Count; i++) {
-                ((GUIObject)m_guiObjects[i]).OnRender();
+                if (((GUIObject)m_guiObjects[i]).Active) {
+                    ((GUIObject)m_guiObjects[i]).OnRender();
+                }
             }
 
             if (m_guiOperations.Count == 0) {

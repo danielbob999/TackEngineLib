@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace TackEngineLib.GUI {
     public class GUIObject {
-        internal GUIObject() {
+        private bool m_active;
 
+        public bool Active {
+            get { return m_active; }
+            set { m_active = value; }
+        }
+
+        internal GUIObject() {
+            Active = true;
         }
 
         internal virtual void OnStart() {

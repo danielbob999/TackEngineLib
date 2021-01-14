@@ -72,6 +72,14 @@ namespace TackEngineLib.GUI {
             }
         }
 
+        public class InputSubmitEventArgs : EventArgs {
+            public string Text { get; private set; }
+
+            public InputSubmitEventArgs(string text) : base() {
+                Text = text;
+            }
+        }
+
         private GUIBox m_caretBox;
 
         public string Text { get; set; }
@@ -81,6 +89,9 @@ namespace TackEngineLib.GUI {
         public bool RequiringInput { get; set; }
         public GUIInputFieldStyle NormalStyle { get; set; }
         public GUIInputFieldStyle RequiringInputStyle { get; set; }
+
+        public delegate void InputSubmitEventHandler(object sender, string input);
+        public event InputSubmitEventHandler OnSubmit;
 
         public GUIInputField() {
             Text = "";
@@ -122,7 +133,14 @@ namespace TackEngineLib.GUI {
             KeyboardKey[] bufferOperations = TackInput.GetInputBufferArray();
 
             for (int i = 0; i < bufferOperations.Length; i++) {
-                if (bufferOperations[i] == KeyboardKey.Left) {
+                if (bufferOperations[i] == KeyboardKey.Enter) {
+                    if (OnSubmit != null) {
+                        if (OnSubmit.GetInvocationList().Length > 0) {
+                            Console.WriteLine("(" + Text + ")");
+                            OnSubmit.Invoke(this, Text);
+                        }
+                    }
+                } else if (bufferOperations[i] == KeyboardKey.Left) {
                     if (SelectionStart > 0) {
                         SelectionStart -= 1;
                     }
