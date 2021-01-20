@@ -120,7 +120,7 @@ namespace TackEngineLib.Main
                 mConsoleTextArea = new GUITextArea() {
                     Bounds = new RectangleShape(5, 5, TackEngine.ScreenWidth - 10, 400),
                     NormalStyle = new GUITextArea.GUITextAreaStyle() {
-                        Colour = new Colour4b(0, 0, 0, 190),
+                        Colour = new Colour4b(0, 0, 0, 255),
                         Texture = Sprite.DefaultSprite,
                         FontColour = new Colour4b(0, 255, 0, 255),
                         FontSize = 9f,
@@ -129,7 +129,7 @@ namespace TackEngineLib.Main
                     },
 
                     HoverStyle = new GUITextArea.GUITextAreaStyle() {
-                        Colour = new Colour4b(0, 0, 0, 190),
+                        Colour = new Colour4b(0, 0, 0, 255),
                         Texture = Sprite.DefaultSprite,
                         FontColour = new Colour4b(0, 255, 0, 255),
                         FontSize = 9f,
