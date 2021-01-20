@@ -289,7 +289,7 @@ namespace TackEngineLib.Physics {
         internal void ResolveCollisions(List<PhysicsCollision> collisions) {
             //Console.WriteLine(collisions.Count + " collisions");
            for (int i = 0; i < collisions.Count; i++) {
-                TackConsole.EngineLog(EngineLogType.Message, "Resolving collision between {0} and {1}, with penetration {2}", collisions[i].Body1.GetParent().Name, collisions[i].Body2.GetParent().Name, collisions[i].Penetration);
+                //TackConsole.EngineLog(EngineLogType.Message, "Resolving collision between {0} and {1}, with penetration {2}", collisions[i].Body1.GetParent().Name, collisions[i].Body2.GetParent().Name, collisions[i].Penetration);
                 BasePhysicsComponent comp1 = collisions[i].Body1;
                 BasePhysicsComponent comp2 = collisions[i].Body2;
 
