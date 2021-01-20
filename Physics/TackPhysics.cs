@@ -19,10 +19,19 @@ namespace TackEngineLib.Physics {
         private Vector2f m_gravityForce;
         private List<BasePhysicsComponent> m_physicBodyComponents;
         private bool m_runBroadphaseAlgorithm;
+        private bool m_debugDrawBodies;
 
         public Vector2f Gravity {
             get { return m_gravityForce; }
             set { m_gravityForce = value; }
+        }
+
+        /// <summary>
+        /// Gets/Sets whether the render should draw the AABBs on screen
+        /// </summary>
+        public bool ShouldDebugDrawBodies {
+            get { return m_debugDrawBodies; }
+            set { m_debugDrawBodies = value; }
         }
 
         /// <summary>
@@ -45,6 +54,7 @@ namespace TackEngineLib.Physics {
         /// Starts this TackPhysics instance
         /// </summary>
         internal override void Start() {
+            m_debugDrawBodies = false;
         }
 
         internal override void Update() {
@@ -91,6 +101,10 @@ namespace TackEngineLib.Physics {
         }
 
         internal void DrawPhysicsObjects() {
+            if (!m_debugDrawBodies) {
+                return;
+            }
+
             // Vertex layout
             //  V4----V3
             //  |     |

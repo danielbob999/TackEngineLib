@@ -9,6 +9,7 @@ using TackEngineLib.Main;
 using TackEngineLib.Objects;
 using TackEngineLib.Objects.Components;
 using TackEngineLib.GUI;
+using TackEngineLib.Physics;
 
 namespace TackEngineLib.Engine
 {
@@ -238,6 +239,27 @@ namespace TackEngineLib.Engine
             }
 
             TackConsole.EngineLog(EngineLogType.Error, "Incorrect number of args for command: " + args[1]);
+        }
+
+        [CommandMethod("physics.debugdraw", "", "state:bool")]
+        public static void EnableDebugDrawCommand(string[] args) {
+            if (args.Length == 1) {
+                TackConsole.EngineLog(EngineLogType.Message, "Value: " + TackPhysics.GetInstance().ShouldDebugDrawBodies);
+                return;
+            }
+
+            if (args.Length == 2) {
+                if (bool.TryParse(args[1], out bool res)) {
+                    TackPhysics.GetInstance().ShouldDebugDrawBodies = res;
+                    TackConsole.EngineLog(EngineLogType.Message, "Set {0} to Value: {1}", args[0], res);
+                } else {
+                    TackConsole.EngineLog(EngineLogType.Error, "Failed to convert '{0}' to a boolean value", args[1]);
+                }
+
+                return;
+            }
+
+            TackConsole.EngineLog(EngineLogType.Error, "Incorrect number of arguments for command: " + args[0]);
         }
     }
 }
