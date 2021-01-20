@@ -22,7 +22,6 @@ namespace TackEngineLib.Objects.Components
             set { m_active = value; } 
         }
 
-
         internal TackComponent() {
             m_componentId = s_nextId;
             s_nextId++;

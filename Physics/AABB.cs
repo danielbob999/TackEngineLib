@@ -45,6 +45,29 @@ namespace TackEngineLib.Physics {
             get { return m_topRight.X; }
         }
 
+        public Vector2f Origin {
+            get {
+                Vector2f origin = new Vector2f() {
+                    X = m_bottomLeft.X + ((m_topRight.X - m_bottomLeft.X) / 2.0f),
+                    Y = m_topRight.Y - ((m_topRight.Y - m_bottomLeft.Y) / 2.0f)
+                };
+
+                return origin;
+            }
+        }
+
+        public float Width {
+            get {
+                return m_topRight.X - m_bottomLeft.X;
+            }
+        }
+
+        public float Height {
+            get {
+                return m_topRight.Y - m_bottomLeft.Y;
+            }
+        }
+
         internal AABB() {
             m_bottomLeft = new Vector2f(-1, -1);
             m_topRight = new Vector2f(1, 1);

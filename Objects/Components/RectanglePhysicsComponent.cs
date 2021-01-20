@@ -30,8 +30,8 @@ namespace TackEngineLib.Objects.Components {
                 AABB aabb = new AABB();
                 TackObject obj = GetParent();
 
-                Vector2f bottomLeftScaled = new Vector2f(obj.Position.X - ((obj.Scale.X / 2.0f) * m_aabbScale.X), obj.Position.Y + ((obj.Scale.Y / 2.0f) * m_aabbScale.Y));
-                Vector2f topRightScaled = new Vector2f(obj.Position.X + ((obj.Scale.X / 2.0f) * m_aabbScale.X), obj.Position.Y - ((obj.Scale.Y / 2.0f) * m_aabbScale.Y));
+                Vector2f bottomLeftScaled = new Vector2f(obj.Position.X - ((obj.Scale.X / 2.0f) * m_aabbScale.X), obj.Position.Y - ((obj.Scale.Y / 2.0f) * m_aabbScale.Y));
+                Vector2f topRightScaled = new Vector2f(obj.Position.X + ((obj.Scale.X / 2.0f) * m_aabbScale.X), obj.Position.Y + ((obj.Scale.Y / 2.0f) * m_aabbScale.Y));
 
                 aabb.BottomLeft = new Vector2f(bottomLeftScaled.X + m_aabbOffset.X, bottomLeftScaled.Y + m_aabbOffset.Y);
                 aabb.TopRight = new Vector2f(topRightScaled.X + m_aabbOffset.X, topRightScaled.Y + m_aabbOffset.Y);
