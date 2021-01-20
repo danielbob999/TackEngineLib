@@ -136,7 +136,6 @@ namespace TackEngineLib.GUI {
                 if (bufferOperations[i] == KeyboardKey.Enter) {
                     if (OnSubmit != null) {
                         if (OnSubmit.GetInvocationList().Length > 0) {
-                            Console.WriteLine("(" + Text + ")");
                             OnSubmit.Invoke(this, Text);
                         }
                     }
