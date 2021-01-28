@@ -77,6 +77,7 @@
     <Compile Include="Math\LinearEquation.cs" />
     <Compile Include="Objects\Components\AudioComponent.cs" />
     <Compile Include="Objects\Components\BasePhysicsComponent.cs" />
+    <Compile Include="Objects\Components\CirclePhysicsComponent.cs" />
     <Compile Include="Objects\Components\RectanglePhysicsComponent.cs" />
     <Compile Include="Physics\AABB.cs" />
     <Compile Include="Physics\MovementDirection.cs" />

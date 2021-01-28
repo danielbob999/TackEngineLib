@@ -68,6 +68,29 @@ namespace TackEngineLib.Physics {
             }
         }
 
+        /// <summary>
+        /// Returns the 4 vertex points of the AABB
+        /// 
+        /// Vertex Layout: v1, v2, v3, v4
+        /// 
+        ///  v4 --- v3
+        ///  |      |
+        ///  |      |
+        ///  v1 --- v2
+        /// 
+        /// </summary>
+        public Vector2f[] VertexPoints {
+            get {
+                Vector2f[] points = new Vector2f[4];
+                points[0] = m_bottomLeft;
+                points[1] = new Vector2f(Right, Bottom);
+                points[2] = m_topRight;
+                points[3] = new Vector2f(Left, Top);
+
+                return points;
+            }
+        }
+
         internal AABB() {
             m_bottomLeft = new Vector2f(-1, -1);
             m_topRight = new Vector2f(1, 1);

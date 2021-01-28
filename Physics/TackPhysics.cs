@@ -142,6 +142,30 @@ namespace TackEngineLib.Physics {
                     GL.Vertex2(aabbScreenSpace.Right, aabbScreenSpace.Top);
 
                     GL.End();
+                } else if (physCompType == typeof(CirclePhysicsComponent)) {
+                    CirclePhysicsComponent physComp = (CirclePhysicsComponent)m_physicBodyComponents[i];
+                    AABB aabb = physComp.BoundingBox;
+                    AABB aabbScreenSpace = new AABB(Renderer.TackRenderer.FindScreenCoordsFromPosition(aabb.BottomLeft), Renderer.TackRenderer.FindScreenCoordsFromPosition(aabb.TopRight));
+
+                    GL.Begin(PrimitiveType.Lines);
+
+                    // V1->V2
+                    GL.Vertex2(aabbScreenSpace.Left, aabbScreenSpace.Bottom);
+                    GL.Vertex2(aabbScreenSpace.Right, aabbScreenSpace.Bottom);
+
+                    // V2->V3
+                    GL.Vertex2(aabbScreenSpace.Right, aabbScreenSpace.Bottom);
+                    GL.Vertex2(aabbScreenSpace.Right, aabbScreenSpace.Top);
+
+                    // V3->V4
+                    GL.Vertex2(aabbScreenSpace.Right, aabbScreenSpace.Top);
+                    GL.Vertex2(aabbScreenSpace.Left, aabbScreenSpace.Top);
+
+                    // V4->V1
+                    GL.Vertex2(aabbScreenSpace.Left, aabbScreenSpace.Top);
+                    GL.Vertex2(aabbScreenSpace.Left, aabbScreenSpace.Bottom);
+
+                    GL.End();
                 } else {
                     // Unsupported phyics component
                 }
@@ -240,54 +264,45 @@ namespace TackEngineLib.Physics {
 
                         // Handle if both physic bodies are rectangle types
                         if (comp1.FinalType == typeof(RectanglePhysicsComponent) && comp2.FinalType == typeof(RectanglePhysicsComponent)) {
-                            AABB comp1AABB = comp1.BoundingBox;
-                            AABB comp2AABB = comp2.BoundingBox;
-                            TackObject obj1 = comp1.GetParent();
-                            TackObject obj2 = comp2.GetParent();
+                            if (CheckAABBToAABBCollision(comp1.BoundingBox, comp2.BoundingBox, out PhysicsCollision tempCollision)) {
+                                detailedCollisions.Add(new PhysicsCollision(comp1, comp2, tempCollision.Normal, tempCollision.Penetration));
+                            }
 
-                            bool isCollidingXAxis = false;
-                            bool isCollidingYAxis = false;
-                            Vector2f penetration = new Vector2f(0, 0);
-                            Vector2f normal = new Vector2f();
+                            checkedCollisions.Add(new Tuple<BasePhysicsComponent, BasePhysicsComponent>(comp1, comp2));
+                        } else if ((comp1.FinalType == typeof(RectanglePhysicsComponent) && comp2.FinalType == typeof(CirclePhysicsComponent)) || (comp1.FinalType == typeof(CirclePhysicsComponent) && comp2.FinalType == typeof(RectanglePhysicsComponent))) {
+                            Vector2f nearestVertexPoint = default;
+                            float nearestDistance = 10000000.0f;
+                            RectanglePhysicsComponent rectanglePhysicComp;
+                            CirclePhysicsComponent circlePhysicsComp;
 
-                            if (comp1AABB.Origin.X < comp2AABB.Origin.X) {
-                                if (comp1AABB.Right > comp2AABB.Left) {
-                                    isCollidingXAxis = true;
-                                    penetration.X = Math.TackMath.AbsValf(comp1AABB.Right - comp2AABB.Left);
-                                    normal.X = -1;
-                                }
+
+                            if (comp1.FinalType == typeof(RectanglePhysicsComponent)) {
+                                rectanglePhysicComp = (RectanglePhysicsComponent)comp1;
+                                circlePhysicsComp = (CirclePhysicsComponent)comp2;
                             } else {
-                                if (comp1AABB.Left < comp2AABB.Right) {
-                                    isCollidingXAxis = true;
-                                    penetration.X = Math.TackMath.AbsValf(comp2AABB.Right - comp1AABB.Left);
-                                    normal.X = 1;
+                                rectanglePhysicComp = (RectanglePhysicsComponent)comp2;
+                                circlePhysicsComp = (CirclePhysicsComponent)comp1;
+                            }
+
+                            for (int k = 0; k < 4; k++) {
+                                float distance = Vector2f.Distance(rectanglePhysicComp.BoundingBox.VertexPoints[k], circlePhysicsComp.BoundingBox.Origin);
+                                if (distance < nearestDistance) {
+                                    nearestDistance = distance;
+                                    nearestVertexPoint = rectanglePhysicComp.BoundingBox.VertexPoints[k];
                                 }
                             }
 
-                            
-                            if (comp1AABB.Origin.Y > comp2AABB.Origin.Y) {
-                                if (comp1AABB.Bottom < comp2AABB.Top) {
-                                    isCollidingYAxis = true;
-                                    penetration.Y = Math.TackMath.AbsValf(comp1AABB.Bottom - comp2AABB.Top);
-                                    normal.Y = 1;
+                            // Check to see if the circle body should be treated 
+                            if ((comp1.BoundingBox.Origin.X < comp2.BoundingBox.Right && comp1.BoundingBox.Origin.X > comp2.BoundingBox.Left) || (comp1.BoundingBox.Origin.Y < comp2.BoundingBox.Top && comp1.BoundingBox.Origin.Y > comp2.BoundingBox.Bottom)) {
+                                if (CheckAABBToAABBCollision(comp1.BoundingBox, comp2.BoundingBox, out PhysicsCollision tempCollision)) {
+                                    detailedCollisions.Add(new PhysicsCollision(comp1, comp2, tempCollision.Normal, tempCollision.Penetration));
                                 }
                             } else {
-                                if (comp1AABB.Top > comp2AABB.Bottom) {
-                                    isCollidingYAxis = true;
-                                    penetration.Y = Math.TackMath.AbsValf(comp1AABB.Top - comp2AABB.Bottom);
-                                    normal.Y = -1;
-                                }
-                            }
+                                if (nearestDistance < ((circlePhysicsComp.BoundingBox.Width / 2.0f) * circlePhysicsComp.RadiusMultiplier)) {
+                                    Vector2f normal = Vector2f.Normalise(circlePhysicsComp.BoundingBox.Origin - nearestVertexPoint);
+                                    float penentration = ((circlePhysicsComp.BoundingBox.Width / 2.0f) * circlePhysicsComp.RadiusMultiplier) - nearestDistance;
 
-                            if (isCollidingXAxis && isCollidingYAxis) {
-                                Vector2f distances = new Vector2f(Math.TackMath.AbsValf(comp1AABB.Origin.X - comp2AABB.Origin.X), Math.TackMath.AbsValf(comp1AABB.Origin.Y - comp2AABB.Origin.Y));
-
-                                if (distances.X >= distances.Y) {
-                                    normal.Y = 0;
-                                    detailedCollisions.Add(new PhysicsCollision(comp1, comp2, normal, penetration.X));
-                                } else {
-                                    normal.X = 0;
-                                    detailedCollisions.Add(new PhysicsCollision(comp1, comp2, normal, penetration.Y));
+                                    detailedCollisions.Add(new PhysicsCollision(comp1, comp2, -normal, penentration));
                                 }
                             }
 
@@ -323,6 +338,64 @@ namespace TackEngineLib.Physics {
 
                 }
             }
+        }
+
+        private bool CheckAABBToAABBCollision(AABB aabb1, AABB aabb2, out PhysicsCollision collision) {
+            AABB comp1AABB = aabb1;
+            AABB comp2AABB = aabb2;
+            //TackObject obj1 = comp1.GetParent();
+            //TackObject obj2 = comp2.GetParent();
+
+            bool isCollidingXAxis = false;
+            bool isCollidingYAxis = false;
+            Vector2f penetration = new Vector2f(0, 0);
+            Vector2f normal = new Vector2f();
+
+            if (comp1AABB.Origin.X < comp2AABB.Origin.X) {
+                if (comp1AABB.Right > comp2AABB.Left) {
+                    isCollidingXAxis = true;
+                    penetration.X = Math.TackMath.AbsValf(comp1AABB.Right - comp2AABB.Left);
+                    normal.X = -1;
+                }
+            } else {
+                if (comp1AABB.Left < comp2AABB.Right) {
+                    isCollidingXAxis = true;
+                    penetration.X = Math.TackMath.AbsValf(comp2AABB.Right - comp1AABB.Left);
+                    normal.X = 1;
+                }
+            }
+
+
+            if (comp1AABB.Origin.Y > comp2AABB.Origin.Y) {
+                if (comp1AABB.Bottom < comp2AABB.Top) {
+                    isCollidingYAxis = true;
+                    penetration.Y = Math.TackMath.AbsValf(comp1AABB.Bottom - comp2AABB.Top);
+                    normal.Y = 1;
+                }
+            } else {
+                if (comp1AABB.Top > comp2AABB.Bottom) {
+                    isCollidingYAxis = true;
+                    penetration.Y = Math.TackMath.AbsValf(comp1AABB.Top - comp2AABB.Bottom);
+                    normal.Y = -1;
+                }
+            }
+
+            if (isCollidingXAxis && isCollidingYAxis) {
+                Vector2f distances = new Vector2f(Math.TackMath.AbsValf(comp1AABB.Origin.X - comp2AABB.Origin.X), Math.TackMath.AbsValf(comp1AABB.Origin.Y - comp2AABB.Origin.Y));
+
+                if (distances.X >= distances.Y) {
+                    normal.Y = 0;
+                    collision = new PhysicsCollision(null, null, normal, penetration.X);
+                    return true;
+                } else {
+                    normal.X = 0;
+                    collision = new PhysicsCollision(null, null, normal, penetration.Y);
+                    return true;
+                }
+            }
+
+            collision = null;
+            return false;
         }
 
         public void Shutdown() {

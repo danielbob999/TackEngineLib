@@ -86,5 +86,10 @@ namespace TackEngineLib.Main
 
             return (float)System.Math.Sqrt(xDiff + yDiff);
         }
+
+        public static Vector2f Normalise(Vector2f vec) {
+            float distance = (float)System.Math.Sqrt(vec.X * vec.X + vec.Y * vec.Y);
+            return new Vector2f(vec.X / distance, vec.Y / distance);
+        }
     }
 }
