@@ -298,12 +298,23 @@ namespace TackEngineLib.Physics {
                                     detailedCollisions.Add(new PhysicsCollision(comp1, comp2, tempCollision.Normal, tempCollision.Penetration));
                                 }
                             } else {
-                                if (nearestDistance < ((circlePhysicsComp.BoundingBox.Width / 2.0f) * circlePhysicsComp.RadiusMultiplier)) {
+                                if (nearestDistance < (circlePhysicsComp.BoundingBox.Width / 2.0f)) {
                                     Vector2f normal = Vector2f.Normalise(circlePhysicsComp.BoundingBox.Origin - nearestVertexPoint);
-                                    float penentration = ((circlePhysicsComp.BoundingBox.Width / 2.0f) * circlePhysicsComp.RadiusMultiplier) - nearestDistance;
+                                    float penentration = (circlePhysicsComp.BoundingBox.Width / 2.0f) - nearestDistance;
 
                                     detailedCollisions.Add(new PhysicsCollision(comp1, comp2, -normal, penentration));
                                 }
+                            }
+
+                            checkedCollisions.Add(new Tuple<BasePhysicsComponent, BasePhysicsComponent>(comp1, comp2));
+                        } else if (comp1.FinalType == typeof(CirclePhysicsComponent) && comp2.FinalType == typeof(CirclePhysicsComponent)) {
+                            float distance = Vector2f.Distance(comp1.BoundingBox.Origin, comp2.BoundingBox.Origin);
+
+                            if (distance < ((comp1.BoundingBox.Width / 2.0f) + (comp2.BoundingBox.Width / 2.0f))) {
+                                Vector2f normal = Vector2f.Normalise(comp1.BoundingBox.Origin - comp2.BoundingBox.Origin);
+                                float penentration = ((comp1.BoundingBox.Width / 2.0f) + (comp2.BoundingBox.Width / 2.0f)) - distance;
+
+                                detailedCollisions.Add(new PhysicsCollision(comp1, comp2, -normal, penentration));
                             }
 
                             checkedCollisions.Add(new Tuple<BasePhysicsComponent, BasePhysicsComponent>(comp1, comp2));
