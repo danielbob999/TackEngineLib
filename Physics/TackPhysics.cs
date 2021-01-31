@@ -43,7 +43,7 @@ namespace TackEngineLib.Physics {
         }
 
         internal TackPhysics() {
-            m_gravityForce = new Vector2f(0, -1.2f);
+            m_gravityForce = new Vector2f(0, -1f);
             m_physicBodyComponents = new List<BasePhysicsComponent>();
             m_runBroadphaseAlgorithm = true;
 
@@ -176,15 +176,13 @@ namespace TackEngineLib.Physics {
             for (int i = 0; i < m_physicBodyComponents.Count; i++) {
                 // Add gravity
                 if (m_physicBodyComponents[i].IsAffectedByGravity) {
-                    m_physicBodyComponents[i].AddGravityForce(1 * (float)EngineTimer.LastCycleTime);
+                    m_physicBodyComponents[i].AddGravityForce();
                 }
 
                 // Add Forces
                 if (!m_physicBodyComponents[i].IsStatic) {
                     // Gravity force
-                    Vector2f calcedGravityForce = new Vector2f();
-                    calcedGravityForce.X = ((m_physicBodyComponents[i].CurrentGravityForce.X * m_physicBodyComponents[i].GravityModifier) * m_gravityForce.X);
-                    calcedGravityForce.Y = ((m_physicBodyComponents[i].CurrentGravityForce.Y * m_physicBodyComponents[i].GravityModifier) * m_gravityForce.Y);
+                    Vector2f calcedGravityForce = m_physicBodyComponents[i].CurrentGravityForce;
 
                     // Move body
                     Vector2f moveAmnt = m_physicBodyComponents[i].CurrentActingForce + calcedGravityForce;
@@ -334,17 +332,22 @@ namespace TackEngineLib.Physics {
                 BasePhysicsComponent comp2 = collisions[i].Body2;
 
                 float massRatio = (comp1.Mass + comp2.Mass) / comp1.Mass;
+                float restitution = comp1.Restitution;
+
+                if (comp2.Restitution < comp1.Restitution) {
+                    restitution = comp2.Restitution;
+                }
 
                 if (comp1.IsStatic) {
                     //TackConsole.EngineLog(EngineLogType.Message, "comp2 moveamnt: " + (collisions[i].Normal * collisions[i].Penetration).ToString());
                     comp2.GetParent().Position += (collisions[i].Normal * (collisions[i].Penetration * 1.000001f));
-                    comp2.Velocity = new Vector2f(0, 0);
-                    comp2.CurrentActingForce = new Vector2f(0, 0);
+                    comp2.CurrentGravityForce = new Vector2f(0, 0);
+                    comp2.CurrentActingForce = new Vector2f((-comp2.Velocity.X * 0.9999f) * restitution, ((-comp2.Velocity.Y * 0.9999f) * restitution));
                 } else if (comp2.IsStatic) {
                     //TackConsole.EngineLog(EngineLogType.Message, "comp1 moveamnt: " + (collisions[i].Normal * collisions[i].Penetration).ToString());
                     comp1.GetParent().Position += (collisions[i].Normal * (collisions[i].Penetration * 1.000001f));
-                    comp1.Velocity = new Vector2f(0, 0);
-                    comp1.CurrentActingForce = new Vector2f(0, 0);
+                    comp1.CurrentGravityForce = new Vector2f(0, 0);
+                    comp1.CurrentActingForce = new Vector2f((-comp1.Velocity.X * 0.9999f) * restitution, ((-comp1.Velocity.Y * 0.9999f) * restitution));
                 } else {
 
                 }

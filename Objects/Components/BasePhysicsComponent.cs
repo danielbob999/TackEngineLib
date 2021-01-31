@@ -19,6 +19,8 @@ namespace TackEngineLib.Objects.Components {
         private Vector2f m_currentGravityForce;
         private Vector2f m_currentActingForce;
         private float m_gravityModifier;
+        private float m_restitution;
+        private Vector2f m_previousPosition;
 
         private bool m_affectedByGravity;
         private bool m_isStatic;
@@ -92,6 +94,14 @@ namespace TackEngineLib.Objects.Components {
             set { m_drag = value; }
         }
 
+        /// <summary>
+        /// Gets/Sets the restitution (or bounciness) of the physics body
+        /// </summary>
+        public float Restitution {
+            get { return m_restitution; }
+            set { m_restitution = value; }
+        }
+
         internal float InvMass {
             get { return m_invMass; }
         }
@@ -114,6 +124,8 @@ namespace TackEngineLib.Objects.Components {
 
         protected BasePhysicsComponent(Type finalType) {
             m_finalType = finalType;
+            m_currentActingForce = new Vector2f(0, 0);
+            m_currentGravityForce = new Vector2f(0, 0);
         }
 
         public override void OnStart() {
@@ -122,6 +134,9 @@ namespace TackEngineLib.Objects.Components {
 
         public override void OnUpdate() {
             base.OnUpdate();
+
+            m_velocity = m_previousPosition - GetParent().Position;
+            m_previousPosition = new Vector2f(GetParent().Position);
         }
 
         public override void OnGUIRender() {
@@ -135,6 +150,7 @@ namespace TackEngineLib.Objects.Components {
         public override void OnAttachedToTackObject() {
             base.OnAttachedToTackObject();
 
+            m_previousPosition = new Vector2f(GetParent().Position);
             TackPhysics.GetInstance().RegisterPhysicsComponent(this);
         }
 
@@ -154,9 +170,8 @@ namespace TackEngineLib.Objects.Components {
             m_currentActingForce += finalForce;
         }
 
-        internal virtual void AddGravityForce(float val) {
-            m_currentGravityForce.X = Math.TackMath.Clamp(m_currentGravityForce.X + val, 0, 1);
-            m_currentGravityForce.Y = Math.TackMath.Clamp(m_currentGravityForce.Y + val, 0, 1);
+        internal virtual void AddGravityForce() {
+            m_currentGravityForce += TackPhysics.GetInstance().Gravity * m_gravityModifier * (float)Engine.EngineTimer.LastCycleTime;
         }
     }
 }

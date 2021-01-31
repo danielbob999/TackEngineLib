@@ -14,6 +14,11 @@ namespace TackEngineLib.Main
         public float X { get; set; }
         public float Y { get; set; }
 
+        public Vector2f(Vector2f vec) {
+            X = vec.X;
+            Y = vec.Y;
+        }
+
         public Vector2f(float _x, float _y) {
             X = _x;
             Y = _y;
